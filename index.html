@@ -252,7 +252,7 @@ const PROFS=[
  {k:"pharmacist",n:"صيدلي",e:"💊",salary:7000,tax:1300,home:1050,car:260,cards:200,other:430,childCost:230,cash:5000,debt:"قرض صيدلية 140,000",perk:{itemDisc:{honey:0.2,saffron:0.2}},pt:"عسل وزعفران أرخص ٢٠٪"},
  {k:"pilot",n:"طيار",e:"✈️",salary:11000,tax:2300,home:1900,car:420,cards:360,other:760,childCost:360,cash:8500,debt:"قرض سكن 260,000",perk:{itemDisc:{perfume:0.15,fabric:0.15}},pt:"عطور وأقمشة أرخص ١٥٪ (من أسفاره)"}
 ];
-const RAT=["payday","deal","doodad","deal","market","souk","deal","order","payday","deal","market","deal","family","child","partner","payday","market","deal","quiz","deal","layoff","market","auction","charity"];
+const RAT=["payday","deal","doodad","deal","market","souk","tax","order","payday","deal","market","deal","family","child","partner","payday","market","doodad","quiz","deal","layoff","deal","auction","charity"];
 const FAST=["payday","biz","dream","biz","lawsuit","biz","payday","dream","biz","tax","biz","dream"];
 const DREAMS=[
  {n:"رحلة حول العالم مع العائلة",cost:180000},
@@ -390,11 +390,14 @@ const P=id=>G.players[id];
 const evMult=t=>{const m=G&&G.event&&G.event.mult;return m&&m[t]?m[t]:1};
 const effInc=a=>Math.round(a.inc*evMult(a.t));
 const loanRate=()=>0.1*((G&&G.event&&G.event.loanMult)||1);
-const expenses=p=>Object.values(p.exp).reduce((a,b)=>a+b,0)+p.children*p.childCost+p.loans*loanRate();
+const expenses=p=>Math.round((Object.values(p.exp).reduce((a,b)=>a+b,0)+p.children*p.childCost)*inflation())+p.loans*loanRate();
 const passive=p=>p.assets.reduce((a,b)=>a+effInc(b),0);
 const fastMode=()=>!!(G&&G.mode==="fast");
-const exitNeed=p=>expenses(p)*(fastMode()?0.7:1);
-const dreamCost=d=>Math.round(d.cost*(fastMode()?0.6:1)/1000)*1000;
+const hard=()=>!!(G&&G.mode!=="fast");                       // الوضع العادي أصعب من «السريعة»
+const hd=c=>hard()?{...c,down:Math.round(c.down*1.08/100)*100,inc:Math.round(c.inc*0.97)}:c; // صفقات أغلى ودخل أقل في الوضع العادي
+const inflation=()=>hard()?1+Math.min(0.1,0.025*Math.floor(((G&&G.round)||1)/10)):1; // التضخم: +٥٪ على المصاريف كل ٨ جولات
+const exitNeed=p=>expenses(p)*(fastMode()?0.7:(hard()?1.0:1));
+const dreamCost=d=>Math.round(d.cost*(fastMode()?0.6:1.1)/1000)*1000;
 const evGoods=k=>{const m=G&&G.event&&G.event.goods;return m&&m[k]?m[k]:1};
 const gPrice=k=>Math.round(G.goods[k].p*evGoods(k));
 const buyPrice=(p,k)=>Math.max(1,Math.round(gPrice(k)*(1-(p.perk.buyDisc||0)-((p.perk.itemDisc&&p.perk.itemDisc[k])||0))));
@@ -601,7 +604,7 @@ async function resolveTile(p,k){
   switch(k){
   case"payday":pay(p);return;
   case"doodad":{
-    const [n,c0]=rnd(DOODADS);const c=Math.round(c0*((G.event&&G.event.doodadMult)||1)*(p.perk.doodadMult||1)/10)*10;
+    const [n,c0]=rnd(DOODADS);const c=Math.round(c0*(hard()?1.2:1)*((G.event&&G.event.doodadMult)||1)*(p.perk.doodadMult||1)/10)*10;
     await ack(p,"🛍️ مصروف طارئ",`<p>${n}: <b class="bad">${fmt(c)}</b></p><p class="sub">مصاريف الاستهلاك لا تُنتج دخلاً. هي جزء من الحياة، لكن لا تدعها تلتهم نقدك.</p>`,"ادفع");
     if(await ensureCash(p,c,true)){p.cash-=c;p.st.doodads++;cue("bad",p);log(`🛍️ ${p.name} دفع ${fmt(c)} على «${n}».`)}
     return}
@@ -622,8 +625,8 @@ async function resolveTile(p,k){
   case"market":return market(p);
   case"deal":{
     const i=await ask(p,{kind:"dealsize",title:"🤝 فرصة استثمارية",body:`<p>اختر حجم الصفقة:</p><div class="tip">الصغيرة أرخص وأخف مخاطرة. الكبيرة تحتاج نقداً أكبر لكن دخلها أعلى.</div>`,opts:["صفقة صغيرة","صفقة كبيرة"],alt:[false,false]});
-    return offer(p,i===0?rnd(SMALL):rnd(BIG))}
-  case"biz":return offer(p,rnd(BIZ));
+    return offer(p,i===0?hd(rnd(SMALL)):hd(rnd(BIG)))}
+  case"biz":return offer(p,hd(rnd(BIZ)));
   case"dream":{
     const d=DREAMS[FAST.slice(0,p.pos).filter(x=>x==="dream").length];
     const dc=dreamCost(d),afford=p.cash>=dc;
@@ -647,8 +650,8 @@ async function resolveTile(p,k){
   case"order":return orderTile(p);
   case"partner":return partner(p);
   case"family":return familyCard(p);
-  case"lawsuit":{const c=Math.round(p.cash*0.2);await ack(p,"⚖️ قضية",`<p>تدفع ${fmt(c)} (20% من نقدك).</p>`,"ادفع");p.cash-=c;cue("bad",p);log(`⚖️ ${p.name} دفع ${fmt(c)} في قضية.`);return}
-  case"tax":{const c=Math.round(p.cash*0.1);await ack(p,"🧾 ضريبة",`<p>تدفع ${fmt(c)} (10% من نقدك).</p>`,"ادفع");p.cash-=c;log(`🧾 ${p.name} دفع ضريبة ${fmt(c)}.`);return}
+  case"lawsuit":{const lp=hard()?0.25:0.2,c=Math.round(p.cash*lp);await ack(p,"⚖️ قضية",`<p>تدفع ${fmt(c)} (${Math.round(lp*100)}% من نقدك).</p>`,"ادفع");p.cash-=c;cue("bad",p);log(`⚖️ ${p.name} دفع ${fmt(c)} في قضية.`);return}
+  case"tax":{const tp=hard()?0.15:0.1,c=Math.round(p.cash*tp);await ack(p,"🧾 ضريبة",`<p>تدفع ${fmt(c)} (${Math.round(tp*100)}% من نقدك).</p>`,"ادفع");p.cash-=c;log(`🧾 ${p.name} دفع ضريبة ${fmt(c)}.`);return}
   }
 }
 async function offer(p,c){
@@ -668,7 +671,7 @@ async function market(p){
   const owned=p.assets.filter(a=>a.cost);
   if(!owned.length){log(`📈 السوق نشط لكن ${p.name} لا يملك أصولاً للبيع.`);return}
   const a=rnd(owned);
-  const f=a.t==="أسهم"?0.5+Math.random()*2.2:1.05+Math.random()*0.9;
+  const f=hard()?(a.t==="أسهم"?0.45+Math.random()*2.1:1.0+Math.random()*0.8):(a.t==="أسهم"?0.5+Math.random()*2.2:1.05+Math.random()*0.9);
   const price=Math.round(a.cost*f/100)*100, gain=price-a.cost;
   const i=await ask(p,{kind:"market",title:"📈 عرض من السوق",
     body:`<p>مشترٍ يعرض <b>${fmt(price)}</b> على «${a.n}» (قيمتها ${fmt(a.cost)}).<br>${gain>=0?"ربح":"خسارة"}: <b class="${gain>=0?"good":"bad"}">${fmt(Math.abs(gain))}</b></p><p class="sub">لو بعت، تخسر دخلها الشهري ${fmt(a.inc)}.</p>`,
@@ -676,7 +679,7 @@ async function market(p){
   if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);cue("pay",p);log(`📈 ${p.name} باع «${a.n}» بـ ${fmt(price)}.`)}
 }
 async function partner(p){
-  const c=rnd(BIG),half=Math.round(c.down/2/100)*100,halfInc=Math.round(c.inc/2);
+  const c=hd(rnd(BIG)),half=Math.round(c.down/2/100)*100,halfInc=Math.round(c.inc/2);
   const others=G.players.filter(q=>q!==p&&q.cash>=half);
   if(!others.length){log(`👥 ${p.name} وقف على صفقة شراكة ولا يوجد شريك يملك نصف الدفعة.`);return offer(p,c)}
   const info=`<p><b>${c.n}</b><br>النوع: ${c.t}${c.cost?` — القيمة: ${fmt(c.cost)}`:""}<br>وحدك: دفعة ${fmt(c.down)} ودخل ${c.inc?"+"+fmt(c.inc):"—"}<br>بالشراكة: <b>نصيب كل واحد دفعة ${fmt(half)} ودخل ${halfInc?"+"+fmt(halfInc):"—"}</b></p><p class="sub">ادعُ شريكاً يتقاسم معك الدفعة والدخل، أو اشترِ وحدك. نقدك: ${fmt(p.cash)}</p>`;
@@ -930,7 +933,7 @@ function botOrders(p){
   [...p.orders,...G.openOrders].forEach(o=>{if(canFill(p,o)&&(pro||Math.random()<0.6))fillOrder(p,o)});
 }
 async function auction(p){
-  const base=rnd(BIG);
+  const base=hd(rnd(BIG));
   if(G.players.length<2)return offer(p,base);
   const price=Math.round(base.down*0.85/100)*100;
   const c={...base,down:price};
@@ -1327,6 +1330,7 @@ const HELP=[
   <div class="tip warn">الاتصال مباشر بين الجهازين. إن فشل (بعض شبكات الجوال تمنعه) جرّبا الواي فاي نفسه، أو العبا على جهاز واحد بالتناوب.</div>
   <p class="sub">كل لاعب يحاول الخروج من سباق الفئران في لوحته الخاصة، وتتنافسون على من يحقق حلماً أولاً. اضغط على بطاقة أي لاعب في الأعلى لترى أرقامه ولوحته.</p>`],
  ["الحماس والتفاعل",()=>`<dl>
+  <dt>🔥 مستوى الصعوبة</dt><dd><b>الوضع «عادية»</b> أصعب: التضخم يرفع مصاريفك ٢٫٥٪ كل ١٠ جولات (حتى ١٠٪)، والصفقات أغلى بنحو ٨٪ ودخلها أقل ٣٪، والمصاريف الطارئة أكبر بـ٢٠٪، وسعر عرض السوق أقل سخاءً، والضريبة والقضية أثقل، والأحلام أغلى بـ١٠٪، وفي سباق الفئران خانة ضريبة وخانتا مصروف إضافيتان بدل صفقتين. <b>«سريعة وسهلة»</b> تبقي الأسعار الأخف للعب أقصر.</dd>
   <dt>🎲 الرمية والجولة</dt><dd>في وسط اللوحة ترى «الجولة ٣ · الرمية الخامسة»: الجولة تكتمل بدور كل اللاعبين، والرمية هي عدد رميات صاحب الدور. وبعد أن يفوز أول لاعب تستطيع الضغط «▶️ تابع اللعب» ليكمل الباقون حتى تتحدد كل المراكز، فلا تنتهي المتعة باختصار.</dd>
   <dt>🌍 أحداث الجولة</dt><dd>أحياناً يقع حدث يشمل الجميع لمدة جولتين: ازدهار عقاري، موسم سياحي، ركود، ارتفاع الفائدة، تخفيضات… يظهر في شريط ذهبي أعلى الشاشة ويغيّر دخلك التلقائي أو مصاريفك.</dd>
   <dt>🧠 سؤال مالي</dt><dd>خانة فيها سؤال بثلاثة خيارات. الجواب الصحيح يمنحك نصف مصاريف شهر.</dd>
@@ -1401,7 +1405,7 @@ function drawSetup(){
     <div class="nmrow"><select data-k="avatar" class="avsel" aria-label="الصورة">${AVATARS.map(a=>`<option ${a===s.avatar?"selected":""}>${a}</option>`).join("")}</select><input type="text" data-k="name" maxlength="14" value="${esc(s.name)}" placeholder="الاسم"></div>
   </div>`).join("");
   $("#sheet").innerHTML=`<h2>🎮 لعبة جديدة</h2><p class="sub">اختر اللاعبين (حتى ٤). أول من يحقق حلماً يفوز.</p>${rows}
-    <label class="l">سرعة اللعبة</label><select id="sMode"><option value="normal" ${setupMode==="normal"?"selected":""}>عادية</option><option value="fast" ${setupMode==="fast"?"selected":""}>سريعة (خروج أسهل وأحلام أرخص)</option></select>
+    <label class="l">سرعة اللعبة</label><select id="sMode"><option value="normal" ${setupMode==="normal"?"selected":""}>عادية (أصعب)</option><option value="fast" ${setupMode==="fast"?"selected":""}>سريعة وسهلة (خروج أسهل وأحلام أرخص)</option></select>
     <div class="row">${slots.length<MAXP?'<button class="alt" id="sAdd">➕ إضافة لاعب</button>':""}<button class="alt" id="sHelp">❓ كيف ألعب؟</button></div>
     <div class="row"><button id="sStart">ابدأ اللعبة</button></div>`;
   $("#modal").classList.add("on");
