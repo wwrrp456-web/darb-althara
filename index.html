@@ -11,12 +11,12 @@
   --brand:#0f766e;--brand-2:#14b8a6;--brand-ink:#fff;--gold:#c8901a;
   --good:#15803d;--bad:#b91c1c;--soft:#efeadd;--shadow:0 2px 10px rgba(30,40,50,.08);
   --t-payday:#c9f3d6;--t-deal:#cfe2fb;--t-doodad:#fcd3d3;--t-market:#fbe7a4;
-  --t-quiz:#d3eef2;--t-auction:#fde2c8;
+  --t-quiz:#d3eef2;--t-auction:#fde2c8;--t-partner:#d9ecd0;--t-family:#ffdfd2;
   --t-child:#f9d2e6;--t-charity:#e1daf9;--t-layoff:#dcdfe3;--t-dream:#fddcb8;--t-lawsuit:#fcd3d3;--t-tax:#e6e8eb;
 }
 @media (prefers-color-scheme:dark){
   :root{--bg:#12171c;--card:#1b232b;--ink:#e8edf2;--muted:#98a4b0;--line:#2b3641;--soft:#222c35;--brand:#2dd4bf;--brand-2:#0f766e;--brand-ink:#06201d;--gold:#f0b43c;--shadow:none;
-  --t-quiz:#164650;--t-auction:#6a3b12;
+  --t-quiz:#164650;--t-auction:#6a3b12;--t-partner:#29481f;--t-family:#5a2b1f;
   --t-payday:#17482b;--t-deal:#1d3a60;--t-doodad:#5a2020;--t-market:#5a4710;--t-child:#582044;--t-charity:#3a2f68;--t-layoff:#38414a;--t-dream:#693a12;--t-lawsuit:#5a2020;--t-tax:#343b43}
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -200,7 +200,7 @@ const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const SPEED=Math.max(1,+new URLSearchParams(location.search).get("speed")||1);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms/SPEED));
-const KEY="darb-althara-v3", SEEN="darb-althara-help";
+const KEY="darb-althara-v4", SEEN="darb-althara-help";
 const FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];
 const AV=["🧑","👩","🧔","👧"], COL=["#0f766e","#c2410c","#7c3aed","#be123c"];
 const AVATARS=["🧑","👩","🧔","👧","👦","👴","👵","🦁","🐯","🦊","🐼","🦄","🐸","🚀","👑","🎩"];
@@ -216,7 +216,7 @@ const PROFS=[
  {n:"طبيب",e:"⚕️",salary:12500,tax:2900,home:2300,car:480,cards:400,other:900,childCost:420,cash:9000,debt:"قرض سكن 310,000"},
  {n:"محاسب",e:"🧮",salary:5600,tax:930,home:720,car:190,cards:130,other:330,childCost:180,cash:4000,debt:"قرض سكن 96,000"}
 ];
-const RAT=["payday","deal","doodad","deal","market","charity","deal","doodad","payday","deal","market","deal","doodad","child","deal","payday","market","deal","quiz","deal","layoff","market","auction","charity"];
+const RAT=["payday","deal","doodad","deal","market","charity","deal","doodad","payday","deal","market","deal","family","child","partner","payday","market","deal","quiz","deal","layoff","market","auction","charity"];
 const FAST=["payday","biz","dream","biz","lawsuit","biz","payday","dream","biz","tax","biz","dream"];
 const DREAMS=[
  {n:"رحلة حول العالم مع العائلة",cost:180000},
@@ -228,7 +228,7 @@ const TILE={
  market:["📈","السوق","--t-market"],child:["👶","مولود","--t-child"],charity:["🎁","تبرّع","--t-charity"],
  layoff:["📉","تسريح","--t-layoff"],biz:["🏢","مشروع كبير","--t-deal"],dream:["⭐","حلم","--t-dream"],
  lawsuit:["⚖️","قضية","--t-lawsuit"],tax:["🧾","ضريبة","--t-tax"],
- quiz:["🧠","سؤال مالي","--t-quiz"],auction:["🔔","مزاد","--t-auction"]
+ quiz:["🧠","سؤال مالي","--t-quiz"],auction:["🔔","مزاد","--t-auction"],partner:["👥","صفقة شراكة","--t-partner"],family:["🎴","مفاجأة عائلية","--t-family"]
 };
 const SMALL=[
  {n:"شقة صغيرة للإيجار",t:"عقار",down:3000,cost:38000,inc:160},
@@ -300,10 +300,27 @@ const QUIZ=[
  ["الإنفاق على الكماليات باستمرار يؤدي غالباً إلى:",["بقاء المرء في سباق الفئران","الحرية المالية السريعة","زيادة الدخل التلقائي"],0],
  ["ما أهم خطوة قبل شراء أي أصل؟",["معرفة دخله الشهري وتكلفته","اختيار لونه","سؤال الجيران فقط"],0]
 ];
+const FAMILY=[
+ {i:"👵",t:"زيارة الجدّة",s:"جاءت جدتك بهدية وحلويات للعائلة.",k:"gain",x:2},
+ {i:"🏆",t:"فوز في مسابقة",s:"ابنك فاز بالمركز الأول في مسابقة المدرسة!",k:"gain",x:3},
+ {i:"🧁",t:"بيع الحلويات",s:"باعت العائلة حلويات منزلية في الحي وكسبتم.",k:"gain",x:2},
+ {i:"🎈",t:"مفاجأة سارة",s:"وجدت مبلغاً نسيته في جيب سترة قديمة.",k:"gain",x:1},
+ {i:"📚",t:"مصاريف المدرسة",s:"حان موعد الرسوم والدفاتر والزي المدرسي.",k:"pay",x:2},
+ {i:"🐈",t:"القطة والأريكة",s:"خرّبت القطة الأريكة الجديدة!",k:"pay",x:1},
+ {i:"🏥",t:"زيارة الطبيب",s:"نزلة برد في العائلة وفاتورة العيادة.",k:"pay",x:2},
+ {i:"🎂",t:"عيد ميلاد",s:"عيد ميلاد أحد أفراد العائلة. كيف تحتفلون؟",k:"choice",o:[["حفلة كبيرة",3,2],["هدية بسيطة",1,1]]},
+ {i:"👗",t:"كسوة العيد",s:"اقترب العيد والجميع يحتاجون ملابس جديدة.",k:"choice",o:[["اشترِ الكسوة",2,2]]},
+ {i:"🤲",t:"معروف لجار",s:"جارك يحتاج مساعدة عاجلة.",k:"choice",o:[["ساعده",1,2]]},
+ {i:"🏞️",t:"رحلة عائلية",s:"فرصة لرحلة ممتعة في نهاية الأسبوع.",k:"choice",o:[["اذهبوا في الرحلة",2,3]]},
+ {i:"📸",t:"صورة العائلة",s:"صورة جماعية جميلة تُعلَّق في الصالة.",k:"love",x:1,l:2},
+ {i:"🍽️",t:"عزومة العائلة",s:"أنت تستضيف الجميع على عشاء كبير.",k:"host",multi:true},
+ {i:"🧧",t:"العيدية",s:"جاء دورك لتأخذ العيدية من الجميع!",k:"eid",multi:true},
+ {i:"🎲",t:"تحدي النرد العائلي",s:"اختر لاعباً وتنافسا بالنرد على مبلغ رمزي.",k:"duel",multi:true}
+];
 const CTRL_ICON={local:"👤",bot1:"🤖",bot2:"🤖",remote:"🌐"};
 
 /* ---------- الحالة العامة ---------- */
-let QDECK=[], lastFlash=null, SOUND=true;
+let QDECK=[], FDECK=[], lastFlash=null, SOUND=true;
 let G=null;                 // حالة اللعبة (المضيف يملكها، والضيف يستقبلها)
 let RUN=0;                  // رمز التشغيل لإلغاء الحلقات القديمة
 let viewId=null, manualView=false, lastCur=-1;
@@ -423,14 +440,14 @@ function mkPlayer(slot,i){
   const av=AVATARS.includes(slot.avatar)?slot.avatar:AV[i];
   const pi=slot.prof>=0&&slot.prof<PROFS.length?slot.prof:Math.floor(Math.random()*PROFS.length);
   const p=PROFS[pi];
-  return {id:i,name:slot.name,ctrl:slot.ctrl,avatar:av,color:COL[i],prof:p.n,pe:p.e,st:{charity:0,loans:0,doodads:0,quiz:0,quizOk:0,auction:0,exitRound:null},
+  return {id:i,name:slot.name,ctrl:slot.ctrl,avatar:av,color:COL[i],prof:p.n,pe:p.e,st:{charity:0,loans:0,doodads:0,quiz:0,quizOk:0,auction:0,love:0,partner:0,duel:0,exitRound:null},
     salary:p.salary,cash:p.cash,
     exp:{"ضرائب":p.tax,"قسط السكن":p.home,"قسط السيارة":p.car,"بطاقات ائتمان":p.cards,"مصاريف أخرى":p.other},
     childCost:p.childCost,children:0,loans:0,debt:p.debt,assets:[],pos:0,skip:0,charity:0,fast:false,turns:0,months:0,last:1};
 }
 function mkGame(slots,mode){
   const players=slots.map(mkPlayer);
-  const g={v:3,mode:mode==='fast'?'fast':'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,rolling:false,dice:1,summary:null};
+  const g={v:4,mode:mode==='fast'?'fast':'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,rolling:false,dice:1,summary:null};
   return g;
 }
 
@@ -553,6 +570,8 @@ async function resolveTile(p,k){
     await ack(p,ok?"✅ إجابة صحيحة":"❌ إجابة خاطئة",ok?`<p>أحسنت! حصلت على <b class="good">+${fmt(reward)}</b>.</p>`:`<p>الإجابة الصحيحة: <b>${esc(shown[ci])}</b></p>`);
     return}
   case"auction":return auction(p);
+  case"partner":return partner(p);
+  case"family":return familyCard(p);
   case"lawsuit":{const c=Math.round(p.cash*0.2);await ack(p,"⚖️ قضية",`<p>تدفع ${fmt(c)} (20% من نقدك).</p>`,"ادفع");p.cash-=c;cue("bad",p);log(`⚖️ ${p.name} دفع ${fmt(c)} في قضية.`);return}
   case"tax":{const c=Math.round(p.cash*0.1);await ack(p,"🧾 ضريبة",`<p>تدفع ${fmt(c)} (10% من نقدك).</p>`,"ادفع");p.cash-=c;log(`🧾 ${p.name} دفع ضريبة ${fmt(c)}.`);return}
   }
@@ -578,6 +597,90 @@ async function market(p){
     body:`<p>مشترٍ يعرض <b>${fmt(price)}</b> على «${a.n}» (قيمتها ${fmt(a.cost)}).<br>${gain>=0?"ربح":"خسارة"}: <b class="${gain>=0?"good":"bad"}">${fmt(Math.abs(gain))}</b></p><p class="sub">لو بعت، تخسر دخلها الشهري ${fmt(a.inc)}.</p>`,
     opts:["بِع","احتفظ"],alt:[false,true],data:{price,cost:a.cost,inc:a.inc,t:a.t}});
   if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);cue("pay",p);log(`📈 ${p.name} باع «${a.n}» بـ ${fmt(price)}.`)}
+}
+async function partner(p){
+  const c=rnd(BIG),half=Math.round(c.down/2/100)*100,halfInc=Math.round(c.inc/2);
+  const others=G.players.filter(q=>q!==p&&q.cash>=half);
+  if(!others.length){log(`👥 ${p.name} وقف على صفقة شراكة ولا يوجد شريك يملك نصف الدفعة.`);return offer(p,c)}
+  const info=`<p><b>${c.n}</b><br>النوع: ${c.t}${c.cost?` — القيمة: ${fmt(c.cost)}`:""}<br>وحدك: دفعة ${fmt(c.down)} ودخل ${c.inc?"+"+fmt(c.inc):"—"}<br>بالشراكة: <b>نصيب كل واحد دفعة ${fmt(half)} ودخل ${halfInc?"+"+fmt(halfInc):"—"}</b></p><p class="sub">ادعُ شريكاً يتقاسم معك الدفعة والدخل، أو اشترِ وحدك. نقدك: ${fmt(p.cash)}</p>`;
+  const n=others.length;
+  const pi=await ask(p,{kind:"partnerpick",title:`👥 صفقة شراكة`,body:info,
+    opts:[...others.map(q=>`ادعُ ${q.name} ${q.avatar}`),"اشترِ وحدك","تجاوز"],alt:[...others.map(()=>false),false,true],
+    data:{payback:halfInc>0?half/halfInc:Infinity,n}});
+  if(pi===n+1)return;
+  if(pi===n){
+    if(await ensureCash(p,c.down,false,c)){p.cash-=c.down;p.assets.push({n:c.n,t:c.t,inc:c.inc,cost:c.cost||c.down});log(`✅ ${p.name} اشترى «${c.n}» وحده بدفعة ${fmt(c.down)}.`);cue("buy",p)}
+    return;
+  }
+  const q=others[pi];
+  const ai=await ask(q,{kind:"partner",title:`👥 دعوة شراكة من ${p.name}`,
+    body:`<p>${esc(p.name)} يدعوك للشراكة في «${c.n}».<br>نصيبك: دفعة <b>${fmt(half)}</b> ودخل شهري <b class="good">${halfInc?"+"+fmt(halfInc):"—"}</b>.<br>القيمة: ${fmt(c.cost||c.down)} (${c.t}).</p><p class="sub">نقدك: ${fmt(q.cash)}</p>`,
+    opts:["أشارك ✅","أرفض"],alt:[false,true],data:{down:half,inc:halfInc}});
+  if(ai===0){
+    const item=o=>({n:`${c.n} (شراكة مع ${o.name})`,t:c.t,inc:halfInc,cost:Math.round((c.cost||c.down)/2)});
+    p.cash-=half;q.cash-=half;p.assets.push(item(q));q.assets.push(item(p));
+    p.st.partner++;q.st.partner++;p.st.love++;q.st.love++;
+    log(`👥 ${p.name} و${q.name} اشتريا معاً «${c.n}» (دفعة ${fmt(half)} لكل منهما).`);
+    flash(`👥 شراكة بين ${p.name} و${q.name}!`);cue("buy",p);cue("buy",q);
+  }else{
+    log(`👥 ${q.name} رفض دعوة ${p.name} للشراكة.`);
+    return offer(p,c);
+  }
+}
+async function familyCard(p){
+  const n=G.players.length;
+  let k;do{if(!FDECK.length)FDECK=shuffle([...FAMILY.keys()]);k=FDECK.pop()}while(FAMILY[k].multi&&n<2);
+  const c=FAMILY[k],u=Math.max(300,Math.round(expenses(p)*0.12/50)*50),T=`${c.i} ${c.t}`;
+  const head=`<p><b>${c.s}</b></p>`;
+  log(`🎴 ${p.name}: ${c.t}.`);
+  switch(c.k){
+  case"gain":{const a=c.x*u;await ack(p,T,head+`<p>تحصل على <b class="good">+${fmt(a)}</b></p>`,"رائع");p.cash+=a;cue("good",p);log(`🎴 ${p.name} ربح ${fmt(a)}.`);return}
+  case"pay":{const a=c.x*u;await ack(p,T,head+`<p>تدفع <b class="bad">${fmt(a)}</b></p>`,"ادفع");if(await ensureCash(p,a,true)){p.cash-=a;cue("bad",p);log(`🎴 ${p.name} دفع ${fmt(a)}.`)}return}
+  case"love":{const a=c.x*u;await ack(p,T,head+`<p>تحصل على <b class="good">+${fmt(a)}</b> و<b>❤️ ${c.l}</b> من دفء العائلة.</p>`,"جميل");p.cash+=a;p.st.love+=c.l;cue("good",p);return}
+  case"choice":{
+    const o=c.o.map(([l,x,lv])=>({l,a:x*u,lv}));
+    const i=await ask(p,{kind:"family",title:T,body:head+`<p class="sub">الاختيارات الدافئة ❤️ تمنحك لقب «قلب العائلة».</p>`,
+      opts:[...o.map(q=>`${q.l} (−${fmt(q.a)} · ❤️+${q.lv})`),"تجاوز"],alt:[...o.map(()=>false),true],data:{costs:[...o.map(q=>q.a),0]}});
+    if(i<o.length){
+      const q=o[i];
+      if(p.cash<q.a){log(`🎴 ${p.name}: لا يكفي النقد.`);return}
+      p.cash-=q.a;p.st.love+=q.lv;cue("good",p);log(`🎴 ${p.name} اختار «${q.l}» ❤️+${q.lv}.`);
+    }
+    return}
+  case"host":{
+    const others=G.players.filter(q=>q!==p),a=Math.max(200,Math.round(u/2/50)*50),total=a*others.length;
+    const i=await ask(p,{kind:"family",title:T,body:head+`<p>تدفع <b>${fmt(a)}</b> لكل لاعب (المجموع ${fmt(total)}) ويحصل كل واحد منهم على <b class="good">+${fmt(a)}</b>.</p><p class="sub">مقابل كرمك تنال ❤️+3.</p>`,
+      opts:[`استضف (−${fmt(total)} · ❤️+3)`,"اعتذر"],alt:[false,true],data:{costs:[total,0]}});
+    if(i===0){
+      if(p.cash<total){log(`🎴 ${p.name}: لا يكفي النقد للعزومة.`);return}
+      p.cash-=total;others.forEach(q=>{q.cash+=a});p.st.love+=3;cue("good",p);
+      log(`🍽️ ${p.name} استضاف الجميع ودفع ${fmt(a)} لكل لاعب.`);flash(`🍽️ ${p.name} أقام عزومة للجميع!`);
+    }
+    return}
+  case"eid":{
+    let sum=0;
+    G.players.forEach(q=>{if(q===p)return;const a=Math.min(250,Math.max(0,Math.round(q.cash*0.02/10)*10));q.cash-=a;sum+=a});
+    await ack(p,T,head+`<p>جمعت <b class="good">+${fmt(sum)}</b> من الجميع 😄</p>`,"شكراً");
+    p.cash+=sum;cue("pay",p);log(`🧧 ${p.name} أخذ عيدية ${fmt(sum)} من اللاعبين.`);flash(`🧧 ${p.name} أخذ العيدية من الجميع!`);
+    return}
+  case"duel":{
+    const others=G.players.filter(q=>q!==p);
+    const i=await ask(p,{kind:"duelpick",title:T,body:head+`<p class="sub">يرمي كل منكما نرداً، والأعلى يأخذ المبلغ من الآخر.</p>`,
+      opts:[...others.map(q=>`تحدَّ ${q.name} ${q.avatar}`),"تخطَّ"],alt:[...others.map(()=>false),true],data:{}});
+    if(i>=others.length)return;
+    const q=others[i],stake=Math.min(u,Math.max(0,p.cash),Math.max(0,q.cash));
+    if(stake<=0){log("🎲 لا يكفي نقد لأحد الطرفين فأُلغي التحدي.");return}
+    const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6);
+    let msg;
+    if(a===b)msg=`تعادل! كلاهما رمى ${a}.`;
+    else{
+      const w=a>b?p:q,l=a>b?q:p;w.cash+=stake;l.cash-=stake;w.st.duel++;
+      msg=`${p.name} رمى ${a} و${q.name} رمى ${b}. فاز ${w.name} بـ${fmt(stake)}!`;
+    }
+    log(`🎲 ${msg}`);flash(`🎲 ${msg}`);cue(a===b?"pay":"good");
+    await ack(p,T,`<p><b>${esc(msg)}</b></p>`,"حسناً");
+    return}
+  }
 }
 async function auction(p){
   const base=rnd(BIG);
@@ -619,9 +722,12 @@ function awards(){
   pick("doodads",2,"🛍️","المتسوّق");
   pick(p=>p.assets.length,2,"💼","تاجر الأصول");
   pick("loans",20000,"🏦","ملك القروض");
+  pick("love",2,"❤️","قلب العائلة");
+  pick("partner",1,"👥","الشريك الذهبي");
+  pick("duel",1,"🎲","بطل التحديات");
   let ex=null;pl.forEach(p=>{if(p.st.exitRound!=null&&(!ex||p.st.exitRound<ex.v))ex={p,v:p.st.exitRound}});
   if(ex)out.push({icon:"🚀",title:"الأسرع خروجاً",name:ex.p.name,av:ex.p.avatar});
-  return out.slice(0,5);
+  return out.slice(0,6);
 }
 function standings(){
   const rows=G.players.map(p=>({id:p.id,name:p.name,avatar:p.avatar,fast:p.fast,passive:passive(p),exp:expenses(p),cash:p.cash,months:p.months,turns:p.turns,won:p.id===G.winner}));
@@ -655,6 +761,15 @@ async function loop(){
 function botChoose(p,pr,secret){
   const pro=p.ctrl==="bot2",d=pr.data||{};
   switch(pr.kind){
+  case"family":{
+    const costs=d.costs||[],last=costs.length-1;
+    const aff=costs.map((c,i)=>({c,i})).filter(x=>x.c>0&&p.cash-x.c>=expenses(p)*2);
+    if(!aff.length)return last;
+    if(!pro)return Math.random()<0.5?last:aff[0].i;
+    return aff.sort((a,b)=>b.c-a.c)[0].i}
+  case"duelpick":return Math.random()<0.6?Math.floor(Math.random()*(pr.opts.length-1)):pr.opts.length-1;
+  case"partnerpick":return pro?(d.payback<=40?0:d.n+1):(Math.random()<0.5?0:d.n+1);
+  case"partner":return(pro?d.inc>0&&d.down/d.inc<=40:Math.random()<0.55)?0:1;
   case"quiz":{const ok=Math.random()<(pro?0.75:0.45);return ok?secret:(secret+1+Math.floor(Math.random()*2))%3}
   case"auction":{const payback=d.inc>0?d.down/d.inc:Infinity;return(pro?payback<=45:(p.cash-d.down>=0&&Math.random()<0.5))?0:1}
   case"dealsize":return p.cash>=(pro?70000:110000)?1:0;
@@ -685,7 +800,7 @@ function loadSaved(){
   try{
     const r=localStorage.getItem(KEY);if(!r)return false;
     const g=JSON.parse(r);
-    if(!g||g.v!==3||!Array.isArray(g.players)||!g.players.length||g.winner!=null)return false;
+    if(!g||g.v!==4||!Array.isArray(g.players)||!g.players.length||g.winner!=null)return false;
     if(g.players.some(p=>p.ctrl==="remote"))return false;
     G=g;G.phase="idle";G.prompt=null;G.rolling=false;return true;
   }catch(e){}
@@ -753,7 +868,7 @@ function render(){
     ["🧾","المصاريف",fmt(expenses(me)),"bad"]];
   $("#stats").innerHTML=cells.map(([i,k,v,c])=>`<div class="stat"><small>${i} ${k}</small><b class="${c}">${v}</b></div>`).join("");
   const nd=nextPayday(me);
-  $("#clock").innerHTML=`<span>📅 مرّ <b>${me.months}</b> شهراً</span><span>⏭️ الراتب القادم بعد <b>${nd}</b> ${nd===1?"خانة":"خانات"}</span><span>💰 ستقبض <b class="${(me.fast?passive(me)*12:cf)>=0?"good":"bad"}">${me.fast?"+"+fmt(passive(me)*12):(cf>=0?"+":"")+fmt(cf)}</b></span>`;
+  $("#clock").innerHTML=`<span>📅 مرّ <b>${me.months}</b> شهراً</span><span>⏭️ الراتب القادم بعد <b>${nd}</b> ${nd===1?"خانة":"خانات"}</span><span>❤️ <b>${(me.st&&me.st.love)||0}</b></span><span>💰 ستقبض <b class="${(me.fast?passive(me)*12:cf)>=0?"good":"bad"}">${me.fast?"+"+fmt(passive(me)*12):(cf>=0?"+":"")+fmt(cf)}</b></span>`;
   const need=exitNeed(me),ratio=need?Math.min(1,passive(me)/need):0;
   $("#prog").style.width=(me.fast?100:ratio*100)+"%";
   $("#phase").innerHTML=`${esc(me.name)} · ${me.fast?'<span class="phase fast">المسار السريع 🚀</span>':'<span class="phase">سباق الفئران 🐀</span>'}`;
@@ -868,7 +983,7 @@ function sheet(p){
    `<table><tr><td>الراتب</td><td>${fmt(p.salary)}</td></tr><tr><td>الدخل التلقائي</td><td class="good">${fmt(passive(p))}</td></tr>
     <tr><td>إجمالي المصاريف</td><td class="bad">${fmt(expenses(p))}</td></tr><tr><td><b>التدفق الشهري</b></td><td><b>${fmt(cashflow(p))}</b></td></tr></table>
     <details><summary>المصاريف بالتفصيل</summary><table>${ex}<tr><td>أطفال (${p.children})</td><td>${fmt(p.children*p.childCost)}</td></tr><tr><td>أقساط القروض (${fmt(p.loans)})</td><td>${fmt(p.loans*loanRate())}</td></tr></table></details>
-    <details open><summary>الأصول (مصادر الدخل التلقائي)</summary><table>${as}</table></details><p class="sub">${esc(p.debt)} (مدرج ضمن قسط السكن)</p>`,btns);
+    <details open><summary>الأصول (مصادر الدخل التلقائي)</summary><table>${as}</table></details><p class="sub">❤️ دفء العائلة: ${(p.st&&p.st.love)||0} · 👥 شراكات: ${(p.st&&p.st.partner)||0}</p><p class="sub">${esc(p.debt)} (مدرج ضمن قسط السكن)</p>`,btns);
 }
 function repay(pid){
   const p=G.players[pid];
@@ -908,6 +1023,8 @@ const HELP=[
    ["dream","(المسار السريع) اشترِ حلمك إن كان نقدك يكفي فتفوز."],
    ["lawsuit","قضية تأخذ 20% من نقدك."],
    ["quiz","سؤال مالي: أجب صح لتنال مكافأة نصف مصاريف شهر."],
+   ["partner","صفقة شراكة: تدعو لاعباً يتقاسم معك الدفعة والدخل (نصف ونصف)."],
+   ["family","مفاجأة عائلية: بطاقة موقف من الحياة العائلية، بعضها يشارك فيه اللاعبون الآخرون."],
    ["auction","مزاد: صفقة كبيرة بخصم 15% تُعرض على اللاعبين بالترتيب، ومن يشتري أولاً يربحها."],
    ["tax","ضريبة تأخذ 10% من نقدك."]];
   return `<dl>${rows.map(([k,t])=>`<dt><span class="chip" style="background:var(${TILE[k][2]})">${TILE[k][0]} ${TILE[k][1]}</span></dt><dd>${t}</dd>`).join("")}</dl>`}],
@@ -930,6 +1047,8 @@ const HELP=[
   <dt>🌍 أحداث الجولة</dt><dd>أحياناً يقع حدث يشمل الجميع لمدة جولتين: ازدهار عقاري، موسم سياحي، ركود، ارتفاع الفائدة، تخفيضات… يظهر في شريط ذهبي أعلى الشاشة ويغيّر دخلك التلقائي أو مصاريفك.</dd>
   <dt>🧠 سؤال مالي</dt><dd>خانة فيها سؤال بثلاثة خيارات. الجواب الصحيح يمنحك نصف مصاريف شهر.</dd>
   <dt>🔔 المزاد</dt><dd>صفقة كبيرة بخصم 15% تُعرض على اللاعبين بالترتيب. إن مرّرت قد يسبقك غيرك!</dd>
+  <dt>👥 صفقة الشراكة</dt><dd>صفقة كبيرة تتقاسمها مع لاعب تدعوه: كل واحد يدفع نصف الدفعة ويأخذ نصف الدخل. قد يرفض صديقك، فتشتري وحدك!</dd>
+  <dt>🎴 المفاجآت العائلية</dt><dd>بطاقات مواقف: زيارة الجدة، عيد ميلاد، كسوة العيد، معروف لجار، وبعضها يتفاعل فيه اللاعبون: عزومة تدفع فيها للجميع، وعيدية تجمعها منهم، وتحدي نرد. تمنحك نقاط ❤️ دفء العائلة ولقب «قلب العائلة».</dd>
   <dt>😀 التفاعلات</dt><dd>اضغط زر 😀 (أسفل اليسار) لترسل إيموجي يطير على شاشات الجميع: تشجيع أو مزاح مع أهلك وأصدقائك.</dd>
   <dt>🥇 الترتيب المباشر</dt><dd>الميداليات على بطاقات اللاعبين تتغير حسب من هو أقرب إلى الفوز.</dd>
   <dt>🏆 الألقاب</dt><dd>في نهاية اللعبة: الذكي، الكريم، صائد المزادات، المتسوّق، تاجر الأصول، ملك القروض، الأسرع خروجاً.</dd>
@@ -1019,7 +1138,7 @@ function drawSetup(){
 function launch(sl,remote,mode){
   if(!remote)closeNet(false);
   RUN++;pending.roll=null;pending.ask=null;
-  G=mkGame(sl,mode);viewId=null;manualView=false;lastCur=-1;shownPrompt=0;resultShown=false;QDECK=[];lastFlash=null;
+  G=mkGame(sl,mode);viewId=null;manualView=false;lastCur=-1;shownPrompt=0;resultShown=false;QDECK=[];FDECK=[];lastFlash=null;
   if(remote){Net.role="host"}else{Net.role="solo"}
   clearSave();render();
   if(remote&&Net.open){send({t:"welcome",pid:Net.remotePid})}
@@ -1273,7 +1392,7 @@ else{
   if(!seen)help(0);
 }
 // للاختبار الآلي فقط
-window.__darb={get G(){return G},get Net(){return Net}};
+window.__darb={get G(){return G},get Net(){return Net},setFamilyDeck(a){FDECK=a}};
 })();
 </script>
 </body>
