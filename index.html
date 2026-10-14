@@ -11,10 +11,12 @@
   --brand:#0f766e;--brand-2:#14b8a6;--brand-ink:#fff;--gold:#c8901a;
   --good:#15803d;--bad:#b91c1c;--soft:#efeadd;--shadow:0 2px 10px rgba(30,40,50,.08);
   --t-payday:#c9f3d6;--t-deal:#cfe2fb;--t-doodad:#fcd3d3;--t-market:#fbe7a4;
+  --t-quiz:#d3eef2;--t-auction:#fde2c8;
   --t-child:#f9d2e6;--t-charity:#e1daf9;--t-layoff:#dcdfe3;--t-dream:#fddcb8;--t-lawsuit:#fcd3d3;--t-tax:#e6e8eb;
 }
 @media (prefers-color-scheme:dark){
   :root{--bg:#12171c;--card:#1b232b;--ink:#e8edf2;--muted:#98a4b0;--line:#2b3641;--soft:#222c35;--brand:#2dd4bf;--brand-2:#0f766e;--brand-ink:#06201d;--gold:#f0b43c;--shadow:none;
+  --t-quiz:#164650;--t-auction:#6a3b12;
   --t-payday:#17482b;--t-deal:#1d3a60;--t-doodad:#5a2020;--t-market:#5a4710;--t-child:#582044;--t-charity:#3a2f68;--t-layoff:#38414a;--t-dream:#693a12;--t-lawsuit:#5a2020;--t-tax:#343b43}
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -117,6 +119,22 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 .steps li{counter-increment:s;padding:4px 34px 4px 0;position:relative;font-size:.9rem}
 .steps li::before{content:counter(s);position:absolute;inset-inline-start:auto;right:0;top:4px;width:24px;height:24px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-size:.8rem;font-weight:700}
 .rank td:first-child{width:1%;white-space:nowrap}
+.event{margin:0 0 10px;padding:9px 12px;border-radius:12px;background:linear-gradient(90deg,#c8901a,#e0a82e);color:#241800;font-weight:700;font-size:.86rem;text-align:center;box-shadow:var(--shadow)}
+.react-fab{position:fixed;inset-inline-start:14px;bottom:calc(88px + env(safe-area-inset-bottom));width:46px;height:46px;border-radius:50%;padding:0;font-size:1.4rem;z-index:6;background:var(--card);border:1px solid var(--line);box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.react-tray{position:fixed;inset-inline-start:14px;bottom:calc(142px + env(safe-area-inset-bottom));display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:30px;padding:6px 8px;z-index:6;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.react-tray[hidden]{display:none}
+.react-tray button{min-height:0;width:40px;height:40px;padding:0;font-size:1.3rem;background:var(--soft);border-radius:50%}
+#floaters{position:fixed;inset:0;pointer-events:none;z-index:25;overflow:hidden}
+.floater{position:absolute;bottom:130px;display:flex;flex-direction:column;align-items:center;animation:rise 2.4s ease-out forwards}
+.floater .fe{font-size:2.4rem}.floater .fn{background:var(--ink);color:var(--bg);border-radius:8px;padding:1px 7px;font-size:.7rem}
+@keyframes rise{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:1;transform:translateY(-30px) scale(1.1)}100%{transform:translateY(-60vh) scale(1);opacity:0}}
+.cf{position:fixed;top:-30px;animation:fall linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(112vh) rotate(360deg)}}
+.nmrow{grid-column:1/-1;display:flex;gap:6px}
+.avsel{width:78px!important;flex:none;font-size:1.25rem}
+.awards{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.award{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:4px 10px;font-size:.82rem}
+.award b{display:block}
 .welcome{text-align:center;padding:26px 14px}
 .welcome .big{font-size:3rem}
 .welcome button{display:block;width:100%;margin-top:10px}
@@ -139,6 +157,7 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
   </div>
 
   <div id="game" hidden>
+    <div class="event" id="event" hidden></div>
     <div class="chips" id="chips"></div>
     <div class="status" id="status"></div>
 
@@ -166,6 +185,9 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
   <button class="alt" id="menuBtn" aria-label="القائمة الرئيسية">☰</button>
 </div></div>
 
+<button class="react-fab" id="reactBtn" hidden aria-label="تفاعل">😀</button>
+<div class="react-tray" id="reactTray" hidden></div>
+<div id="floaters"></div>
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 
@@ -178,9 +200,11 @@ const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const SPEED=Math.max(1,+new URLSearchParams(location.search).get("speed")||1);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms/SPEED));
-const KEY="darb-althara-v2", SEEN="darb-althara-help";
+const KEY="darb-althara-v3", SEEN="darb-althara-help";
 const FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];
 const AV=["🧑","👩","🧔","👧"], COL=["#0f766e","#c2410c","#7c3aed","#be123c"];
+const AVATARS=["🧑","👩","🧔","👧","👦","👴","👵","🦁","🐯","🦊","🐼","🦄","🐸","🚀","👑","🎩"];
+const REACTS=["👏","😂","😮","🔥","💪","😭"];
 const MAXP=4;
 
 /* ---------- المحتوى ---------- */
@@ -192,7 +216,7 @@ const PROFS=[
  {n:"طبيب",e:"⚕️",salary:12500,tax:2900,home:2300,car:480,cards:400,other:900,childCost:420,cash:9000,debt:"قرض سكن 310,000"},
  {n:"محاسب",e:"🧮",salary:5600,tax:930,home:720,car:190,cards:130,other:330,childCost:180,cash:4000,debt:"قرض سكن 96,000"}
 ];
-const RAT=["payday","deal","doodad","deal","market","charity","deal","doodad","payday","deal","market","deal","doodad","child","deal","payday","market","deal","doodad","deal","layoff","market","deal","charity"];
+const RAT=["payday","deal","doodad","deal","market","charity","deal","doodad","payday","deal","market","deal","doodad","child","deal","payday","market","deal","quiz","deal","layoff","market","auction","charity"];
 const FAST=["payday","biz","dream","biz","lawsuit","biz","payday","dream","biz","tax","biz","dream"];
 const DREAMS=[
  {n:"رحلة حول العالم مع العائلة",cost:180000},
@@ -203,7 +227,8 @@ const TILE={
  payday:["💰","يوم الراتب","--t-payday"],deal:["🤝","فرصة","--t-deal"],doodad:["🛍️","مصروف طارئ","--t-doodad"],
  market:["📈","السوق","--t-market"],child:["👶","مولود","--t-child"],charity:["🎁","تبرّع","--t-charity"],
  layoff:["📉","تسريح","--t-layoff"],biz:["🏢","مشروع كبير","--t-deal"],dream:["⭐","حلم","--t-dream"],
- lawsuit:["⚖️","قضية","--t-lawsuit"],tax:["🧾","ضريبة","--t-tax"]
+ lawsuit:["⚖️","قضية","--t-lawsuit"],tax:["🧾","ضريبة","--t-tax"],
+ quiz:["🧠","سؤال مالي","--t-quiz"],auction:["🔔","مزاد","--t-auction"]
 };
 const SMALL=[
  {n:"شقة صغيرة للإيجار",t:"عقار",down:3000,cost:38000,inc:160},
@@ -236,9 +261,49 @@ const DOODADS=[
  ["إصلاح مفاجئ للسيارة",900],["شاشة تلفاز جديدة",1500],["عشاء فاخر لأصدقاء",400],
  ["هاتف أحدث إصدار",1300],["رحلة قصيرة غير مخططة",2200],["غسالة معطّلة",700],["مخالفة مرورية",350]
 ];
+const EVENTS=[
+ {id:"re",icon:"🏠",name:"ازدهار عقاري",text:"دخل العقارات ×1.3",mult:{"عقار":1.3}},
+ {id:"tour",icon:"🏖️",name:"موسم سياحي",text:"دخل المشاريع ×1.25",mult:{"مشروع":1.25}},
+ {id:"slump",icon:"📉",name:"ركود اقتصادي",text:"دخل المشاريع ×0.8",mult:{"مشروع":0.8}},
+ {id:"stk",icon:"📈",name:"سوق أسهم صاعد",text:"دخل الأسهم ×3",mult:{"أسهم":3}},
+ {id:"rate",icon:"🏦",name:"ارتفاع الفائدة",text:"أقساط القروض ×1.5",loanMult:1.5},
+ {id:"sale",icon:"🛍️",name:"موسم التخفيضات",text:"المصاريف الطارئة بنصف قيمتها",doodadMult:0.5}
+];
+const QUIZ=[
+ ["ما «الأصل» في عالم المال؟",["شيء يدرّ عليّ دخلاً","شيء يُخرج مني مالاً كل شهر","أي شيء غالي الثمن"],0],
+ ["أي مما يلي مثال على الدخل التلقائي؟",["إيجار شقة تملكها","راتب الوظيفة","أجر ساعات إضافية"],0],
+ ["قسط السيارة الشهري يُعدّ:",["التزاماً (خصماً)","أصلاً","دخلاً تلقائياً"],0],
+ ["ما معنى «الدفعة الأولى»؟",["ما تدفعه نقداً عند بدء الشراء","ما تقبضه من البنك","آخر قسط في القرض"],0],
+ ["ما نسبة زكاة النقود إذا بلغت النصاب وحال عليها الحول؟",["2.5%","10%","20%"],0],
+ ["«لا تضع كل البيض في سلة واحدة» تعني:",["نوّع استثماراتك","وفّر البيض","استثمر في سلة واحدة فقط"],0],
+ ["ما «التضخم»؟",["ارتفاع الأسعار مع الوقت","نزول الأسعار","زيادة الراتب"],0],
+ ["ما «الميزانية»؟",["خطة توزّع دخلك على المصاريف والادخار","مبلغ مقترض","نوع من الأسهم"],0],
+ ["ما «الفائدة المركبة»؟",["فائدة تُحسب على الأصل وعلى الفائدة السابقة","فائدة ثابتة لا تتغير","غرامة تأخير"],0],
+ ["ما «صندوق الطوارئ»؟",["مال مدّخر يكفي مصاريف أشهر عند الأزمات","مال للسفر","قرض سريع"],0],
+ ["الربح يساوي:",["الإيراد − التكلفة","الإيراد + التكلفة","التكلفة − الإيراد"],0],
+ ["ما أفضل طريقة لتقييم صفقة بسرعة؟",["مدة استرداد الدفعة الأولى","لون الإعلان","رأي أول من تقابل"],0],
+ ["بطاقة الائتمان إن لم تُسدَّد كاملة تصبح:",["قرضاً بفائدة عالية","هدية","دخلاً"],0],
+ ["ما «السهم»؟",["حصة ملكية في شركة","قرض للبنك","نوع من العقارات"],0],
+ ["العقار المؤجر يدرّ عليك:",["إيجاراً شهرياً","راتباً من الدولة","فائدة بنكية فقط"],0],
+ ["ما «التأمين»؟",["حماية من خسارة كبيرة مقابل قسط","مكافأة سنوية","نوع من الأسهم"],0],
+ ["الدَّين الجيد هو الذي:",["يموّل أصلاً دخله أكبر من قسطه","نشتري به الكماليات","لا نسدده أبداً"],0],
+ ["أيّ مما يلي ليس أصلاً بالمعنى المالي؟",["هاتف باهظ للاستهلاك فقط","عمارة مؤجرة","مشروع رابح"],0],
+ ["«الراتب الصافي» هو:",["بعد خصم الضرائب والاستقطاعات","قبل أي خصم","راتب شهرين"],0],
+ ["ما فائدة تعدد مصادر الدخل؟",["تقلّ المخاطرة إن توقف مصدر واحد","تزيد الضرائب","لا فائدة"],0],
+ ["إذا ارتفعت الفائدة فإن الاقتراض يصبح:",["أغلى","أرخص","بلا قسط"],0],
+ ["أفضل عادة ادخار:",["نسبة ثابتة من دخلك كل شهر","ما يتبقى آخر الشهر","الادخار عند الحاجة فقط"],0],
+ ["ما الهدف من الخروج من «سباق الفئران»؟",["أن يغطي دخلك التلقائي مصاريفك","جمع أكبر قدر من الأثاث","الحصول على ترقية"],0],
+ ["ما «العائد على الاستثمار»؟",["ما تكسبه مقارنة بما دفعت","اسم بنك","ضريبة"],0],
+ ["ما «الإفلاس»؟",["العجز عن سداد الديون","الربح الكبير","بيع الأسهم"],0],
+ ["إن ظهر مصروف طارئ، فأفضل مصدر لتغطيته:",["صندوق الطوارئ","قرض بفائدة عالية","بيع أصل مدرّ للدخل"],0],
+ ["«الأصول» تزيد ثروتك لأنها:",["تضيف دخلاً أو قيمة","تزيد مصاريفك","تُنسى في الدرج"],0],
+ ["الإنفاق على الكماليات باستمرار يؤدي غالباً إلى:",["بقاء المرء في سباق الفئران","الحرية المالية السريعة","زيادة الدخل التلقائي"],0],
+ ["ما أهم خطوة قبل شراء أي أصل؟",["معرفة دخله الشهري وتكلفته","اختيار لونه","سؤال الجيران فقط"],0]
+];
 const CTRL_ICON={local:"👤",bot1:"🤖",bot2:"🤖",remote:"🌐"};
 
 /* ---------- الحالة العامة ---------- */
+let QDECK=[], lastFlash=null, SOUND=true;
 let G=null;                 // حالة اللعبة (المضيف يملكها، والضيف يستقبلها)
 let RUN=0;                  // رمز التشغيل لإلغاء الحلقات القديمة
 let viewId=null, manualView=false, lastCur=-1;
@@ -247,8 +312,15 @@ const pending={roll:null,ask:null};
 const Net={role:"solo",pc:null,dc:null,myPid:null,open:false,remotePid:null,lobby:null,onJoined:null};
 
 const P=id=>G.players[id];
-const expenses=p=>Object.values(p.exp).reduce((a,b)=>a+b,0)+p.children*p.childCost+p.loans*0.1;
-const passive=p=>p.assets.reduce((a,b)=>a+b.inc,0);
+const evMult=t=>{const m=G&&G.event&&G.event.mult;return m&&m[t]?m[t]:1};
+const effInc=a=>Math.round(a.inc*evMult(a.t));
+const loanRate=()=>0.1*((G&&G.event&&G.event.loanMult)||1);
+const expenses=p=>Object.values(p.exp).reduce((a,b)=>a+b,0)+p.children*p.childCost+p.loans*loanRate();
+const passive=p=>p.assets.reduce((a,b)=>a+effInc(b),0);
+const fastMode=()=>!!(G&&G.mode==="fast");
+const exitNeed=p=>expenses(p)*(fastMode()?0.7:1);
+const dreamCost=d=>Math.round(d.cost*(fastMode()?0.6:1)/1000)*1000;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const cashflow=p=>p.salary+passive(p)-expenses(p);
 const isBot=p=>p.ctrl==="bot1"||p.ctrl==="bot2";
 const colr=p=>/^#[0-9a-f]{6}$/i.test(p.color)?p.color:"#0f766e";
@@ -256,6 +328,75 @@ const isMine=p=>Net.role==="guest"?p.id===Net.myPid:p.ctrl==="local";
 function log(t){G.log.unshift(t);if(G.log.length>50)G.log.length=50}
 async function w(ms){const r=RUN;await sleep(ms);if(r!==RUN)throw"cancel"}
 let tt;function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("on"),2600)}
+
+/* ---------- صوت وتفاعل ---------- */
+try{SOUND=localStorage.getItem("darb-sound")!=="0"}catch(e){}
+let AC=null;
+function audio(){
+  if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+  if(AC&&AC.state==="suspended")AC.resume().catch(()=>{});
+  return AC;
+}
+function tone(f,d,type,vol,when){
+  if(!SOUND)return;const a=audio();if(!a)return;
+  const t=a.currentTime+(when||0),o=a.createOscillator(),g=a.createGain();
+  o.type=type||"sine";o.frequency.setValueAtTime(f,t);
+  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol||0.07,t+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+0.03);
+}
+const SND={
+ roll:()=>{for(let i=0;i<6;i++)tone(300+Math.random()*300,0.05,"square",0.04,i*0.08)},
+ step:()=>tone(520,0.04,"triangle",0.05),
+ pay:()=>{tone(880,0.09,"sine",0.07);tone(1320,0.14,"sine",0.07,0.09)},
+ buy:()=>[523,659,784].forEach((f,i)=>tone(f,0.12,"triangle",0.07,i*0.09)),
+ bad:()=>{tone(220,0.18,"sawtooth",0.05);tone(150,0.25,"sawtooth",0.05,0.15)},
+ good:()=>[659,784,1047].forEach((f,i)=>tone(f,0.12,"sine",0.07,i*0.09)),
+ exit:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,0.16,"triangle",0.08,i*0.1)),
+ win:()=>{[523,659,784,1047].forEach((f,i)=>tone(f,0.18,"triangle",0.09,i*0.12));[784,1047,1319].forEach((f,i)=>tone(f,0.3,"triangle",0.09,0.55+i*0.14))},
+ event:()=>{tone(740,0.12,"square",0.04);tone(554,0.18,"square",0.04,0.13)},
+ react:()=>tone(660,0.07,"sine",0.06)
+};
+function playCue(t){
+  try{
+    if(SND[t])SND[t]();
+    if(SOUND&&navigator.vibrate&&["bad","good","buy","exit","win"].includes(t))navigator.vibrate(t==="win"?[60,40,60,40,120]:30);
+  }catch(e){}
+}
+function localCue(t,pid){
+  if(pid!=null&&G&&G.players[pid]&&!isMine(G.players[pid]))return;
+  playCue(t);
+}
+function cue(t,p){
+  const pid=p?p.id:null;
+  localCue(t,pid);
+  if(Net.role==="host"&&Net.open)send({t:"cue",c:t,pid});
+}
+function floatReact(name,av,e){
+  const f=document.createElement("div");f.className="floater";f.style.left=(8+Math.random()*68)+"%";
+  const a=document.createElement("span");a.className="fe";a.textContent=e;
+  const b=document.createElement("small");b.className="fn";b.textContent=`${av} ${name}`;
+  f.appendChild(a);f.appendChild(b);$("#floaters").appendChild(f);
+  setTimeout(()=>f.remove(),2600);playCue("react");
+}
+let lastReact=0,lastRemoteReact=0;
+function sendReact(e){
+  if(!G||!REACTS.includes(e)||Date.now()-lastReact<700)return;
+  lastReact=Date.now();
+  if(Net.role==="guest"){send({t:"react",e});return}
+  const cp=G.players[G.cur];
+  const me=(cp&&isMine(cp))?cp:(G.players.find(isMine)||G.players[0]);
+  floatReact(me.name,me.avatar,e);
+  if(Net.role==="host"&&Net.open)send({t:"react",pid:me.id,e});
+}
+function confetti(){
+  const ems=["🎉","✨","💰","🪙","⭐","🎊"];
+  for(let i=0;i<36;i++){
+    const c=document.createElement("span");c.className="cf";c.textContent=rnd(ems);
+    c.style.left=Math.random()*100+"%";c.style.fontSize=(14+Math.random()*16)+"px";
+    c.style.animationDuration=(2.2+Math.random()*2)+"s";c.style.animationDelay=(Math.random()*0.8)+"s";
+    $("#floaters").appendChild(c);setTimeout(()=>c.remove(),5400);
+  }
+}
 
 function cleanHTML(html){
   const d=new DOMParser().parseFromString(`<div>${html}</div>`,"text/html");
@@ -279,16 +420,17 @@ function cleanHTML(html){
 
 /* ---------- إنشاء اللعبة ---------- */
 function mkPlayer(slot,i){
+  const av=AVATARS.includes(slot.avatar)?slot.avatar:AV[i];
   const pi=slot.prof>=0&&slot.prof<PROFS.length?slot.prof:Math.floor(Math.random()*PROFS.length);
   const p=PROFS[pi];
-  return {id:i,name:slot.name,ctrl:slot.ctrl,avatar:AV[i],color:COL[i],prof:p.n,pe:p.e,
+  return {id:i,name:slot.name,ctrl:slot.ctrl,avatar:av,color:COL[i],prof:p.n,pe:p.e,st:{charity:0,loans:0,doodads:0,quiz:0,quizOk:0,auction:0,exitRound:null},
     salary:p.salary,cash:p.cash,
     exp:{"ضرائب":p.tax,"قسط السكن":p.home,"قسط السيارة":p.car,"بطاقات ائتمان":p.cards,"مصاريف أخرى":p.other},
     childCost:p.childCost,children:0,loans:0,debt:p.debt,assets:[],pos:0,skip:0,charity:0,fast:false,turns:0,months:0,last:1};
 }
-function mkGame(slots){
+function mkGame(slots,mode){
   const players=slots.map(mkPlayer);
-  const g={v:2,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,rolling:false,dice:1,summary:null};
+  const g={v:3,mode:mode==='fast'?'fast':'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,rolling:false,dice:1,summary:null};
   return g;
 }
 
@@ -297,11 +439,11 @@ function sync(){
   render();
   if(Net.role==="host"&&Net.open)send({t:"state",G});
 }
-function ask(p,pr){
+function ask(p,pr,secret){
   pr.pid=p.id;pr.id=++G.promptSeq;G.prompt=pr;sync();
   return new Promise(res=>{
-    pending.ask={id:pr.id,pid:p.id,res,pr};
-    if(isBot(p))setTimeout(()=>{if(pending.ask&&pending.ask.id===pr.id)answerAsk(pr.id,botChoose(p,pr))},(650+Math.random()*450)/SPEED);
+    pending.ask={id:pr.id,pid:p.id,res,pr,secret};
+    if(isBot(p))setTimeout(()=>{if(pending.ask&&pending.ask.id===pr.id)answerAsk(pr.id,botChoose(p,pr,secret))},(650+Math.random()*450)/SPEED);
   });
 }
 function answerAsk(id,idx){
@@ -323,7 +465,7 @@ async function ensureCash(p,amount,forced,ctx){
   const idx=await ask(p,{kind:"loan",title:"🏦 تحتاج إلى قرض",
     body:`<p>ينقصك ${fmt(amount-p.cash)}. البنك يقرضك <b>${fmt(need)}</b> بقسط شهري ${fmt(need*0.1)} (10%) يُضاف إلى مصاريفك.</p>`,
     opts:forced?["اقترض"]:["اقترض","لا"],alt:forced?[false]:[false,true],data:{need,forced,inc:ctx?ctx.inc:0}});
-  if(forced||idx===0){p.cash+=need;p.loans+=need;log(`🏦 ${p.name} اقترض ${fmt(need)}.`);return true}
+  if(forced||idx===0){p.cash+=need;p.loans+=need;p.st.loans+=need;log(`🏦 ${p.name} اقترض ${fmt(need)}.`);return true}
   return false;
 }
 function pay(p){
@@ -331,9 +473,10 @@ function pay(p){
   p.months+=p.fast?12:1;
   p.cash+=amt;
   log(`💰 ${p.name}: يوم الراتب (الشهر ${p.months}) ${amt>=0?"+":""}${fmt(amt)}`);
+  if(amt>0)cue("pay",p);
   if(p.cash<0){
     const need=Math.ceil(-p.cash/1000)*1000;
-    p.cash+=need;p.loans+=need;
+    p.cash+=need;p.loans+=need;p.st.loans+=need;
     log(`🏦 رصيد ${p.name} سالب، فاقترض ${fmt(need)} تلقائياً.`);
   }
 }
@@ -342,7 +485,7 @@ async function takeTurn(p){
   if(p.skip>0){p.skip--;log(`⏸️ فاتك الدور يا ${p.name} (تسريح). متبقٍ ${p.skip}.`);sync();await w(600);return}
   const dice=p.charity>0&&!p.fast?2:1;
   if(p.charity>0)p.charity--;
-  G.phase="move";G.rolling=true;sync();await w(560);G.rolling=false;
+  G.phase="move";G.rolling=true;cue("roll");sync();await w(560);G.rolling=false;
   let d=0;const ds=[];for(let i=0;i<dice;i++){const x=1+Math.floor(Math.random()*6);ds.push(x);d+=x}
   G.dice=ds[0];p.last=ds[0];
   log(`🎲 ${p.name} رمى ${ds.join(" + ")}${dice>1?" = "+d:""}.`);sync();await w(250);
@@ -350,39 +493,41 @@ async function takeTurn(p){
   for(let i=0;i<d;i++){
     p.pos=(p.pos+1)%track.length;
     if(track[p.pos]==="payday"&&i<d-1)pay(p);
-    sync();await w(150);
+    playCue("step");sync();await w(150);
   }
   await w(150);
   await resolveTile(p,track[p.pos]);
   if(G.winner)return;
-  if(!p.fast&&passive(p)>0&&passive(p)>=expenses(p)){
+  if(!p.fast&&passive(p)>0&&passive(p)>=exitNeed(p)){
     const bonus=passive(p)*40;
-    p.fast=true;p.pos=0;p.cash+=bonus;
+    p.fast=true;p.pos=0;p.cash+=bonus;p.st.exitRound=G.round;
     log(`🎉 ${p.name} خرج من سباق الفئران! مكافأة ${fmt(bonus)}.`);
-    await ack(p,"🎉 مبروك! خرجت من سباق الفئران",`<p>دخلك السلبي (${fmt(passive(p))}) صار يغطي مصاريفك. دخلت <b>المسار السريع</b> بنقد ${fmt(p.cash)}.</p><div class="tip">الهدف الآن: اشترِ أحد الأحلام الثلاثة على اللوحة قبل منافسيك.</div>`,"هيا 🚀");
+    if(G.players.length>1)flash(`🚀 ${p.name} خرج من سباق الفئران!`);
+    cue("exit");
+    await ack(p,"🎉 مبروك! خرجت من سباق الفئران",`<p>دخلك التلقائي (${fmt(passive(p))}) صار يغطي مصاريفك. دخلت <b>المسار السريع</b> بنقد ${fmt(p.cash)}.</p><div class="tip">الهدف الآن: اشترِ أحد الأحلام الثلاثة على اللوحة قبل منافسيك.</div>`,"هيا 🚀");
   }
 }
 async function resolveTile(p,k){
   switch(k){
   case"payday":pay(p);return;
   case"doodad":{
-    const [n,c]=rnd(DOODADS);
+    const [n,c0]=rnd(DOODADS);const c=Math.round(c0*((G.event&&G.event.doodadMult)||1)/10)*10;
     await ack(p,"🛍️ مصروف طارئ",`<p>${n}: <b class="bad">${fmt(c)}</b></p><p class="sub">مصاريف الاستهلاك لا تُنتج دخلاً. هي جزء من الحياة، لكن لا تدعها تلتهم نقدك.</p>`,"ادفع");
-    if(await ensureCash(p,c,true)){p.cash-=c;log(`🛍️ ${p.name} دفع ${fmt(c)} على «${n}».`)}
+    if(await ensureCash(p,c,true)){p.cash-=c;p.st.doodads++;cue("bad",p);log(`🛍️ ${p.name} دفع ${fmt(c)} على «${n}».`)}
     return}
   case"child":
     p.children++;log(`👶 ${p.name} رُزق بمولود. مصاريفه +${fmt(p.childCost)}.`);
-    await ack(p,"👶 مولود جديد",`<p>مبروك! تزيد مصاريفك ${fmt(p.childCost)} شهرياً.</p><p class="sub">ارتفاع المصاريف يعني أنك تحتاج دخلاً سلبياً أكبر للخروج.</p>`);
+    await ack(p,"👶 مولود جديد",`<p>مبروك! تزيد مصاريفك ${fmt(p.childCost)} شهرياً.</p><p class="sub">ارتفاع المصاريف يعني أنك تحتاج دخلاً تلقائياً أكبر للخروج.</p>`);
     return;
   case"layoff":{
     const c=expenses(p);
-    await ack(p,"📉 تسريح مؤقت",`<p>فقدت وظيفتك مؤقتاً. ادفع مصاريف شهر (<b class="bad">${fmt(c)}</b>) وتفوتك دورتان.</p><p class="sub">دخلك السلبي يستمر بالوصول حتى وأنت بلا وظيفة، وهذا سبب بنائه.</p>`,"ادفع");
-    if(await ensureCash(p,c,true)){p.cash-=c;p.skip=2;log(`📉 ${p.name} سُرّح: دفع ${fmt(c)} ويفوته دوران.`)}
+    await ack(p,"📉 تسريح مؤقت",`<p>فقدت وظيفتك مؤقتاً. ادفع مصاريف شهر (<b class="bad">${fmt(c)}</b>) وتفوتك دورتان.</p><p class="sub">دخلك التلقائي يستمر بالوصول حتى وأنت بلا وظيفة، وهذا سبب بنائه.</p>`,"ادفع");
+    if(await ensureCash(p,c,true)){p.cash-=c;p.skip=2;cue("bad",p);log(`📉 ${p.name} سُرّح: دفع ${fmt(c)} ويفوته دوران.`)}
     return}
   case"charity":{
     const c=Math.round((p.salary+passive(p))*0.1);
     const i=await ask(p,{kind:"charity",title:"🎁 فرصة تبرّع",body:`<p>تبرّع بـ <b>${fmt(c)}</b> (10% من دخلك) فترمي نردين لمدة ٣ أدوار.</p>`,opts:["تبرّع","تجاوز"],alt:[false,true],data:{c}});
-    if(i===0){if(p.cash<c)log(`${p.name}: لا يكفي النقد للتبرع.`);else{p.cash-=c;p.charity=3;log(`🎁 ${p.name} تبرّع بـ ${fmt(c)} — نردان لـ٣ أدوار.`)}}
+    if(i===0){if(p.cash<c)log(`${p.name}: لا يكفي النقد للتبرع.`);else{p.cash-=c;p.charity=3;p.st.charity++;cue("good",p);log(`🎁 ${p.name} تبرّع بـ ${fmt(c)} — نردان لـ٣ أدوار.`)}}
     return}
   case"market":return market(p);
   case"deal":{
@@ -391,11 +536,24 @@ async function resolveTile(p,k){
   case"biz":return offer(p,rnd(BIZ));
   case"dream":{
     const d=DREAMS[FAST.slice(0,p.pos).filter(x=>x==="dream").length];
-    const afford=p.cash>=d.cost;
-    const i=await ask(p,{kind:"dream",title:`⭐ ${d.n}`,body:`<p>السعر: <b>${fmt(d.cost)}</b> — نقدك ${fmt(p.cash)}.</p>`,opts:afford?["حقّق الحلم","لاحقاً"]:["لا يكفي النقد"],alt:afford?[false,true]:[true],data:{afford}});
-    if(afford&&i===0){p.cash-=d.cost;win(p,d)}
+    const dc=dreamCost(d),afford=p.cash>=dc;
+    const i=await ask(p,{kind:"dream",title:`⭐ ${d.n}`,body:`<p>السعر: <b>${fmt(dc)}</b> — نقدك ${fmt(p.cash)}.</p>`,opts:afford?["حقّق الحلم","لاحقاً"]:["لا يكفي النقد"],alt:afford?[false,true]:[true],data:{afford}});
+    if(afford&&i===0){p.cash-=dc;win(p,d)}
     return}
-  case"lawsuit":{const c=Math.round(p.cash*0.2);await ack(p,"⚖️ قضية",`<p>تدفع ${fmt(c)} (20% من نقدك).</p>`,"ادفع");p.cash-=c;log(`⚖️ ${p.name} دفع ${fmt(c)} في قضية.`);return}
+  case"quiz":{
+    if(!QDECK.length)QDECK=shuffle([...QUIZ.keys()]);
+    const [q,opts,c]=QUIZ[QDECK.pop()];
+    const order=shuffle([0,1,2]),shown=order.map(i=>opts[i]),ci=order.indexOf(c);
+    const reward=Math.round(expenses(p)*0.5/100)*100;
+    const i=await ask(p,{kind:"quiz",title:"🧠 سؤال مالي",body:`<p><b>${q}</b></p><p class="sub">الإجابة الصحيحة تمنحك <b class="good">+${fmt(reward)}</b> (نصف مصاريف شهر).</p>`,opts:shown,alt:[false,false,false]},ci);
+    p.st.quiz++;
+    const ok=i===ci;
+    if(ok){p.cash+=reward;p.st.quizOk++;log(`🧠 ${p.name} أجاب صح +${fmt(reward)}.`);cue("good",p)}
+    else{log(`🧠 ${p.name} أخطأ في السؤال المالي.`);cue("bad",p)}
+    await ack(p,ok?"✅ إجابة صحيحة":"❌ إجابة خاطئة",ok?`<p>أحسنت! حصلت على <b class="good">+${fmt(reward)}</b>.</p>`:`<p>الإجابة الصحيحة: <b>${esc(shown[ci])}</b></p>`);
+    return}
+  case"auction":return auction(p);
+  case"lawsuit":{const c=Math.round(p.cash*0.2);await ack(p,"⚖️ قضية",`<p>تدفع ${fmt(c)} (20% من نقدك).</p>`,"ادفع");p.cash-=c;cue("bad",p);log(`⚖️ ${p.name} دفع ${fmt(c)} في قضية.`);return}
   case"tax":{const c=Math.round(p.cash*0.1);await ack(p,"🧾 ضريبة",`<p>تدفع ${fmt(c)} (10% من نقدك).</p>`,"ادفع");p.cash-=c;log(`🧾 ${p.name} دفع ضريبة ${fmt(c)}.`);return}
   }
 }
@@ -407,7 +565,8 @@ async function offer(p,c){
   if(i!==0)return;
   if(!(await ensureCash(p,c.down,false,c)))return;
   p.cash-=c.down;p.assets.push({n:c.n,t:c.t,inc:c.inc,cost:c.cost||c.down});
-  log(`✅ ${p.name} اشترى «${c.n}» بدفعة ${fmt(c.down)}.`);
+  log(`✅ ${p.name} اشترى «${c.n}» بدفعة ${fmt(c.down)}.`);cue("buy",p);
+  if(G.players.length>1&&c.down>=100000)flash(`💼 ${p.name} اشترى «${c.n}»!`);
 }
 async function market(p){
   const owned=p.assets.filter(a=>a.cost);
@@ -418,7 +577,51 @@ async function market(p){
   const i=await ask(p,{kind:"market",title:"📈 عرض من السوق",
     body:`<p>مشترٍ يعرض <b>${fmt(price)}</b> على «${a.n}» (قيمتها ${fmt(a.cost)}).<br>${gain>=0?"ربح":"خسارة"}: <b class="${gain>=0?"good":"bad"}">${fmt(Math.abs(gain))}</b></p><p class="sub">لو بعت، تخسر دخلها الشهري ${fmt(a.inc)}.</p>`,
     opts:["بِع","احتفظ"],alt:[false,true],data:{price,cost:a.cost,inc:a.inc,t:a.t}});
-  if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);log(`📈 ${p.name} باع «${a.n}» بـ ${fmt(price)}.`)}
+  if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);cue("pay",p);log(`📈 ${p.name} باع «${a.n}» بـ ${fmt(price)}.`)}
+}
+async function auction(p){
+  const base=rnd(BIG);
+  if(G.players.length<2)return offer(p,base);
+  const price=Math.round(base.down*0.85/100)*100;
+  const c={...base,down:price};
+  log(`🔔 مزاد: «${base.n}» بدفعة ${fmt(price)} فقط (خصم 15%) لمن يشتري أولاً!`);
+  flash(`🔔 مزاد على «${base.n}»!`);cue("event");
+  const order=[];for(let k=0;k<G.players.length;k++)order.push(G.players[(p.id+k)%G.players.length]);
+  for(const q of order){
+    if(q.cash<price){log(`🔔 ${q.name} لا يملك الدفعة فتجاوز المزاد.`);continue}
+    const inc=c.inc?`<b class="good">+${fmt(c.inc)}</b>`:"لا دخل شهرياً — الربح من إعادة البيع.";
+    const i=await ask(q,{kind:"auction",title:`🔔 مزاد: ${c.n}`,
+      body:`<p>صفقة كبيرة بـ<b>خصم 15%</b> لمن يشتريها أولاً!<br>النوع: ${c.t}${c.cost?` — القيمة: ${fmt(c.cost)}`:""}<br>الدفعة الأولى: <b>${fmt(price)}</b> (بدل ${fmt(base.down)})<br>الدخل الشهري الصافي: ${inc}</p><p class="sub">ترتيبك في المزاد: ${order.indexOf(q)+1} من ${order.length}. إن مرّرت قد يشتريها غيرك. نقدك: ${fmt(q.cash)}</p>`,
+      opts:["اشترِ الآن ⚡","مرّر"],alt:[false,true],data:{down:price,inc:c.inc,cost:c.cost||price,t:c.t}});
+    if(i===0){
+      q.cash-=price;q.assets.push({n:c.n,t:c.t,inc:c.inc,cost:c.cost||price});q.st.auction++;
+      log(`🔔 ${q.name} فاز بالمزاد: «${c.n}» بـ ${fmt(price)}!`);flash(`🔔 ${q.name} فاز بالمزاد!`);cue("buy",q);
+      return;
+    }
+    log(`🔔 ${q.name} مرّر.`);
+  }
+  log("🔔 لم يشترِ أحد صفقة المزاد.");
+}
+function flash(text){G.flash={id:(G.flash?G.flash.id:0)+1,text}}
+function rollEvent(){
+  if(G.event){G.event.left--;if(G.event.left<=0){log(`🌍 انتهى حدث «${G.event.name}».`);G.event=null}}
+  if(!G.event&&G.round>=3&&Math.random()<0.45){
+    const e=rnd(EVENTS);G.event={...e,left:2};
+    log(`🌍 حدث جديد: ${e.icon} ${e.name} — ${e.text}`);flash(`🌍 ${e.name}: ${e.text}`);cue("event");
+  }
+}
+function awards(){
+  const pl=G.players,out=[];
+  const pick=(key,min,icon,title)=>{let best=null;pl.forEach(p=>{const v=typeof key==="function"?key(p):p.st[key];if(v>=min&&(!best||v>best.v))best={p,v}});if(best)out.push({icon,title,name:best.p.name,av:best.p.avatar})};
+  pick("quizOk",1,"🧠","الذكي");
+  pick("charity",1,"🎁","الكريم");
+  pick("auction",1,"🔔","صائد المزادات");
+  pick("doodads",2,"🛍️","المتسوّق");
+  pick(p=>p.assets.length,2,"💼","تاجر الأصول");
+  pick("loans",20000,"🏦","ملك القروض");
+  let ex=null;pl.forEach(p=>{if(p.st.exitRound!=null&&(!ex||p.st.exitRound<ex.v))ex={p,v:p.st.exitRound}});
+  if(ex)out.push({icon:"🚀",title:"الأسرع خروجاً",name:ex.p.name,av:ex.p.avatar});
+  return out.slice(0,5);
 }
 function standings(){
   const rows=G.players.map(p=>({id:p.id,name:p.name,avatar:p.avatar,fast:p.fast,passive:passive(p),exp:expenses(p),cash:p.cash,months:p.months,turns:p.turns,won:p.id===G.winner}));
@@ -428,7 +631,8 @@ function standings(){
 function win(p,d){
   G.winner=p.id;G.phase="over";
   log(`🏆 ${p.name} حقق حلمه: ${d.n}!`);
-  G.summary={dream:d.n,rows:standings()};
+  flash(`🏆 ${p.name} فاز بتحقيق حلمه!`);cue("win");
+  G.summary={dream:d.n,rows:standings(),awards:awards()};
 }
 async function loop(){
   const my=RUN;
@@ -441,16 +645,18 @@ async function loop(){
       await takeTurn(p);
       if(G.winner||my!==RUN)break;
       G.cur=(G.cur+1)%G.players.length;
-      if(G.cur===0)G.round++;
+      if(G.cur===0){G.round++;rollEvent()}
     }
     if(my===RUN){sync();clearSave()}
   }catch(e){if(e!=="cancel")throw e}
 }
 
 /* ---------- لاعب آلي ---------- */
-function botChoose(p,pr){
+function botChoose(p,pr,secret){
   const pro=p.ctrl==="bot2",d=pr.data||{};
   switch(pr.kind){
+  case"quiz":{const ok=Math.random()<(pro?0.75:0.45);return ok?secret:(secret+1+Math.floor(Math.random()*2))%3}
+  case"auction":{const payback=d.inc>0?d.down/d.inc:Infinity;return(pro?payback<=45:(p.cash-d.down>=0&&Math.random()<0.5))?0:1}
   case"dealsize":return p.cash>=(pro?70000:110000)?1:0;
   case"offer":{
     const payback=d.inc>0?d.down/d.inc:Infinity,after=p.cash-d.down;
@@ -479,7 +685,7 @@ function loadSaved(){
   try{
     const r=localStorage.getItem(KEY);if(!r)return false;
     const g=JSON.parse(r);
-    if(!g||g.v!==2||!Array.isArray(g.players)||!g.players.length||g.winner!=null)return false;
+    if(!g||g.v!==3||!Array.isArray(g.players)||!g.players.length||g.winner!=null)return false;
     if(g.players.some(p=>p.ctrl==="remote"))return false;
     G=g;G.phase="idle";G.prompt=null;G.rolling=false;return true;
   }catch(e){}
@@ -520,12 +726,21 @@ function render(){
   if(!has){$("#roll").textContent="🎲 ارمِ النرد";return}
   const me=viewP(),cp=G.players[G.cur];
 
+  // شريط الحدث
+  const ev=G.event,eb=$("#event");
+  if(ev){eb.hidden=false;eb.textContent=`${ev.icon} ${ev.name}: ${ev.text} · متبقٍ ${ev.left} ${ev.left===1?"جولة":"جولات"}`}else eb.hidden=true;
+  // رسائل فورية
+  if(G.flash){if(lastFlash===null)lastFlash=G.flash.id;else if(G.flash.id!==lastFlash){lastFlash=G.flash.id;toast(G.flash.text)}}else lastFlash=0;
+  $("#reactBtn").hidden=G.players.length<2;if(G.players.length<2)$("#reactTray").hidden=true;
   // الشريط العلوي للاعبين
+  const score=q=>q.id===G.winner?9:(q.fast?1+Math.min(1,q.cash/dreamCost(DREAMS[0])):Math.min(1,passive(q)/Math.max(1,exitNeed(q))));
+  const rank=[...G.players].sort((a,b)=>score(b)-score(a)).map(q=>q.id);
   $("#chips").innerHTML=G.players.map(p=>{
-    const r=expenses(p)?Math.min(1,passive(p)/expenses(p)):0;
+    const r=exitNeed(p)?Math.min(1,passive(p)/exitNeed(p)):0;
+    const medal=G.players.length>1?(["🥇","🥈","🥉"][rank.indexOf(p.id)]||""):"";
     return `<button class="chip-p ${p.id===G.cur?"cur":""} ${p.id===me.id?"view":""}" data-pid="${p.id}" style="--pc:${colr(p)}">
       <div class="nm"><span class="av">${esc(p.avatar)}</span>${esc(p.name)} <span>${esc(CTRL_ICON[p.ctrl]||"")}</span></div>
-      <div class="mn"><span>${p.fast?"🚀 سريع":"🐀 سباق"}</span><span>${fmt(+p.cash||0)}</span></div>
+      <div class="mn"><span>${medal} ${p.fast?"🚀 سريع":"🐀 سباق"}</span><span>${fmt(+p.cash||0)}</span></div>
       <div class="mb"><i style="width:${(p.fast?1:r)*100}%"></i></div></button>`}).join("");
   $("#chips").querySelectorAll(".chip-p").forEach(b=>b.onclick=()=>{manualView=true;viewId=+b.dataset.pid;render()});
 
@@ -534,15 +749,15 @@ function render(){
   const cells=[
     ["💵","النقد",fmt(me.cash),me.cash<0?"bad":""],
     ["💼",me.fast?"الراتب (متوقف)":"الراتب",fmt(me.fast?0:me.salary),""],
-    ["🌱","الدخل السلبي",fmt(passive(me)),"good"],
+    ["🌱","الدخل التلقائي",fmt(passive(me)),"good"],
     ["🧾","المصاريف",fmt(expenses(me)),"bad"]];
   $("#stats").innerHTML=cells.map(([i,k,v,c])=>`<div class="stat"><small>${i} ${k}</small><b class="${c}">${v}</b></div>`).join("");
   const nd=nextPayday(me);
   $("#clock").innerHTML=`<span>📅 مرّ <b>${me.months}</b> شهراً</span><span>⏭️ الراتب القادم بعد <b>${nd}</b> ${nd===1?"خانة":"خانات"}</span><span>💰 ستقبض <b class="${(me.fast?passive(me)*12:cf)>=0?"good":"bad"}">${me.fast?"+"+fmt(passive(me)*12):(cf>=0?"+":"")+fmt(cf)}</b></span>`;
-  const ratio=expenses(me)?Math.min(1,passive(me)/expenses(me)):0;
+  const need=exitNeed(me),ratio=need?Math.min(1,passive(me)/need):0;
   $("#prog").style.width=(me.fast?100:ratio*100)+"%";
   $("#phase").innerHTML=`${esc(me.name)} · ${me.fast?'<span class="phase fast">المسار السريع 🚀</span>':'<span class="phase">سباق الفئران 🐀</span>'}`;
-  $("#progtxt").textContent=me.fast?"اشترِ حلمك لتفوز":`دخل سلبي ${fmt(passive(me))} من ${fmt(expenses(me))}`;
+  $("#progtxt").textContent=me.fast?"اشترِ حلمك لتفوز":`دخل تلقائي ${fmt(passive(me))} من ${fmt(need)}`;
 
   // اللوحة
   const track=me.fast?FAST:RAT,n=me.fast?4:7;
@@ -582,7 +797,7 @@ function render(){
   $("#status").textContent=(pr&&!isMine(G.players[pr.pid]))?`⏳ ${G.players[pr.pid].name} يقرر…`:"";
 
   renderPrompt();
-  if(G.winner!=null){if(!resultShown){resultShown=true;showResult()}}else resultShown=false;
+  if(G.winner!=null){if(!resultShown){resultShown=true;showResult();confetti()}}else resultShown=false;
 }
 function renderPrompt(){
   const pr=G.prompt;
@@ -592,6 +807,7 @@ function renderPrompt(){
   shownPrompt=pr.id;
   const btns=pr.opts.map((l,i)=>[l,()=>answer(pr.id,i),pr.alt&&pr.alt[i]]);
   openModal("prompt",esc(pr.title),cleanHTML(pr.body),btns,true);
+  if(pr.kind==="quiz")$("#sheet .row").style.flexDirection="column";
 }
 function answer(id,i){
   if(Net.role==="guest")send({t:"choose",id,idx:i});
@@ -616,24 +832,43 @@ function showResult(){
   const win=G.players[G.winner];
   const rows=s.rows.map((r,i)=>`<tr><td>${i===0?"🏆":i+1}</td><td>${esc(r.avatar)} ${esc(r.name)}</td><td>${r.fast?"🚀":"🐀"} ${fmt(r.passive)}</td><td>${fmt(r.cash)}</td></tr>`).join("");
   const mine=isMine(win);
-  const btns=Net.role==="guest"?[["إغلاق",null,true]]:[["لعبة جديدة",()=>openSetup()],["إغلاق",null,true]];
+  const aw=(s.awards||[]).map(a=>`<div class="award"><b>${esc(a.icon)} ${esc(a.title)}</b>${esc(a.av)} ${esc(a.name)}</div>`).join("");
   openModal("result",mine?"🏆 فزت!":`🏁 فاز ${esc(win.name)}`,
     `<p>${mine?"حققت حلمك":esc(win.name)+" حقق حلمه"}: <b>${esc(s.dream)}</b> في الجولة ${G.round}.</p>
-     <table class="rank"><tr><th></th><th>اللاعب</th><th>الدخل السلبي</th><th>النقد</th></tr>${rows}</table>`,btns);
+     ${aw?`<div class="awards">${aw}</div>`:""}
+     <table class="rank"><tr><th></th><th>اللاعب</th><th>الدخل التلقائي</th><th>النقد</th></tr>${rows}</table>`,[]);
+  const row=$("#sheet .row");
+  const add=(label,fn,alt,keep)=>{const b=document.createElement("button");b.textContent=label;if(alt)b.className="alt";b.onclick=()=>{if(!keep)closeModal();fn&&fn()};row.appendChild(b)};
+  if(Net.role!=="guest")add("🔁 إعادة المباراة",rematch);
+  add("📤 مشاركة النتيجة",shareResult,true,true);
+  if(Net.role!=="guest")add("لعبة جديدة",()=>openSetup(),true);
+  add("إغلاق",null,true);
+}
+function shareResult(){
+  const s=G.summary,win=G.players[G.winner];
+  const lines=s.rows.map((r,i)=>`${i===0?"🏆":(i+1)+"."} ${r.avatar} ${r.name} — دخل تلقائي ${fmt(r.passive)}`);
+  const url=/^https?:/.test(location.href)?"\nالعب معنا: "+location.href.split("?")[0]:"";
+  shareText(`🏁 «درب الثراء»\nفاز ${win.name} بتحقيق حلمه: ${s.dream} (الجولة ${G.round})\n${lines.join("\n")}${url}`);
+}
+function rematch(){
+  const sl=G.players.map(q=>({ctrl:q.ctrl,name:q.name.replace(/ 🤖$/,""),prof:-1,avatar:q.avatar}));
+  const remote=Net.role==="host"&&Net.open&&G.players.some(q=>q.ctrl==="remote");
+  if(remote)Net.remotePid=G.players.findIndex(q=>q.ctrl==="remote");
+  launch(sl,remote,G.mode);
 }
 
 function sheet(p){
   const own=isMine(p);
   const ex=Object.entries(p.exp).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${fmt(v)}</td></tr>`).join("");
-  const as=p.assets.length?p.assets.map(a=>`<tr><td>${esc(a.n)}<br><span class="sub">${esc(a.t)}</span></td><td class="good">${a.inc?"+"+fmt(a.inc):"—"}</td></tr>`).join(""):`<tr><td colspan="2" class="sub">لا أصول بعد.</td></tr>`;
+  const as=p.assets.length?p.assets.map(a=>`<tr><td>${esc(a.n)}<br><span class="sub">${esc(a.t)}</span></td><td class="good">${a.inc?"+"+fmt(effInc(a))+(effInc(a)!==a.inc?` <small class="sub">(الأساسي ${fmt(a.inc)})</small>`:""):"—"}</td></tr>`).join(""):`<tr><td colspan="2" class="sub">لا أصول بعد.</td></tr>`;
   const btns=[["إغلاق",null,true]];
   const canRepay=own&&p.loans>0&&p.cash>=1000&&G.phase==="await_roll"&&G.players[G.cur]===p&&!G.prompt;
   if(canRepay)btns.unshift(["سدّ قرضاً 1,000",()=>{if(Net.role==="guest")send({t:"repay"});else repay(p.id)}]);
   openModal("sheet",`📋 قائمة ${esc(p.name)} (${esc(p.prof)})`,
-   `<table><tr><td>الراتب</td><td>${fmt(p.salary)}</td></tr><tr><td>الدخل السلبي</td><td class="good">${fmt(passive(p))}</td></tr>
+   `<table><tr><td>الراتب</td><td>${fmt(p.salary)}</td></tr><tr><td>الدخل التلقائي</td><td class="good">${fmt(passive(p))}</td></tr>
     <tr><td>إجمالي المصاريف</td><td class="bad">${fmt(expenses(p))}</td></tr><tr><td><b>التدفق الشهري</b></td><td><b>${fmt(cashflow(p))}</b></td></tr></table>
-    <details><summary>المصاريف بالتفصيل</summary><table>${ex}<tr><td>أطفال (${p.children})</td><td>${fmt(p.children*p.childCost)}</td></tr><tr><td>أقساط القروض (${fmt(p.loans)})</td><td>${fmt(p.loans*0.1)}</td></tr></table></details>
-    <details open><summary>الأصول (مصادر الدخل السلبي)</summary><table>${as}</table></details><p class="sub">${esc(p.debt)} (مدرج ضمن قسط السكن)</p>`,btns);
+    <details><summary>المصاريف بالتفصيل</summary><table>${ex}<tr><td>أطفال (${p.children})</td><td>${fmt(p.children*p.childCost)}</td></tr><tr><td>أقساط القروض (${fmt(p.loans)})</td><td>${fmt(p.loans*loanRate())}</td></tr></table></details>
+    <details open><summary>الأصول (مصادر الدخل التلقائي)</summary><table>${as}</table></details><p class="sub">${esc(p.debt)} (مدرج ضمن قسط السكن)</p>`,btns);
 }
 function repay(pid){
   const p=G.players[pid];
@@ -644,25 +879,25 @@ function repay(pid){
 /* ---------- شرح اللعبة ---------- */
 const HELP=[
  ["الفكرة",()=>`
-  <p>أنت موظف براتب، لكن مصاريفك تلتهمه. اللعبة هي أن تبني <b>دخلاً سلبياً</b> (إيجارات ومشاريع وأسهم) حتى يغطي <b>كل مصاريفك الشهرية</b>. عندها تخرج من «سباق الفئران».</p>
-  <div class="tip"><b>الفوز على مرحلتين:</b><br>① <b>سباق الفئران 🐀:</b> ابنِ دخلاً سلبياً أكبر من مصاريفك.<br>② <b>المسار السريع 🚀:</b> اجمع نقداً واشترِ أحد أحلامك الثلاثة.<br>ومع المنافسين: <b>أول من يحقق حلماً يفوز</b>.</div>
+  <p>أنت موظف براتب، لكن مصاريفك تلتهمه. اللعبة هي أن تبني <b>دخلاً تلقائياً</b> (إيجارات ومشاريع وأسهم) حتى يغطي <b>كل مصاريفك الشهرية</b>. عندها تخرج من «سباق الفئران».</p>
+  <div class="tip"><b>الفوز على مرحلتين:</b><br>① <b>سباق الفئران 🐀:</b> ابنِ دخلاً تلقائياً أكبر من مصاريفك.<br>② <b>المسار السريع 🚀:</b> اجمع نقداً واشترِ أحد أحلامك الثلاثة.<br>ومع المنافسين: <b>أول من يحقق حلماً يفوز</b>.</div>
   <h3>الدور الواحد</h3>
   <p>١) ارمِ النرد 🎲 ← ٢) تتحرك قطعتك ← ٣) تنفّذ الخانة التي وقفت عليها ← ٤) ينتقل الدور للاعب التالي.</p>`],
  ["الراتب والشهور",()=>`
-  <p><b>سؤال شائع: متى يزيد الراتب؟</b> الراتب نفسه <b>ثابت ولا يزيد</b>. الذي يزيد هو <b>الدخل السلبي</b> كلما اشتريت أصلاً، فيكبر المبلغ الذي تقبضه.</p>
+  <p><b>سؤال شائع: متى يزيد الراتب؟</b> الراتب نفسه <b>ثابت ولا يزيد</b>. الذي يزيد هو <b>الدخل التلقائي</b> كلما اشتريت أصلاً، فيكبر المبلغ الذي تقبضه.</p>
   <div class="tip"><b>متى أقبض؟</b> كلما <b>مررت أو وقفت</b> على خانة <span class="chip" style="background:var(--t-payday)">💰 يوم الراتب</span>. كل خانة راتب = <b>شهر جديد</b>.</div>
   <ul>
    <li>لوحة سباق الفئران ٢٤ خانة فيها <b>٣ خانات راتب</b>: أي أن اللفة الواحدة = ٣ أشهر.</li>
-   <li>لوحة المسار السريع ١٢ خانة فيها <b>خانتا راتب</b>، وكل واحدة تدفع <b>١٢ شهراً</b> من الدخل السلبي (لا راتب وظيفة هناك).</li>
+   <li>لوحة المسار السريع ١٢ خانة فيها <b>خانتا راتب</b>، وكل واحدة تدفع <b>١٢ شهراً</b> من الدخل التلقائي (لا راتب وظيفة هناك).</li>
    <li>باقي الخانات ليست أشهراً: هي أحداث وقرارات.</li>
   </ul>
   <h3>الحساب في كل «يوم راتب»</h3>
-  <p><b>تقبض = الراتب + الدخل السلبي − المصاريف</b></p>
+  <p><b>تقبض = الراتب + الدخل التلقائي − المصاريف</b></p>
   <div class="tip">مثال: مهندس راتبه 7,800 ومصاريفه 3,740 ← يقبض +4,060. اشترى «كشك قهوة» دخله +230 ← صار يقبض +4,290 في الراتب التالي.</div>
   <p class="sub">في أعلى الشاشة ستجد: «مرّ كذا شهراً»، و«الراتب القادم بعد كذا خانات»، وكم ستقبض بالضبط.</p>`],
  ["الخانات",()=>{
   const rows=[
-   ["payday","تقبض تدفقك الشهري (الراتب + الدخل السلبي − المصاريف). وتقبضه كذلك عند المرور بالخانة."],
+   ["payday","تقبض تدفقك الشهري (الراتب + الدخل التلقائي − المصاريف). وتقبضه كذلك عند المرور بالخانة."],
    ["deal","فرصة استثمارية: اختر صفقة صغيرة أو كبيرة. تدفع دفعة أولى وتحصل على دخل شهري."],
    ["biz","(المسار السريع) مشروع كبير بدفعة أولى ضخمة ودخل عالٍ."],
    ["market","مشترٍ يعرض سعراً على أحد أصولك. بِع إن كان الربح يستحق فقدان دخلها."],
@@ -672,6 +907,8 @@ const HELP=[
    ["layoff","تسريح: تدفع مصاريف شهر وتفوتك دورتان."],
    ["dream","(المسار السريع) اشترِ حلمك إن كان نقدك يكفي فتفوز."],
    ["lawsuit","قضية تأخذ 20% من نقدك."],
+   ["quiz","سؤال مالي: أجب صح لتنال مكافأة نصف مصاريف شهر."],
+   ["auction","مزاد: صفقة كبيرة بخصم 15% تُعرض على اللاعبين بالترتيب، ومن يشتري أولاً يربحها."],
    ["tax","ضريبة تأخذ 10% من نقدك."]];
   return `<dl>${rows.map(([k,t])=>`<dt><span class="chip" style="background:var(${TILE[k][2]})">${TILE[k][0]} ${TILE[k][1]}</span></dt><dd>${t}</dd>`).join("")}</dl>`}],
  ["المنافسون",()=>`
@@ -689,21 +926,31 @@ const HELP=[
   </ul>
   <div class="tip warn">الاتصال مباشر بين الجهازين. إن فشل (بعض شبكات الجوال تمنعه) جرّبا الواي فاي نفسه، أو العبا على جهاز واحد بالتناوب.</div>
   <p class="sub">كل لاعب يحاول الخروج من سباق الفئران في لوحته الخاصة، وتتنافسون على من يحقق حلماً أولاً. اضغط على بطاقة أي لاعب في الأعلى لترى أرقامه ولوحته.</p>`],
+ ["الحماس والتفاعل",()=>`<dl>
+  <dt>🌍 أحداث الجولة</dt><dd>أحياناً يقع حدث يشمل الجميع لمدة جولتين: ازدهار عقاري، موسم سياحي، ركود، ارتفاع الفائدة، تخفيضات… يظهر في شريط ذهبي أعلى الشاشة ويغيّر دخلك التلقائي أو مصاريفك.</dd>
+  <dt>🧠 سؤال مالي</dt><dd>خانة فيها سؤال بثلاثة خيارات. الجواب الصحيح يمنحك نصف مصاريف شهر.</dd>
+  <dt>🔔 المزاد</dt><dd>صفقة كبيرة بخصم 15% تُعرض على اللاعبين بالترتيب. إن مرّرت قد يسبقك غيرك!</dd>
+  <dt>😀 التفاعلات</dt><dd>اضغط زر 😀 (أسفل اليسار) لترسل إيموجي يطير على شاشات الجميع: تشجيع أو مزاح مع أهلك وأصدقائك.</dd>
+  <dt>🥇 الترتيب المباشر</dt><dd>الميداليات على بطاقات اللاعبين تتغير حسب من هو أقرب إلى الفوز.</dd>
+  <dt>🏆 الألقاب</dt><dd>في نهاية اللعبة: الذكي، الكريم، صائد المزادات، المتسوّق، تاجر الأصول، ملك القروض، الأسرع خروجاً.</dd>
+  <dt>⚡ سرعة اللعبة</dt><dd>«سريعة» في إعداد اللعبة: الخروج من السباق يكفيه 70% من المصاريف، والأحلام بـ60% من سعرها.</dd>
+  <dt>🔊 الصوت</dt><dd>أصوات للنرد والشراء والفوز مع اهتزاز خفيف. تكتمها من القائمة ☰.</dd>
+  <dt>🔁 إعادة المباراة وزر المشاركة</dt><dd>في شاشة النتيجة: العبوا مباراة ثانية بنفس اللاعبين بمهن جديدة، أو شاركوا النتيجة على واتساب.</dd></dl>`],
  ["المصطلحات",()=>`<dl>
   <dt>الراتب</dt><dd>دخلك من وظيفتك. يتوقف أثناء التسريح، ولا يوجد في المسار السريع.</dd>
-  <dt>الدخل السلبي</dt><dd>مال يأتيك شهرياً من أصول تملكها (إيجار، مشروع، أرباح) دون أن تعمل ساعة إضافية.</dd>
+  <dt>الدخل التلقائي</dt><dd>(ويُعرف أيضاً بـ«الدخل السلبي» في الكتب المالية) مال يأتيك شهرياً من أصول تملكها (إيجار، مشروع، أرباح) دون أن تعمل ساعة إضافية.</dd>
   <dt>المصاريف</dt><dd>ما تدفعه كل شهر: ضرائب وأقساط ومعيشة وأطفال وقروض.</dd>
-  <dt>التدفق النقدي الشهري</dt><dd>الراتب + الدخل السلبي − المصاريف. إن كان موجباً يزيد نقدك مع كل راتب.</dd>
+  <dt>التدفق النقدي الشهري</dt><dd>الراتب + الدخل التلقائي − المصاريف. إن كان موجباً يزيد نقدك مع كل راتب.</dd>
   <dt>الأصل</dt><dd>شيء تشتريه فيدرّ عليك دخلاً (عقار، مشروع، أسهم).</dd>
   <dt>الخصم (الالتزام)</dt><dd>شيء يخرج منك مالاً كل شهر (قرض، قسط، مصروف).</dd>
   <dt>الدفعة الأولى</dt><dd>الجزء الذي تدفعه نقداً من ثمن الصفقة. الباقي يموَّل.</dd>
   <dt>سباق الفئران</dt><dd>حالة من يعمل ليدفع مصاريفه فقط دون أن يبني ثروة.</dd>
-  <dt>الحرية المالية</dt><dd>أن يغطي دخلك السلبي مصاريفك كاملة.</dd></dl>`],
+  <dt>الحرية المالية</dt><dd>أن يغطي دخلك التلقائي مصاريفك كاملة.</dd></dl>`],
  ["نصائح",()=>`
-  <div class="tip"><b>١. اشترِ الأصول مبكراً.</b> كل صفقة تزيد دخلك السلبي، وهو سبب الخروج.</div>
+  <div class="tip"><b>١. اشترِ الأصول مبكراً.</b> كل صفقة تزيد دخلك التلقائي، وهو سبب الخروج.</div>
   <div class="tip"><b>٢. تجنّب القروض الكثيرة.</b> كل قرض يزيد مصاريفك 10% شهرياً ويبعدك عن الخروج.</div>
   <div class="tip"><b>٣. وازن بين الدخل والمخاطرة.</b> الأسهم قد تضاعف سعرها أو تخسر نصفه، لكن دخلها صغير. العقار والمشاريع أثبت.</div>
-  <div class="tip warn"><b>٤. المهن الأعلى دخلاً مصاريفها أعلى.</b> الطبيب يقبض أكثر لكن يحتاج دخلاً سلبياً أكبر ليخرج.</div>
+  <div class="tip warn"><b>٤. المهن الأعلى دخلاً مصاريفها أعلى.</b> الطبيب يقبض أكثر لكن يحتاج دخلاً تلقائياً أكبر ليخرج.</div>
   <div class="tip"><b>٥. لا تبِع كل شيء.</b> عند عرض السوق، سؤال واحد: هل الربح يعوّض دخل الأصل الشهري؟</div>
   <p class="sub">اللعب مع الآلي أو على نفس الجهاز يُحفظ تلقائياً. لعبة الصديق عن بُعد لا تُحفظ.</p>`]
 ];
@@ -719,10 +966,10 @@ function help(tab,after){
 }
 
 /* ---------- إعداد اللعبة ---------- */
-let slots=[];
+let slots=[], setupMode="normal";
 const defName=(ctrl,i)=>ctrl==="local"?(i===0?"أنا":`لاعب ${i+1}`):ctrl==="remote"?"صديقك":`منافس ${i+1}`;
 function openSetup(){
-  if(!slots.length)slots=[{ctrl:"local",name:"أنا",prof:-1},{ctrl:"bot2",name:"منافس 2",prof:-1}];
+  if(!slots.length)slots=[{ctrl:"local",name:"أنا",prof:-1,avatar:AVATARS[0]},{ctrl:"bot2",name:"منافس 2",prof:-1,avatar:AVATARS[1]}];
   drawSetup();
 }
 function drawSetup(){
@@ -737,9 +984,10 @@ function drawSetup(){
       ${i>0?`<option value="remote" ${s.ctrl==="remote"?"selected":""}>🌐 صديق عن بُعد</option>`:""}
     </select>
     <select data-k="prof">${profOpts.replace(`value="${s.prof}"`,`value="${s.prof}" selected`)}</select>
-    <input type="text" data-k="name" maxlength="14" value="${esc(s.name)}" style="grid-column:1/-1" placeholder="الاسم">
+    <div class="nmrow"><select data-k="avatar" class="avsel" aria-label="الصورة">${AVATARS.map(a=>`<option ${a===s.avatar?"selected":""}>${a}</option>`).join("")}</select><input type="text" data-k="name" maxlength="14" value="${esc(s.name)}" placeholder="الاسم"></div>
   </div>`).join("");
   $("#sheet").innerHTML=`<h2>🎮 لعبة جديدة</h2><p class="sub">اختر اللاعبين (حتى ٤). أول من يحقق حلماً يفوز.</p>${rows}
+    <label class="l">سرعة اللعبة</label><select id="sMode"><option value="normal" ${setupMode==="normal"?"selected":""}>عادية</option><option value="fast" ${setupMode==="fast"?"selected":""}>سريعة (خروج أسهل وأحلام أرخص)</option></select>
     <div class="row">${slots.length<MAXP?'<button class="alt" id="sAdd">➕ إضافة لاعب</button>':""}<button class="alt" id="sHelp">❓ كيف ألعب؟</button></div>
     <div class="row"><button id="sStart">ابدأ اللعبة</button></div>`;
   $("#modal").classList.add("on");
@@ -748,6 +996,7 @@ function drawSetup(){
     el.querySelectorAll("[data-k]").forEach(inp=>inp.onchange=inp.oninput=()=>{
       const k=inp.dataset.k;
       if(k==="prof")slots[i].prof=+inp.value;
+      else if(k==="avatar")slots[i].avatar=inp.value;
       else if(k==="name")slots[i].name=inp.value;
       else{
         slots[i].ctrl=inp.value;
@@ -758,18 +1007,19 @@ function drawSetup(){
     });
   });
   $("#sheet").querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{slots.splice(+b.dataset.x,1);drawSetup()});
-  const add=$("#sAdd");if(add)add.onclick=()=>{slots.push({ctrl:"bot2",name:defName("bot2",slots.length),prof:-1});drawSetup()};
+  const add=$("#sAdd");if(add)add.onclick=()=>{const free=AVATARS.find(a=>!slots.some(x=>x.avatar===a))||AVATARS[0];slots.push({ctrl:"bot2",name:defName("bot2",slots.length),prof:-1,avatar:free});drawSetup()};
+  $("#sMode").onchange=e=>{setupMode=e.target.value};
   $("#sHelp").onclick=()=>help(0,openSetup);
   $("#sStart").onclick=()=>{
     slots.forEach((s,i)=>{s.name=(s.name||"").trim().slice(0,14)||defName(s.ctrl,i)});
     const rem=slots.findIndex(s=>s.ctrl==="remote");
-    if(rem>=0)openInvite(rem);else{closeModal();launch(slots.map(s=>({...s})),false)}
+    if(rem>=0)openInvite(rem);else{closeModal();launch(slots.map(s=>({...s})),false,setupMode)}
   };
 }
-function launch(sl,remote){
+function launch(sl,remote,mode){
   if(!remote)closeNet(false);
   RUN++;pending.roll=null;pending.ask=null;
-  G=mkGame(sl);viewId=null;manualView=false;lastCur=-1;shownPrompt=0;resultShown=false;
+  G=mkGame(sl,mode);viewId=null;manualView=false;lastCur=-1;shownPrompt=0;resultShown=false;QDECK=[];lastFlash=null;
   if(remote){Net.role="host"}else{Net.role="solo"}
   clearSave();render();
   if(remote&&Net.open){send({t:"welcome",pid:Net.remotePid})}
@@ -819,7 +1069,7 @@ function closeNet(keepRole){
 }
 function setupDC(dc){
   Net.dc=dc;
-  dc.onopen=()=>{Net.open=true;if(Net.role==="guest-pending")send({t:"hello",name:Net.helloName,prof:Net.helloProf})};
+  dc.onopen=()=>{Net.open=true;if(Net.role==="guest-pending")send({t:"hello",name:Net.helloName,prof:Net.helloProf,av:Net.helloAv})};
   dc.onmessage=e=>{
     if(typeof e.data!=="string"||e.data.length>200000)return;
     let m;try{m=JSON.parse(e.data)}catch(x){return}
@@ -844,7 +1094,7 @@ function onDisconnect(){
       log(`🔌 انقطع اتصال ${p.name}. سيكمل اللاعب الآلي مكانه.`);
       Net.open=false;
       if(pending.roll&&pending.roll.pid===p.id)actRoll(p.id);
-      if(pending.ask&&pending.ask.pid===p.id)answerAsk(pending.ask.id,botChoose(p,pending.ask.pr));
+      if(pending.ask&&pending.ask.pid===p.id)answerAsk(pending.ask.id,botChoose(p,pending.ask.pr,pending.ask.secret));
       toast("انقطع اتصال صديقك — أكمل اللاعب الآلي مكانه");sync();
     }
   }else if(Net.role==="guest"||Net.role==="guest-pending"){
@@ -858,7 +1108,7 @@ function sanitizeName(s){return String(s||"").replace(/[\u0000-\u001f\u007f<>]/g
 /* المضيف يستقبل */
 function onHostMsg(m){
   if(m.t==="hello"){
-    if(Net.lobby)Net.lobby({name:sanitizeName(m.name),prof:Number.isInteger(m.prof)?m.prof:-1});
+    if(Net.lobby)Net.lobby({name:sanitizeName(m.name),prof:Number.isInteger(m.prof)?m.prof:-1,av:AVATARS.includes(m.av)?m.av:null});
     return;
   }
   if(!G||Net.remotePid==null)return;
@@ -867,15 +1117,26 @@ function onHostMsg(m){
     const a=pending.ask;
     if(a&&a.pid===Net.remotePid&&Number.isInteger(m.id)&&Number.isInteger(m.idx))answerAsk(m.id,m.idx);
   }else if(m.t==="repay")repay(Net.remotePid);
+  else if(m.t==="react"){
+    if(REACTS.includes(m.e)&&Date.now()-lastRemoteReact>600){lastRemoteReact=Date.now();const q=G.players[Net.remotePid];floatReact(q.name,q.avatar,m.e);send({t:"react",pid:Net.remotePid,e:m.e})}
+  }
 }
 /* الضيف يستقبل */
 function onGuestMsg(m){
   if(m.t==="welcome"&&Number.isInteger(m.pid)){
-    Net.myPid=m.pid;Net.role="guest";
+    Net.myPid=m.pid;Net.role="guest";lastFlash=null;
     if(Net.onJoined)Net.onJoined();
   }else if(m.t==="state"&&m.G&&Array.isArray(m.G.players)){
     G=m.G;
-    if(Net.role==="guest"){if(modalKind==="join")closeModal();render()}
+    if(Net.role==="guest"){
+      if(modalKind==="join")closeModal();
+      if(modalKind==="result"&&G.winner==null)closeModal();
+      render();
+    }
+  }else if(m.t==="cue"&&typeof m.c==="string"&&Net.role==="guest"){
+    localCue(m.c,Number.isInteger(m.pid)?m.pid:null);
+  }else if(m.t==="react"&&G&&Net.role==="guest"){
+    const q=G.players[m.pid];if(q&&REACTS.includes(m.e))floatReact(q.name,q.avatar,m.e);
   }
 }
 
@@ -918,13 +1179,13 @@ async function openInvite(slotIdx){
       const o=await unpack($("#iAns").value);
       if(o.t!=="answer")throw new Error("bad");
       Net.lobby=info=>{
-        slots[slotIdx].name=info.name;slots[slotIdx].prof=info.prof;
+        slots[slotIdx].name=info.name;slots[slotIdx].prof=info.prof;if(info.av)slots[slotIdx].avatar=info.av;
         const sl=slots.map(s=>({...s}));
         if(sl[0].name==="أنا")sl[0].name="المضيف";
         const remoteIdx=slotIdx;
         closeModal();
         Net.remotePid=remoteIdx;Net.role="host";
-        launch(sl,true);
+        launch(sl,true,setupMode);
         toast(`✅ اتصل ${info.name}`);
       };
       $("#iMsg").textContent="جارٍ الاتصال…";
@@ -941,6 +1202,7 @@ function openJoin(){
   const profOpts=`<option value="-1">مهنة عشوائية</option>`+PROFS.map((p,i)=>`<option value="${i}">${p.e} ${p.n}</option>`).join("");
   $("#sheet").innerHTML=`<h2>🌐 انضمام إلى لعبة صديق</h2>
     <label class="l">اسمك</label><input type="text" id="jName" maxlength="14" value="ضيف">
+    <label class="l">صورتك</label><select id="jAv" class="avsel" style="width:100%!important">${AVATARS.map(a=>`<option>${a}</option>`).join("")}</select>
     <label class="l">مهنتك</label><select id="jProf">${profOpts}</select>
     <label class="l">رمز الدعوة من صديقك</label><textarea id="jCode" placeholder="الصق الرمز هنا"></textarea>
     <div class="row"><button id="jMake">إنشاء رمز الرد</button></div>
@@ -953,7 +1215,7 @@ function openJoin(){
       $("#jMsg").textContent="جارٍ التجهيز…";
       const o=await unpack($("#jCode").value);
       if(o.t!=="offer")throw new Error("bad");
-      Net.helloName=sanitizeName($("#jName").value);Net.helloProf=+$("#jProf").value;
+      Net.helloName=sanitizeName($("#jName").value);Net.helloProf=+$("#jProf").value;Net.helloAv=$("#jAv").value;
       const pc=new RTCPeerConnection({iceServers:ICE});Net.pc=pc;Net.role="guest-pending";
       pc.ondatachannel=e=>setupDC(e.channel);
       await pc.setRemoteDescription({type:"offer",sdp:o.sdp});
@@ -984,6 +1246,7 @@ function menu(){
     ["🎮 لعبة جديدة",()=>{if(!G||G.winner!=null||confirm("بدء لعبة جديدة؟ سيُمسح التقدم الحالي."))openSetup()}],
     ["🌐 انضمام لصديق",()=>{if(!G||G.winner!=null||Net.role==="guest"||confirm("ستترك اللعبة الحالية. متابعة؟"))openJoin()}],
     ["❓ كيف ألعب؟",()=>help(0)],
+    [SOUND?"🔊 الصوت: يعمل":"🔇 الصوت: مكتوم",()=>{SOUND=!SOUND;try{localStorage.setItem("darb-sound",SOUND?"1":"0")}catch(e){}toast(SOUND?"تم تشغيل الصوت":"تم كتم الصوت");if(SOUND)playCue("good")},true],
     ["إغلاق",null,true]];
   openModal("menu","☰ القائمة","",btns);
   $("#sheet .row").style.flexDirection="column";
@@ -995,6 +1258,9 @@ $("#roll").onclick=()=>{
 $("#sheetBtn").onclick=()=>{if(G)sheet(viewP())};
 $("#menuBtn").onclick=menu;
 $("#helpBtn").onclick=()=>help(0);
+REACTS.forEach(e=>{const b=document.createElement("button");b.textContent=e;b.onclick=()=>{sendReact(e);$("#reactTray").hidden=true};$("#reactTray").appendChild(b)});
+$("#reactBtn").onclick=()=>{$("#reactTray").hidden=!$("#reactTray").hidden};
+document.addEventListener("pointerdown",()=>audio(),{once:true});
 $("#wNew").onclick=()=>openSetup();
 $("#wJoin").onclick=()=>openJoin();
 $("#modal").addEventListener("click",e=>{if(e.target.id==="modal"&&["sheet","menu","help","result"].includes(modalKind))closeModal()});
