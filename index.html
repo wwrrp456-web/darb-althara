@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="درب الثراء">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>درب الثراء</title>
 <style>
 :root{
@@ -46,6 +53,7 @@ body.shake .wrap{animation:shake .5s}
 .chrow{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:7px 10px;border-radius:12px;background:var(--soft);font-size:.8rem}
 .chrow.ok{background:color-mix(in srgb,var(--good) 16%,var(--soft))}.chrow b{white-space:nowrap}.chrow i{font-style:normal}
 .chart{width:100%;height:auto;color:var(--ink);background:var(--soft);border-radius:12px}.rh{font-size:.84rem;margin:10px 0 4px}.tips{padding-inline-start:18px;margin:4px 0;font-size:.84rem;line-height:1.8}
+.inst{padding-inline-start:20px;line-height:1.9;font-size:.9rem}
 .lrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:.86rem}.hapbar.wide{flex:1;width:auto;max-width:90px}
 .hm{display:inline-flex;align-items:center;gap:4px}.hapbar{display:inline-block;width:42px;height:7px;border-radius:5px;background:var(--line);overflow:hidden;position:relative}.hapbar u{display:block;height:100%;transition:width .5s,background .5s}
 .mini b{font-size:.92rem}.mini .bad{color:var(--bad,#c0392b)}.mini .good{color:var(--good,#1b8a4a)}
@@ -205,6 +213,7 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
     <p class="sub">العب وحدك، أو تنافس مع لاعب آلي، أو مع صديق على نفس الجهاز، أو مع صديق عن بُعد.</p>
     <button id="wNew">🎮 لعبة جديدة</button>
     <button class="alt" id="wJoin">🌐 انضمام إلى لعبة صديق</button>
+    <button class="alt" id="installBox" hidden>📲 ثبّت اللعبة كتطبيق على جهازك</button>
     <div id="chBox"></div>
   </div>
 
@@ -1458,6 +1467,28 @@ function openModal(kind,title,body,btns,keep){
   });
   $("#modal").classList.add("on");
 }
+/* ---------- التثبيت كتطبيق (PWA) ---------- */
+let deferredInstall=null;
+const isStandalone=()=>{try{return matchMedia("(display-mode: standalone)").matches||navigator.standalone===true}catch(e){return false}};
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e;renderInstall()});
+window.addEventListener("appinstalled",()=>{deferredInstall=null;try{localStorage.setItem("darb-installed","1")}catch(e){};renderInstall();toast("📲 تم تثبيت اللعبة، تجدها بين تطبيقاتك")});
+function renderInstall(){
+  const b=$("#installBox");if(!b)return;
+  b.hidden=isStandalone()||(()=>{try{return localStorage.getItem("darb-installed")==="1"}catch(e){return false}})();
+}
+function installApp(){
+  if(deferredInstall){const d=deferredInstall;deferredInstall=null;d.prompt();d.userChoice.finally(renderInstall);return}
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const body=ios?`<ol class="inst"><li>افتح الرابط في <b>Safari</b>.</li><li>اضغط زر المشاركة <b>⬆️</b> في الأسفل.</li><li>اختر <b>«إضافة إلى الشاشة الرئيسية»</b> ثم <b>إضافة</b>.</li></ol>`
+   :`<ol class="inst"><li><b>أندرويد (Chrome):</b> اضغط ⋮ ثم <b>«تثبيت التطبيق»</b> أو «إضافة إلى الشاشة الرئيسية».</li><li><b>الحاسوب (Chrome/Edge):</b> أيقونة التثبيت 📥 في شريط العنوان.</li><li><b>آيفون:</b> من Safari اضغط المشاركة ⬆️ ثم «إضافة إلى الشاشة الرئيسية».</li></ol>`;
+  const https=/^https:|^http:\/\/localhost/.test(location.href);
+  openModal("install","📲 ثبّت اللعبة كتطبيق",`<p class="sub">تفتح بملء الشاشة وبأيقونة خاصة وتعمل <b>بلا إنترنت</b> (ما عدا اللعب مع صديق عن بُعد).</p>${body}${https?"":'<div class="tip bad">التثبيت يحتاج فتح اللعبة من رابط <b>https</b>، لا من ملف على الجهاز.</div>'}`,[["حسناً",null]]);
+}
+if("serviceWorker" in navigator&&/^https:|^http:\/\/localhost/.test(location.href)){
+  const had=!!navigator.serviceWorker.controller;
+  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had)toast("🔄 تم تحديث اللعبة لأحدث نسخة")});
+}
 let TAB="play";
 function setTab(t){TAB=t;document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));document.querySelectorAll(".pane").forEach(x=>x.classList.toggle("on",x.dataset.p===t));window.scrollTo(0,0)}
 document.addEventListener("click",e=>{const b=e.target.closest("#tabs button");if(b)setTab(b.dataset.t);else if(e.target.closest("#mini"))setTab("me")});
@@ -1999,6 +2030,7 @@ function menu(){
     ["🎮 لعبة جديدة",()=>{if(!G||over()||confirm("بدء لعبة جديدة؟ سيُمسح التقدم الحالي."))openSetup()}],
     ["🌐 انضمام لصديق",()=>{if(!G||over()||Net.role==="guest"||confirm("ستترك اللعبة الحالية. متابعة؟"))openJoin()}],
     ...(Net.role!=="guest"&&G&&!over()&&G.placed.length?[["🏁 أنهِ المباراة الآن (ترتيب الباقين بتقدمهم)",()=>{if(confirm("إنهاء المباراة وترتيب الباقين حسب تقدمهم الحالي؟"))endNow()},true]]:[]),
+    ["📲 ثبّت اللعبة كتطبيق",installApp],
     ["❓ كيف ألعب؟",()=>help(0)],
     [SOUND?"🔊 الصوت: يعمل":"🔇 الصوت: مكتوم",()=>{SOUND=!SOUND;try{localStorage.setItem("darb-sound",SOUND?"1":"0")}catch(e){}toast(SOUND?"تم تشغيل الصوت":"تم كتم الصوت");if(SOUND)playCue("good")},true],
     ["إغلاق",null,true]];
@@ -2011,6 +2043,7 @@ $("#roll").onclick=()=>{
 };
 $("#sheetBtn").onclick=()=>{if(G)sheet(viewP())};
 $("#menuBtn").onclick=menu;
+const ib=$("#installBox");if(ib){ib.onclick=installApp;renderInstall()}
 $("#helpBtn").onclick=()=>help(0);
 REACTS.forEach(e=>{const b=document.createElement("button");b.textContent=e;b.onclick=()=>{sendReact(e);$("#reactTray").hidden=true};$("#reactTray").appendChild(b)});
 $("#reactBtn").onclick=()=>{$("#reactTray").hidden=!$("#reactTray").hidden};
