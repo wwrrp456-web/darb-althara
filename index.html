@@ -11,12 +11,12 @@
   --brand:#0f766e;--brand-2:#14b8a6;--brand-ink:#fff;--gold:#c8901a;
   --good:#15803d;--bad:#b91c1c;--soft:#efeadd;--shadow:0 2px 10px rgba(30,40,50,.08);
   --t-payday:#c9f3d6;--t-deal:#cfe2fb;--t-doodad:#fcd3d3;--t-market:#fbe7a4;
-  --t-souk:#cdeee8;--t-quiz:#d3eef2;--t-auction:#fde2c8;--t-partner:#d9ecd0;--t-family:#ffdfd2;
+  --t-order:#f0e0c0;--t-souk:#cdeee8;--t-quiz:#d3eef2;--t-auction:#fde2c8;--t-partner:#d9ecd0;--t-family:#ffdfd2;
   --t-child:#f9d2e6;--t-charity:#e1daf9;--t-layoff:#dcdfe3;--t-dream:#fddcb8;--t-lawsuit:#fcd3d3;--t-tax:#e6e8eb;
 }
 @media (prefers-color-scheme:dark){
   :root{--bg:#12171c;--card:#1b232b;--ink:#e8edf2;--muted:#98a4b0;--line:#2b3641;--soft:#222c35;--brand:#2dd4bf;--brand-2:#0f766e;--brand-ink:#06201d;--gold:#f0b43c;--shadow:none;
-  --t-souk:#17483f;--t-quiz:#164650;--t-auction:#6a3b12;--t-partner:#29481f;--t-family:#5a2b1f;
+  --t-order:#4d3f22;--t-souk:#17483f;--t-quiz:#164650;--t-auction:#6a3b12;--t-partner:#29481f;--t-family:#5a2b1f;
   --t-payday:#17482b;--t-deal:#1d3a60;--t-doodad:#5a2020;--t-market:#5a4710;--t-child:#582044;--t-charity:#3a2f68;--t-layoff:#38414a;--t-dream:#693a12;--t-lawsuit:#5a2020;--t-tax:#343b43}
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -156,6 +156,9 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 .pcard .pdice{font-size:2.2rem;line-height:64px}
 .pcard small{color:var(--muted);font-weight:400;font-size:.72rem}
 .pcard .pk{color:var(--gold);font-weight:700;text-align:center;line-height:1.25}
+.ords{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.ord{background:var(--soft);border-radius:10px;padding:5px 9px;font-size:.78rem}
+.ord.open{border:1px dashed var(--gold)}
 .welcome{text-align:center;padding:26px 14px}
 .welcome .big{font-size:3rem}
 .welcome button{display:block;width:100%;margin-top:10px}
@@ -224,7 +227,7 @@ const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const SPEED=Math.max(1,+new URLSearchParams(location.search).get("speed")||1);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms/SPEED));
-const KEY="darb-althara-v5", SEEN="darb-althara-help";
+const KEY="darb-althara-v6", SEEN="darb-althara-help";
 const FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];
 const AV=["🧑","👩","🧔","👧"], COL=["#0f766e","#c2410c","#7c3aed","#be123c"];
 const AVATARS=["🧑","👩","🧔","👧","👦","👴","👵","🦁","🐯","🦊","🐼","🦄","🐸","🚀","👑","🎩"];
@@ -249,7 +252,7 @@ const PROFS=[
  {k:"pharmacist",n:"صيدلي",e:"💊",salary:7000,tax:1300,home:1050,car:260,cards:200,other:430,childCost:230,cash:5000,debt:"قرض صيدلية 140,000",perk:{itemDisc:{honey:0.2,saffron:0.2}},pt:"عسل وزعفران أرخص ٢٠٪"},
  {k:"pilot",n:"طيار",e:"✈️",salary:11000,tax:2300,home:1900,car:420,cards:360,other:760,childCost:360,cash:8500,debt:"قرض سكن 260,000",perk:{itemDisc:{perfume:0.15,fabric:0.15}},pt:"عطور وأقمشة أرخص ١٥٪ (من أسفاره)"}
 ];
-const RAT=["payday","deal","doodad","deal","market","souk","deal","doodad","payday","deal","market","deal","family","child","partner","payday","market","deal","quiz","deal","layoff","market","auction","charity"];
+const RAT=["payday","deal","doodad","deal","market","souk","deal","order","payday","deal","market","deal","family","child","partner","payday","market","deal","quiz","deal","layoff","market","auction","charity"];
 const FAST=["payday","biz","dream","biz","lawsuit","biz","payday","dream","biz","tax","biz","dream"];
 const DREAMS=[
  {n:"رحلة حول العالم مع العائلة",cost:180000},
@@ -261,7 +264,7 @@ const TILE={
  market:["📈","السوق","--t-market"],child:["👶","مولود","--t-child"],charity:["🎁","تبرّع","--t-charity"],
  layoff:["📉","تسريح","--t-layoff"],biz:["🏢","مشروع كبير","--t-deal"],dream:["⭐","حلم","--t-dream"],
  lawsuit:["⚖️","قضية","--t-lawsuit"],tax:["🧾","ضريبة","--t-tax"],
- quiz:["🧠","سؤال مالي","--t-quiz"],auction:["🔔","مزاد","--t-auction"],souk:["🛒","سوق الحي","--t-souk"],partner:["👥","صفقة شراكة","--t-partner"],family:["🎴","مفاجأة عائلية","--t-family"]
+ quiz:["🧠","سؤال مالي","--t-quiz"],auction:["🔔","مزاد","--t-auction"],souk:["🛒","سوق الحي","--t-souk"],order:["📦","طلب الحي","--t-order"],partner:["👥","صفقة شراكة","--t-partner"],family:["🎴","مفاجأة عائلية","--t-family"]
 };
 const SMALL=[
  {n:"شقة صغيرة للإيجار",t:"عقار",down:3000,cost:38000,inc:160},
@@ -363,6 +366,15 @@ const GOODS=[
  {k:"saffron",n:"الزعفران",e:"🌸",base:600}
 ];
 const INV_CAP=12;
+const CUSTOMERS=[
+ {w:"أم خالد",e:"👩",s:"تجهّز لعزومة العائلة",goods:["dates","coffee","honey"]},
+ {w:"الحاج سالم",e:"👴",s:"مسافر للعمرة ويحتاج هدايا",goods:["perfume","dates","saffron"]},
+ {w:"مطعم الواحة",e:"🍽️",s:"يجهّز قائمة الأسبوع",goods:["saffron","honey","coffee"]},
+ {w:"العروس نورة",e:"👰",s:"تجهّز لحفل الزواج",goods:["perfume","fabric","saffron"]},
+ {w:"مدرسة الحي",e:"🏫",s:"تنظّم يوماً ثقافياً",goods:["dates","coffee","honey"]},
+ {w:"صاحب المجلس",e:"🛖",s:"يستقبل ضيوفاً هذا المساء",goods:["coffee","dates","perfume"]},
+ {w:"الخيّاط أبو يوسف",e:"🧵",s:"يشتغل على طلبات العيد",goods:["fabric"]}
+];
 const CTRL_ICON={local:"👤",bot1:"🤖",bot2:"🤖",remote:"🌐"};
 
 /* ---------- الحالة العامة ---------- */
@@ -495,7 +507,7 @@ function mkPlayer(slot,i){
   const av=AVATARS.includes(slot.avatar)?slot.avatar:AV[i];
   const pi=slot.prof>=0&&slot.prof<PROFS.length?slot.prof:Math.floor(Math.random()*PROFS.length);
   const p=PROFS[pi];
-  const pl={id:i,name:slot.name,ctrl:slot.ctrl,avatar:av,color:COL[i],prof:p.n,pe:p.e,pk:p.k,perk:p.perk||{},pt:p.pt||"",inv:{},hold:{},st:{charity:0,loans:0,doodads:0,quiz:0,quizOk:0,auction:0,love:0,partner:0,duel:0,trade:0,deals:0,exitRound:null},
+  const pl={id:i,name:slot.name,ctrl:slot.ctrl,avatar:av,color:COL[i],prof:p.n,pe:p.e,pk:p.k,perk:p.perk||{},pt:p.pt||"",inv:{},hold:{},orders:[],st:{charity:0,loans:0,doodads:0,quiz:0,quizOk:0,auction:0,love:0,partner:0,duel:0,trade:0,deals:0,orders:0,exitRound:null},
     salary:p.salary,cash:p.cash,
     exp:{"ضرائب":p.tax,"قسط السكن":p.home,"قسط السيارة":p.car,"بطاقات ائتمان":p.cards,"مصاريف أخرى":p.other},
     childCost:p.childCost,children:0,loans:0,debt:p.debt,assets:[],pos:0,skip:0,charity:0,fast:false,turns:0,months:0,last:1};
@@ -504,7 +516,7 @@ function mkPlayer(slot,i){
 }
 function mkGame(slots,mode){
   const players=slots.map(mkPlayer);
-  const g={v:5,goods:Object.fromEntries(GOODS.map(x=>[x.k,{p:x.base,prev:x.base}])),nextF:Object.fromEntries(GOODS.map(x=>[x.k,0.8+Math.random()*0.45])),mode:mode==='fast'?'fast':'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,rolling:false,dice:1,summary:null};
+  const g={v:6,orderSeq:0,openOrders:[],goods:Object.fromEntries(GOODS.map(x=>[x.k,{p:x.base,prev:x.base}])),nextF:Object.fromEntries(GOODS.map(x=>[x.k,0.8+Math.random()*0.45])),mode:mode==='fast'?'fast':'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,rolling:false,dice:1,summary:null};
   return g;
 }
 
@@ -629,6 +641,7 @@ async function resolveTile(p,k){
     return}
   case"auction":return auction(p);
   case"souk":return souk(p);
+  case"order":return orderTile(p);
   case"partner":return partner(p);
   case"family":return familyCard(p);
   case"lawsuit":{const c=Math.round(p.cash*0.2);await ack(p,"⚖️ قضية",`<p>تدفع ${fmt(c)} (20% من نقدك).</p>`,"ادفع");p.cash-=c;cue("bad",p);log(`⚖️ ${p.name} دفع ${fmt(c)} في قضية.`);return}
@@ -852,6 +865,10 @@ async function botSouk(p){
     if(q>0){const cost=q*pr;p.cash-=cost;addInv(p,g.k,q,cost);p.hold[g.k]=G.round;log(`🛒 ${p.name} اشترى ${q} ${g.n} بـ ${fmt(cost)}.`)}
   };
   if(pro){
+    [...p.orders,...G.openOrders].forEach(o=>{
+      const have=(p.inv[o.k]&&p.inv[o.k].q)||0,miss=o.q-have,pr=buyPrice(p,o.k);
+      if(miss>0&&o.u>=pr*1.15&&INV_CAP-invCount(p)>=miss&&p.cash-miss*pr>=res){const cost=miss*pr,g=GOODS.find(x=>x.k===o.k);p.cash-=cost;addInv(p,o.k,miss,cost);p.hold[o.k]=G.round;log(`🛒 ${p.name} اشترى ${miss} ${g.n} بـ ${fmt(cost)} لطلب ${o.who}.`)}
+    });
     GOODS.slice().sort((a,b)=>buyPrice(p,a.k)/a.base-buyPrice(p,b.k)/b.base).forEach(g=>{if(buyPrice(p,g.k)<=g.base*0.92)buy(g,3)});
   }else if(Math.random()<0.5&&p.cash>res*2)buy(rnd(GOODS),2);
   if(pro&&G.players.length>1&&Object.keys(p.inv).some(k=>canSell(p,k))&&Math.random()<0.35){
@@ -859,6 +876,55 @@ async function botSouk(p){
     const bs=G.players.filter(b=>b!==p&&b.cash>gPrice(k)*q&&invCount(b)+q<=INV_CAP).sort((a,b)=>b.cash-a.cash);
     if(bs.length)await offerTrade(p,bs[0],g,q,gPrice(k));
   }
+}
+function mkOrder(open){
+  const c=rnd(CUSTOMERS),k=rnd(c.goods),q=2+Math.floor(Math.random()*3),m=1.25+Math.random()*0.35;
+  return {id:++G.orderSeq,who:c.w,e:c.e,s:c.s,k,q,u:Math.round(gPrice(k)*m),left:open?3:4,open};
+}
+const canFill=(p,o)=>!!p.inv[o.k]&&p.inv[o.k].q>=o.q&&p.hold[o.k]!==G.round;
+function fillOrder(p,o){
+  const g=GOODS.find(x=>x.k===o.k),basis=takeInv(p,o.k,o.q),rev=o.u*o.q;
+  p.cash+=rev;p.st.trade+=rev-basis;p.st.orders++;love(p,1);
+  if(o.open)G.openOrders=G.openOrders.filter(x=>x.id!==o.id);else p.orders=p.orders.filter(x=>x.id!==o.id);
+  log(`📦 ${p.name} سلّم طلب ${o.who}: ${o.q} ${g.n} بـ ${fmt(rev)}.`);
+  if(o.open)flash(`📦 ${p.name} سبق الجميع وسلّم طلب ${o.who}!`);
+  cue("pay",p);
+}
+function findOrder(p,id){return p.orders.find(o=>o.id===id)||G.openOrders.find(o=>o.id===id)}
+function deliver(pid,id){
+  const p=G.players[pid];
+  if(!p||G.phase!=="await_roll"||G.players[G.cur]!==p||G.prompt)return;
+  const o=findOrder(p,id);
+  if(!o||!canFill(p,o))return;
+  fillOrder(p,o);sync();
+}
+function expireOrders(){
+  G.players.forEach(p=>{p.orders=p.orders.filter(o=>{o.left--;if(o.left<=0){log(`📦 انتهت مهلة طلب ${o.who} عند ${p.name}.`);return false}return true})});
+  G.openOrders=G.openOrders.filter(o=>{o.left--;if(o.left<=0){log(`📦 انتهت مهلة الطلب المفتوح من ${o.who}.`);return false}return true});
+}
+async function orderTile(p){
+  const open=G.players.length>1&&Math.random()<0.45;
+  const o=mkOrder(open),g=GOODS.find(x=>x.k===o.k),total=o.u*o.q;
+  const body=`<p><b>${o.e} ${esc(o.who)}</b> ${esc(o.s)}.<br>يطلب <b>${o.q} ${g.n}</b> بسعر <b>${fmt(o.u)}</b> للوحدة (المجموع <b class="good">${fmt(total)}</b>)، وهو أعلى من سعر السوق اليوم (${fmt(gPrice(o.k))}).<br>المهلة: ${o.left} جولات.</p>`;
+  if(open){
+    if(G.openOrders.length>=2)G.openOrders.shift();
+    G.openOrders.push(o);
+    log(`📦 طلب مفتوح: ${o.who} يريد ${o.q} ${g.n} بـ ${fmt(total)}.`);flash(`📦 طلب مفتوح من ${o.who}: ${o.q} ${g.n}!`);cue("event");
+    await ack(p,"📦 طلب مفتوح في الحي",body+`<div class="tip">طلب مفتوح للجميع: <b>أول لاعب يسلّمه يربحه</b>. سلّمه من «القائمة» في دورك إن كانت البضاعة عندك.</div>`,"فهمت");
+    return;
+  }
+  if(p.orders.length>=2){await ack(p,"📦 طلب من الحي",body+`<p class="sub">طلباتك ممتلئة (٢). سلّم أحدها أولاً.</p>`,"حسناً");return}
+  const now=canFill(p,o);
+  const opts=now?["سلّم الآن ✅","أقبل وأسلّم لاحقاً","أرفض"]:["أقبل الطلب","أرفض"];
+  const i=await ask(p,{kind:"order",title:"📦 طلب من الحي",body:body+(now?`<p class="sub">عندك البضاعة الآن!</p>`:`<p class="sub">ليست عندك البضاعة. اشترِها من سوق الحي ثم سلّمها من «القائمة».</p>`),
+    opts,alt:opts.map((_,j)=>j===opts.length-1),data:{u:o.u,m:gPrice(o.k),canNow:now}});
+  const choice=opts[i];
+  if(choice.startsWith("سلّم"))fillOrder(p,o);
+  else if(choice.startsWith("أقبل")){p.orders.push(o);log(`📦 ${p.name} قبل طلب ${o.who}: ${o.q} ${g.n} بـ ${fmt(total)}.`)}
+}
+function botOrders(p){
+  const pro=p.ctrl==="bot2";
+  [...p.orders,...G.openOrders].forEach(o=>{if(canFill(p,o)&&(pro||Math.random()<0.6))fillOrder(p,o)});
 }
 async function auction(p){
   const base=rnd(BIG);
@@ -886,6 +952,7 @@ async function auction(p){
 function flash(text){G.flash={id:(G.flash?G.flash.id:0)+1,text}}
 function rollEvent(){
   rollPrices();
+  expireOrders();
   if(G.event){G.event.left--;if(G.event.left<=0){log(`🌍 انتهى حدث «${G.event.name}».`);G.event=null}}
   if(!G.event&&G.round>=3&&Math.random()<0.45){
     const e=rnd(EVENTS);G.event={...e,left:2};
@@ -904,11 +971,12 @@ function awards(){
   pick("love",2,"❤️","قلب العائلة");
   pick("trade",300,"🧳","التاجر الشاطر");
   pick("deals",1,"🏪","جار التجارة");
+  pick("orders",1,"📦","خادم الحي");
   pick("partner",1,"👥","الشريك الذهبي");
   pick("duel",1,"🎲","بطل التحديات");
   let ex=null;pl.forEach(p=>{if(p.st.exitRound!=null&&(!ex||p.st.exitRound<ex.v))ex={p,v:p.st.exitRound}});
   if(ex)out.push({icon:"🚀",title:"الأسرع خروجاً",name:ex.p.name,av:ex.p.avatar});
-  return out.slice(0,7);
+  return out.slice(0,8);
 }
 function standings(){
   const rows=G.players.map(p=>({id:p.id,name:p.name,avatar:p.avatar,fast:p.fast,passive:passive(p),exp:expenses(p),cash:p.cash,months:p.months,turns:p.turns,won:p.id===G.winner}));
@@ -927,7 +995,7 @@ async function loop(){
     while(!G.winner&&my===RUN){
       const p=G.players[G.cur];
       G.phase="await_roll";saveLocal();sync();
-      if(isBot(p))await w(750+Math.random()*500);else await waitRoll(p);
+      if(isBot(p)){botOrders(p);sync();await w(750+Math.random()*500)}else await waitRoll(p);
       if(my!==RUN)return;
       await takeTurn(p);
       if(G.winner||my!==RUN)break;
@@ -942,6 +1010,7 @@ async function loop(){
 function botChoose(p,pr,secret){
   const pro=p.ctrl==="bot2",d=pr.data||{};
   switch(pr.kind){
+  case"order":return d.canNow?0:((pro||Math.random()<0.6)?0:1);
   case"tradeoffer":return(pro?d.u<=d.m*1.02:Math.random()<0.5)?0:1;
   case"family":{
     const costs=d.costs||[],last=costs.length-1;
@@ -982,7 +1051,7 @@ function loadSaved(){
   try{
     const r=localStorage.getItem(KEY);if(!r)return false;
     const g=JSON.parse(r);
-    if(!g||g.v!==5||!Array.isArray(g.players)||!g.players.length||g.winner!=null)return false;
+    if(!g||g.v!==6||!Array.isArray(g.players)||!g.players.length||g.winner!=null)return false;
     if(g.players.some(p=>p.ctrl==="remote"))return false;
     G=g;G.phase="idle";G.prompt=null;G.rolling=false;return true;
   }catch(e){}
@@ -1055,7 +1124,8 @@ function render(){
     const pr=gPrice(g.k),o=G.goods[g.k],before=Math.round(o.prev*evGoods(g.k));
     const ch=fc?(G.nextF[g.k]>1.03?"⬆️":G.nextF[g.k]<0.97?"⬇️":"↔️"):(pr>before?"🔺":pr<before?"🔻":"▪️");
     const q=(me.inv[g.k]&&me.inv[g.k].q)||0;
-    return `<div class="gcell">${hp.call(IMG,"g_"+g.k)?`<img src="${IMG["g_"+g.k]}" alt="">`:""}<b>${fmt(pr)}</b><small>${esc(g.n)} ${ch}</small>${q?`<span class="gq">${q}</span>`:""}</div>`}).join("")}</div>`;
+    return `<div class="gcell">${hp.call(IMG,"g_"+g.k)?`<img src="${IMG["g_"+g.k]}" alt="">`:""}<b>${fmt(pr)}</b><small>${esc(g.n)} ${ch}</small>${q?`<span class="gq">${q}</span>`:""}</div>`}).join("")}</div>`
+   +(()=>{const ords=[...(me.orders||[]),...(G.openOrders||[])];return ords.length?`<div class="ords">${ords.map(o=>{const g=GOODS.find(x=>x.k===o.k);return `<div class="ord ${o.open?"open":""}">${esc(o.e)} <b>${esc(o.who)}</b>: ${o.q} ${g?esc(g.n):""} × ${fmt(o.u)} ${o.open?"🌐 مفتوح":""} · ${o.left} ج ${canFill(me,o)?"✅":""}</div>`}).join("")}</div>`:""})();
   $("#stats").innerHTML=cells.map(([i,k,v,c])=>`<div class="stat"><small>${i} ${k}</small><b class="${c}">${v}</b></div>`).join("");
   const nd=nextPayday(me);
   $("#clock").innerHTML=`<span>📅 مرّ <b>${me.months}</b> شهراً</span><span>⏭️ الراتب القادم بعد <b>${nd}</b> ${nd===1?"خانة":"خانات"}</span><span>❤️ <b>${(me.st&&me.st.love)||0}</b></span><span>💰 ستقبض <b class="${(me.fast?passive(me)*12:cf)>=0?"good":"bad"}">${me.fast?"+"+fmt(passive(me)*12):(cf>=0?"+":"")+fmt(cf)}</b></span>`;
@@ -1169,11 +1239,15 @@ function sheet(p){
   const btns=[["إغلاق",null,true]];
   const canRepay=own&&p.loans>0&&p.cash>=1000&&G.phase==="await_roll"&&G.players[G.cur]===p&&!G.prompt;
   if(canRepay)btns.unshift(["سدّ قرضاً 1,000",()=>{if(Net.role==="guest")send({t:"repay"});else repay(p.id)}]);
+  const canAct=own&&G.phase==="await_roll"&&G.players[G.cur]===p&&!G.prompt;
+  const myOrds=[...p.orders,...G.openOrders];
+  if(canAct)myOrds.filter(o=>canFill(p,o)).forEach(o=>{const g=GOODS.find(x=>x.k===o.k);btns.unshift([`📦 سلّم ${o.who} (${o.q} ${g?g.n:""} = ${fmt(o.u*o.q)})`,()=>{if(Net.role==="guest")send({t:"deliver",id:o.id});else deliver(p.id,o.id)}])});
+  const ordHtml=myOrds.length?`<details open><summary>📦 الطلبات (${myOrds.length})</summary><table>${myOrds.map(o=>{const g=GOODS.find(x=>x.k===o.k);return `<tr><td>${esc(o.e)} ${esc(o.who)}${o.open?" 🌐":""}<br><span class="sub">${o.q} ${g?esc(g.n):""} × ${fmt(o.u)} · متبقٍ ${o.left} جولات</span></td><td class="good">${fmt(o.u*o.q)}</td></tr>`}).join("")}</table></details>`:"";
   openModal("sheet",`📋 قائمة ${esc(p.name)} (${esc(p.prof)})`,
    `<table><tr><td>الراتب</td><td>${fmt(p.salary)}</td></tr><tr><td>الدخل التلقائي</td><td class="good">${fmt(passive(p))}</td></tr>
     <tr><td>إجمالي المصاريف</td><td class="bad">${fmt(expenses(p))}</td></tr><tr><td><b>التدفق الشهري</b></td><td><b>${fmt(cashflow(p))}</b></td></tr></table>
     <details><summary>المصاريف بالتفصيل</summary><table>${ex}<tr><td>أطفال (${p.children})</td><td>${fmt(p.children*p.childCost)}</td></tr><tr><td>أقساط القروض (${fmt(p.loans)})</td><td>${fmt(p.loans*loanRate())}</td></tr></table></details>
-    <details open><summary>الأصول (مصادر الدخل التلقائي)</summary><table>${as}</table></details>${Object.keys(p.inv).length?`<details><summary>📦 المخزون (${invCount(p)}/${INV_CAP})</summary><table>${Object.entries(p.inv).map(([k,o])=>{const g=GOODS.find(x=>x.k===k);return g?`<tr><td>${g.e} ${g.n} ×${o.q}</td><td>${fmt(o.c)}</td></tr>`:""}).join("")}</table></details>`:""}<p class="sub">⭐ ميزة المهنة: ${esc(p.pt||"—")}<br>❤️ دفء العائلة: ${(p.st&&p.st.love)||0} · 👥 شراكات: ${(p.st&&p.st.partner)||0} · 🧳 أرباح التجارة: ${fmt((p.st&&p.st.trade)||0)}</p><p class="sub">${esc(p.debt)} (مدرج ضمن قسط السكن)</p>`,btns);
+    <details open><summary>الأصول (مصادر الدخل التلقائي)</summary><table>${as}</table></details>${ordHtml}${Object.keys(p.inv).length?`<details><summary>📦 المخزون (${invCount(p)}/${INV_CAP})</summary><table>${Object.entries(p.inv).map(([k,o])=>{const g=GOODS.find(x=>x.k===k);return g?`<tr><td>${g.e} ${g.n} ×${o.q}</td><td>${fmt(o.c)}</td></tr>`:""}).join("")}</table></details>`:""}<p class="sub">⭐ ميزة المهنة: ${esc(p.pt||"—")}<br>❤️ دفء العائلة: ${(p.st&&p.st.love)||0} · 👥 شراكات: ${(p.st&&p.st.partner)||0} · 🧳 أرباح التجارة: ${fmt((p.st&&p.st.trade)||0)}</p><p class="sub">${esc(p.debt)} (مدرج ضمن قسط السكن)</p>`,btns);
 }
 function repay(pid){
   const p=G.players[pid];
@@ -1213,6 +1287,7 @@ const HELP=[
    ["dream","(المسار السريع) اشترِ حلمك إن كان نقدك يكفي فتفوز."],
    ["lawsuit","قضية تأخذ 20% من نقدك."],
    ["quiz","سؤال مالي: أجب صح لتنال مكافأة نصف مصاريف شهر."],
+   ["order","طلب الحي: زبون يطلب بضاعة بسعر أعلى من السوق. طلب شخصي تقبله أو ترفضه، أو طلب مفتوح للجميع يربحه أول من يسلّمه."],
    ["souk","سوق الحي: اشترِ بضائع (تمور، قهوة، عطور…) وبِعها بسعر أعلى، أو بِعها للاعبين الآخرين."],
    ["partner","صفقة شراكة: تدعو لاعباً يتقاسم معك الدفعة والدخل (نصف ونصف)."],
    ["family","مفاجأة عائلية: بطاقة موقف من الحياة العائلية، بعضها يشارك فيه اللاعبون الآخرون."],
@@ -1254,6 +1329,7 @@ const HELP=[
    <li><b>بِع للاعب آخر</b> بسعر السوق أو أقل أو أعلى منه ١٠٪، وهو يقبل أو يرفض.</li>
    <li>تحت «أسعار سوق الحي» ترى الأسعار والأسهم: 🔺🔻 تغيّرها عن الجولة السابقة.</li>
    <li>عند الخروج من سباق الفئران تُباع بضائعك تلقائياً.</li>
+   <li><b>📦 طلبات الحي:</b> زبون يطلب بضاعة بسعر أعلى من السوق. سلّمها من «القائمة» في دورك. بعض الطلبات <b>مفتوحة للجميع</b>: أول من يسلّمها يربحها!</li>
   </ul>
   <h3>ميزة كل مهنة</h3>
   <dl>${PROFS.map(q=>`<dt>${q.e} ${q.n}</dt><dd>${q.pt}</dd>`).join("")}</dl>`],
@@ -1446,7 +1522,8 @@ function onHostMsg(m){
   else if(m.t==="choose"){
     const a=pending.ask;
     if(a&&a.pid===Net.remotePid&&Number.isInteger(m.id)&&Number.isInteger(m.idx))answerAsk(m.id,m.idx);
-  }else if(m.t==="repay")repay(Net.remotePid);
+  }else if(m.t==="deliver"){if(Number.isInteger(m.id))deliver(Net.remotePid,m.id)}
+  else if(m.t==="repay")repay(Net.remotePid);
   else if(m.t==="react"){
     if(REACTS.includes(m.e)&&Date.now()-lastRemoteReact>600){lastRemoteReact=Date.now();const q=G.players[Net.remotePid];floatReact(q.name,q.avatar,m.e);send({t:"react",pid:Net.remotePid,e:m.e})}
   }
