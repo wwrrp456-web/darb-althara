@@ -23,11 +23,16 @@
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,system-ui,-apple-system,sans-serif;line-height:1.55;padding:0 14px calc(92px + env(safe-area-inset-bottom))}
 .wrap{max-width:720px;margin:0 auto}
 body.ingame header{padding:6px 0 4px}body.ingame header p{display:none}body.ingame .logo,body.ingame .hbtn{width:36px;height:36px;font-size:1.15rem}body.ingame header h1{font-size:1.1rem}
-.tabs{position:sticky;top:0;z-index:20;display:flex;gap:6px;padding:6px 0 8px;background:var(--bg)}
-.tabs button{flex:1 1 0;min-width:0;white-space:nowrap;padding:9px 0;font-size:.76rem;border-radius:12px;background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:none;min-height:0}
-.tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.gtabs{position:sticky;top:0;z-index:20;display:flex;gap:4px;padding:6px 0 8px;background:var(--bg)}
+.gtabs button{flex:1 1 0;min-width:0;white-space:nowrap;padding:9px 0;font-size:.78rem;overflow:hidden;border-radius:12px;background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:none;min-height:0}
+.gtabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 .pane{display:none}.pane.on{display:block}
 @media(max-height:760px){.legend{display:none}.chip-p .mb{display:none}.chips{padding-bottom:6px}.mini{margin-bottom:6px;padding:5px 10px}.card{padding:8px;margin-bottom:8px}.status:empty{display:none}}
+.briefs{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto;margin:6px 0}
+.brief{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--soft)}
+.brief .bh{display:flex;align-items:center;gap:8px}.brief .bh .portrait{width:40px;height:40px}
+.brief .bg{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;font-size:.78rem;margin:6px 0}
+.brief .goal{font-size:.84rem;background:var(--card);border-radius:8px;padding:6px 8px;border:1px dashed var(--brand)}
 .mini{width:100%;display:flex;justify-content:space-between;align-items:center;gap:6px;margin:0 0 10px;padding:8px 12px;border-radius:14px;background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:.8rem;box-shadow:var(--shadow);min-height:0;font-weight:500}
 .mini b{font-size:.92rem}.mini .bad{color:var(--bad,#c0392b)}.mini .good{color:var(--good,#1b8a4a)}
 header{display:flex;align-items:center;gap:10px;padding:14px 0 10px}
@@ -189,7 +194,7 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
   </div>
 
   <div id="game" hidden>
-    <nav class="tabs" id="tabs">
+    <nav class="gtabs" id="tabs">
       <button data-t="play" class="on">🎲 اللوحة</button><button data-t="me">👤 بطاقتي</button><button data-t="souk">🛒 السوق</button><button data-t="log">📜 السجل</button>
     </nav>
     <section class="pane on" data-p="play">
@@ -1470,12 +1475,22 @@ function openProfPicker(i){
   $("#pBack").onclick=()=>drawSetup();
   $("#modal").classList.add("on");
 }
+function showBriefing(){
+  if(!G)return;
+  const rows=G.players.map(p=>{
+    const need=Math.round(exitNeed(p)),cf=p.salary-expenses(p),hp=Object.prototype.hasOwnProperty;
+    return `<div class="brief"><div class="bh">${hp.call(IMG,p.pk)?`<img class="portrait" src="${IMG[p.pk]}" alt="">`:""}<div><b>${esc(p.avatar)} ${esc(p.name)}</b> ${esc(CTRL_ICON[p.ctrl]||"")}<div class="sub">${esc(p.pe)} ${esc(p.prof)}${isBot(p)?" · "+BOTN[p.ctrl]:""}</div></div></div>
+    <div class="bg"><span>💵 نقد البداية <b>${fmt(p.cash)}</b></span><span>💼 الراتب <b>${fmt(p.salary)}</b></span><span>🧾 المصاريف <b class="bad">${fmt(expenses(p))}</b></span><span>💰 فائضك شهرياً <b class="${cf>=0?"good":"bad"}">${fmt(cf)}</b></span></div>
+    <div class="goal">🎯 للخروج من سباق الفئران: دخل تلقائي <b>${fmt(need)}</b> شهرياً${hard()&&!fastMode()?" <small>(يرتفع قليلاً مع التضخم)</small>":""}</div></div>`}).join("");
+  const d=DREAMS.map(x=>fmt(dreamCost(x))).join(" · ");
+  openModal("brief","🏁 قبل أن نبدأ: هدف كل متسابق",`<p class="sub">الدخل التلقائي هو ما تدرّه أصولك (إيجارات ومشاريع وأسهم) بلا عمل. حين يبلغ الهدف أدناه تخرج من سباق الفئران إلى المسار السريع.</p><div class="briefs">${rows}</div><div class="tip">بعد الخروج: أول من يشتري أحد الأحلام (${d}) يفوز بالمركز الأول.</div>`,[["ابدأ المباراة 🎲",null]]);
+}
 function launch(sl,remote,mode){
   if(!remote)closeNet(false);
   RUN++;pending.roll=null;pending.ask=null;
   G=mkGame(sl,mode);viewId=null;manualView=false;lastCur=-1;shownPrompt=0;resultShown=false;QDECK=[];FDECK=[];lastFlash=null;
   if(remote){Net.role="host"}else{Net.role="solo"}
-  clearSave();render();
+  clearSave();render();showBriefing();
   if(remote&&Net.open){send({t:"welcome",pid:Net.remotePid})}
   loop();
 }
@@ -1579,7 +1594,7 @@ function onHostMsg(m){
 /* الضيف يستقبل */
 function onGuestMsg(m){
   if(m.t==="welcome"&&Number.isInteger(m.pid)){
-    Net.myPid=m.pid;Net.role="guest";lastFlash=null;
+    Net.myPid=m.pid;Net.role="guest";lastFlash=null;Net.needBrief=true;
     if(Net.onJoined)Net.onJoined();
   }else if(m.t==="state"&&m.G&&Array.isArray(m.G.players)){
     G=m.G;
@@ -1587,6 +1602,7 @@ function onGuestMsg(m){
       if(modalKind==="join")closeModal();
       if(modalKind==="result"&&!over())closeModal();
       render();
+      if(Net.needBrief){Net.needBrief=false;if(G.round===1&&!over())showBriefing()}
     }
   }else if(m.t==="cue"&&typeof m.c==="string"&&Net.role==="guest"){
     localCue(m.c,Number.isInteger(m.pid)?m.pid:null);
