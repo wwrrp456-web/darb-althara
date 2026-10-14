@@ -402,6 +402,9 @@ const sellPrice=(p,k)=>Math.max(1,Math.round(gPrice(k)*0.95*(1+(p.perk.sellBonus
 const invCount=p=>Object.values(p.inv).reduce((a,b)=>a+b.q,0);
 function addInv(p,k,q,cost){const o=p.inv[k]||{q:0,c:0};p.inv[k]={q:o.q+q,c:o.c+cost}}
 function takeInv(p,k,q){const o=p.inv[k],basis=Math.round(o.c*q/o.q);o.q-=q;o.c-=basis;if(o.q<=0)delete p.inv[k];return basis}
+const ORD=["الأولى","الثانية","الثالثة","الرابعة","الخامسة","السادسة","السابعة","الثامنة","التاسعة","العاشرة"];
+const thr=n=>n<=10?`الرمية ${ORD[n-1]}`:`الرمية ${n}`;
+const over=()=>G.phase==="over";
 const canSell=(p,k)=>!!p.inv[k]&&p.hold[k]!==G.round;
 function love(p,n){p.st.love+=Math.round(n*(p.perk.loveMult||1))}
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -516,7 +519,7 @@ function mkPlayer(slot,i){
 }
 function mkGame(slots,mode){
   const players=slots.map(mkPlayer);
-  const g={v:6,orderSeq:0,openOrders:[],goods:Object.fromEntries(GOODS.map(x=>[x.k,{p:x.base,prev:x.base}])),nextF:Object.fromEntries(GOODS.map(x=>[x.k,0.8+Math.random()*0.45])),mode:mode==='fast'?'fast':'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,rolling:false,dice:1,summary:null};
+  const g={v:6,orderSeq:0,openOrders:[],goods:Object.fromEntries(GOODS.map(x=>[x.k,{p:x.base,prev:x.base}])),nextF:Object.fromEntries(GOODS.map(x=>[x.k,0.8+Math.random()*0.45])),mode:mode==='fast'?'fast':'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,placed:[],cont:false,dream0:null,rolling:false,dice:1,summary:null};
   return g;
 }
 
@@ -574,7 +577,7 @@ async function takeTurn(p){
   G.phase="move";G.rolling=true;cue("roll");sync();await w(560);G.rolling=false;
   let d=0;const ds=[];for(let i=0;i<dice;i++){const x=1+Math.floor(Math.random()*6);ds.push(x);d+=x}
   G.dice=ds[0];p.last=ds[0];
-  log(`🎲 ${p.name} رمى ${ds.join(" + ")}${dice>1?" = "+d:""}.`);sync();await w(250);
+  log(`🎲 ${p.name} رمى ${ds.join(" + ")}${dice>1?" = "+d:""} (${thr(p.turns)}).`);sync();await w(250);
   const track=p.fast?FAST:RAT;
   for(let i=0;i<d;i++){
     p.pos=(p.pos+1)%track.length;
@@ -583,7 +586,7 @@ async function takeTurn(p){
   }
   await w(150);
   await resolveTile(p,track[p.pos]);
-  if(G.winner)return;
+  if(over()||G.placed.includes(p.id))return;
   if(!p.fast&&passive(p)>0&&passive(p)>=exitNeed(p)){
     const bonus=passive(p)*40;
     Object.keys(p.inv).forEach(k=>doSell(p,GOODS.find(g=>g.k===k),p.inv[k].q));
@@ -980,25 +983,38 @@ function awards(){
 }
 function standings(){
   const rows=G.players.map(p=>({id:p.id,name:p.name,avatar:p.avatar,fast:p.fast,passive:passive(p),exp:expenses(p),cash:p.cash,months:p.months,turns:p.turns,won:p.id===G.winner}));
-  rows.sort((a,b)=>(b.won-a.won)||(b.fast-a.fast)||((b.passive/b.exp)-(a.passive/a.exp)));
+  const pi=id=>{const i=G.placed.indexOf(id);return i<0?99:i};
+  rows.sort((a,b)=>(pi(a.id)-pi(b.id))||(b.won-a.won)||(b.fast-a.fast)||((b.passive/b.exp)-(a.passive/a.exp)));
   return rows;
 }
 function win(p,d){
-  G.winner=p.id;G.phase="over";
-  log(`🏆 ${p.name} حقق حلمه: ${d.n}!`);
-  flash(`🏆 ${p.name} فاز بتحقيق حلمه!`);cue("win");
-  G.summary={dream:d.n,rows:standings(),awards:awards()};
+  if(!G.placed.includes(p.id))G.placed.push(p.id);
+  if(G.winner==null){G.winner=p.id;G.dream0=d.n}
+  const n=G.placed.length;
+  log(`🏆 ${p.name} حقق حلمه: ${d.n}! (المركز ${n})`);
+  flash(n===1?`🏆 ${p.name} فاز بتحقيق حلمه!`:`🏅 ${p.name} حقق حلمه ويحتل المركز ${n}`);cue("win");
+  const rest=G.players.filter(q=>!G.placed.includes(q.id));
+  if(G.cont&&rest.length>1)return;
+  if(G.cont&&rest.length===1)G.placed.push(rest[0].id);
+  G.phase="over";
+  G.summary={dream:G.dream0,rows:standings(),awards:awards()};
+}
+function continueGame(){
+  if(Net.role==="guest"||!over()||G.cont)return;
+  G.cont=true;G.phase="await_roll";G.summary=null;resultShown=false;closeModal();
+  flash("▶️ تكملة اللعب: يستمر الباقون حتى تكتمل المراكز");sync();loop();
 }
 async function loop(){
   const my=RUN;
   try{
-    while(!G.winner&&my===RUN){
+    while(!over()&&my===RUN){
       const p=G.players[G.cur];
+      if(G.placed.includes(p.id)){G.cur=(G.cur+1)%G.players.length;if(G.cur===0){G.round++;rollEvent()}continue}
       G.phase="await_roll";saveLocal();sync();
       if(isBot(p)){botOrders(p);sync();await w(750+Math.random()*500)}else await waitRoll(p);
       if(my!==RUN)return;
       await takeTurn(p);
-      if(G.winner||my!==RUN)break;
+      if(over()||my!==RUN)break;
       G.cur=(G.cur+1)%G.players.length;
       if(G.cur===0){G.round++;rollEvent()}
     }
@@ -1051,7 +1067,7 @@ function loadSaved(){
   try{
     const r=localStorage.getItem(KEY);if(!r)return false;
     const g=JSON.parse(r);
-    if(!g||g.v!==6||!Array.isArray(g.players)||!g.players.length||g.winner!=null)return false;
+    if(!g||g.v!==6||!Array.isArray(g.players)||!g.players.length||g.phase==="over")return false;
     if(g.players.some(p=>p.ctrl==="remote"))return false;
     G=g;G.phase="idle";G.prompt=null;G.rolling=false;return true;
   }catch(e){}
@@ -1099,7 +1115,7 @@ function render(){
   if(G.flash){if(lastFlash===null)lastFlash=G.flash.id;else if(G.flash.id!==lastFlash){lastFlash=G.flash.id;toast(G.flash.text)}}else lastFlash=0;
   $("#reactBtn").hidden=G.players.length<2;if(G.players.length<2)$("#reactTray").hidden=true;
   // الشريط العلوي للاعبين
-  const score=q=>q.id===G.winner?9:(q.fast?1+Math.min(1,q.cash/dreamCost(DREAMS[0])):Math.min(1,passive(q)/Math.max(1,exitNeed(q))));
+  const score=q=>G.placed.includes(q.id)?100-G.placed.indexOf(q.id):(q.fast?1+Math.min(1,q.cash/dreamCost(DREAMS[0])):Math.min(1,passive(q)/Math.max(1,exitNeed(q))));
   const rank=[...G.players].sort((a,b)=>score(b)-score(a)).map(q=>q.id);
   $("#chips").innerHTML=G.players.map(p=>{
     const r=exitNeed(p)?Math.min(1,passive(p)/exitNeed(p)):0;
@@ -1143,7 +1159,7 @@ function render(){
   for(let r=0;r<n;r++)for(let c=0;c<n;c++){
     const i=cells2.findIndex(x=>x[0]===r&&x[1]===c);
     if(i<0){
-      const ctr=`<div class="dice ${G.rolling?"roll":""}" id="dice">${FACES[(G.dice||1)-1]}</div><div class="big">دور ${esc(cp.name)}</div><div class="mut">الجولة ${G.round}</div>`;
+      const ctr=`<div class="dice ${G.rolling?"roll":""}" id="dice">${FACES[(G.dice||1)-1]}</div><div class="big">دور ${esc(cp.name)}</div><div class="mut">الجولة ${G.round} · ${thr(cp.turns+1)}</div>`;
       if(n===7&&r===1&&c===1)html+=`<div class="center" style="grid-column:2/7;grid-row:2/7">${ctr}</div>`;
       if(n===4&&r===1&&c===1)html+=`<div class="center" style="grid-column:2/4;grid-row:2/4">${ctr}</div>`;
       continue;
@@ -1163,16 +1179,16 @@ function render(){
   if(!G.rolling&&diceTimer){clearInterval(diceTimer);diceTimer=null}
 
   // الزر السفلي والحالة
-  const myTurn=isMine(cp)&&G.phase==="await_roll"&&!G.prompt&&!G.winner;
+  const myTurn=isMine(cp)&&G.phase==="await_roll"&&!G.prompt&&!over();
   const rb=$("#roll");
-  if(G.winner!=null){rb.textContent="🏁 انتهت اللعبة";rb.disabled=true}
-  else if(myTurn){rb.textContent=Net.role==="solo"&&G.players.filter(x=>x.ctrl==="local").length<2?"🎲 ارمِ النرد":`🎲 ارمِ يا ${cp.name}`;rb.disabled=false}
+  if(over()){rb.textContent="🏁 انتهت اللعبة";rb.disabled=true}
+  else if(myTurn){rb.textContent=Net.role==="solo"&&G.players.filter(x=>x.ctrl==="local").length<2?"🎲 ارمِ النرد":`🎲 ارمِ يا ${cp.name}`;rb.disabled=false;rb.textContent+=` · ${thr(cp.turns+1)}`}
   else{rb.textContent=`⏳ دور ${cp.name}`;rb.disabled=true}
   const pr=G.prompt;
   $("#status").textContent=(pr&&!isMine(G.players[pr.pid]))?`⏳ ${G.players[pr.pid].name} يقرر…`:"";
 
   renderPrompt();
-  if(G.winner!=null){if(!resultShown){resultShown=true;showResult();confetti()}}else resultShown=false;
+  if(over()){if(!resultShown){resultShown=true;showResult();confetti()}}else resultShown=false;
 }
 function renderPrompt(){
   const pr=G.prompt;
@@ -1209,11 +1225,12 @@ function showResult(){
   const mine=isMine(win);
   const aw=(s.awards||[]).map(a=>`<div class="award"><b>${esc(a.icon)} ${esc(a.title)}</b>${esc(a.av)} ${esc(a.name)}</div>`).join("");
   openModal("result",mine?"🏆 فزت!":`🏁 فاز ${esc(win.name)}`,
-    `${Object.prototype.hasOwnProperty.call(IMG,win.pk)?`<img class="portrait big" src="${IMG[win.pk]}" alt="">`:""}<p>${mine?"حققت حلمك":esc(win.name)+" حقق حلمه"}: <b>${esc(s.dream)}</b> في الجولة ${G.round}.</p>
+    `${Object.prototype.hasOwnProperty.call(IMG,win.pk)?`<img class="portrait big" src="${IMG[win.pk]}" alt="">`:""}<p>${mine?"حققت حلمك":esc(win.name)+" حقق حلمه"}: <b>${esc(s.dream)}</b>${G.cont?" وأكمل الباقون اللعب حتى تحدد المراكز":""} · الجولة ${G.round}.</p>
      ${aw?`<div class="awards">${aw}</div>`:""}
      <table class="rank"><tr><th></th><th>اللاعب</th><th>الدخل التلقائي</th><th>النقد</th></tr>${rows}</table>`,[]);
   const row=$("#sheet .row");
   const add=(label,fn,alt,keep)=>{const b=document.createElement("button");b.textContent=label;if(alt)b.className="alt";b.onclick=()=>{if(!keep)closeModal();fn&&fn()};row.appendChild(b)};
+  if(Net.role!=="guest"&&!G.cont&&G.players.filter(q=>!G.placed.includes(q.id)).length>1)add("▶️ تابع اللعب (لترتيب الباقين)",continueGame);
   if(Net.role!=="guest")add("🔁 إعادة المباراة",rematch);
   add("📤 مشاركة النتيجة",shareResult,true,true);
   if(Net.role!=="guest")add("لعبة جديدة",()=>openSetup(),true);
@@ -1310,6 +1327,7 @@ const HELP=[
   <div class="tip warn">الاتصال مباشر بين الجهازين. إن فشل (بعض شبكات الجوال تمنعه) جرّبا الواي فاي نفسه، أو العبا على جهاز واحد بالتناوب.</div>
   <p class="sub">كل لاعب يحاول الخروج من سباق الفئران في لوحته الخاصة، وتتنافسون على من يحقق حلماً أولاً. اضغط على بطاقة أي لاعب في الأعلى لترى أرقامه ولوحته.</p>`],
  ["الحماس والتفاعل",()=>`<dl>
+  <dt>🎲 الرمية والجولة</dt><dd>في وسط اللوحة ترى «الجولة ٣ · الرمية الخامسة»: الجولة تكتمل بدور كل اللاعبين، والرمية هي عدد رميات صاحب الدور. وبعد أن يفوز أول لاعب تستطيع الضغط «▶️ تابع اللعب» ليكمل الباقون حتى تتحدد كل المراكز، فلا تنتهي المتعة باختصار.</dd>
   <dt>🌍 أحداث الجولة</dt><dd>أحياناً يقع حدث يشمل الجميع لمدة جولتين: ازدهار عقاري، موسم سياحي، ركود، ارتفاع الفائدة، تخفيضات… يظهر في شريط ذهبي أعلى الشاشة ويغيّر دخلك التلقائي أو مصاريفك.</dd>
   <dt>🧠 سؤال مالي</dt><dd>خانة فيها سؤال بثلاثة خيارات. الجواب الصحيح يمنحك نصف مصاريف شهر.</dd>
   <dt>🔔 المزاد</dt><dd>صفقة كبيرة بخصم 15% تُعرض على اللاعبين بالترتيب. إن مرّرت قد يسبقك غيرك!</dd>
@@ -1537,7 +1555,7 @@ function onGuestMsg(m){
     G=m.G;
     if(Net.role==="guest"){
       if(modalKind==="join")closeModal();
-      if(modalKind==="result"&&G.winner==null)closeModal();
+      if(modalKind==="result"&&!over())closeModal();
       render();
     }
   }else if(m.t==="cue"&&typeof m.c==="string"&&Net.role==="guest"){
@@ -1650,8 +1668,8 @@ async function shareText(t){
 /* ---------- القائمة والأزرار ---------- */
 function menu(){
   const btns=[
-    ["🎮 لعبة جديدة",()=>{if(!G||G.winner!=null||confirm("بدء لعبة جديدة؟ سيُمسح التقدم الحالي."))openSetup()}],
-    ["🌐 انضمام لصديق",()=>{if(!G||G.winner!=null||Net.role==="guest"||confirm("ستترك اللعبة الحالية. متابعة؟"))openJoin()}],
+    ["🎮 لعبة جديدة",()=>{if(!G||over()||confirm("بدء لعبة جديدة؟ سيُمسح التقدم الحالي."))openSetup()}],
+    ["🌐 انضمام لصديق",()=>{if(!G||over()||Net.role==="guest"||confirm("ستترك اللعبة الحالية. متابعة؟"))openJoin()}],
     ["❓ كيف ألعب؟",()=>help(0)],
     [SOUND?"🔊 الصوت: يعمل":"🔇 الصوت: مكتوم",()=>{SOUND=!SOUND;try{localStorage.setItem("darb-sound",SOUND?"1":"0")}catch(e){}toast(SOUND?"تم تشغيل الصوت":"تم كتم الصوت");if(SOUND)playCue("good")},true],
     ["إغلاق",null,true]];
