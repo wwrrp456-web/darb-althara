@@ -22,6 +22,14 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,system-ui,-apple-system,sans-serif;line-height:1.55;padding:0 14px calc(92px + env(safe-area-inset-bottom))}
 .wrap{max-width:720px;margin:0 auto}
+body.ingame header{padding:6px 0 4px}body.ingame header p{display:none}body.ingame .logo,body.ingame .hbtn{width:36px;height:36px;font-size:1.15rem}body.ingame header h1{font-size:1.1rem}
+.tabs{position:sticky;top:0;z-index:20;display:flex;gap:6px;padding:6px 0 8px;background:var(--bg)}
+.tabs button{flex:1 1 0;min-width:0;white-space:nowrap;padding:9px 0;font-size:.76rem;border-radius:12px;background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:none;min-height:0}
+.tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.pane{display:none}.pane.on{display:block}
+@media(max-height:760px){.legend{display:none}.chip-p .mb{display:none}.chips{padding-bottom:6px}.mini{margin-bottom:6px;padding:5px 10px}.card{padding:8px;margin-bottom:8px}.status:empty{display:none}}
+.mini{width:100%;display:flex;justify-content:space-between;align-items:center;gap:6px;margin:0 0 10px;padding:8px 12px;border-radius:14px;background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:.8rem;box-shadow:var(--shadow);min-height:0;font-weight:500}
+.mini b{font-size:.92rem}.mini .bad{color:var(--bad,#c0392b)}.mini .good{color:var(--good,#1b8a4a)}
 header{display:flex;align-items:center;gap:10px;padding:14px 0 10px}
 .logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:grid;place-items:center;font-size:1.5rem;box-shadow:var(--shadow);flex:none}
 header h1{font-size:1.3rem;margin:0;line-height:1.2}
@@ -181,28 +189,32 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
   </div>
 
   <div id="game" hidden>
-    <div class="event" id="event" hidden></div>
-    <div class="chips" id="chips"></div>
-    <div class="status" id="status"></div>
-
-    <div class="card">
-      <div class="who" id="who"></div>
-      <div class="stats" id="stats"></div>
-      <div class="clock" id="clock"></div>
-      <div class="prog">
-        <div class="prog-top"><span id="phase"></span><span id="progtxt"></span></div>
-        <div class="bar" role="progressbar" aria-label="تقدم الخروج من سباق الفئران"><i id="prog"></i></div>
+    <nav class="tabs" id="tabs">
+      <button data-t="play" class="on">🎲 اللوحة</button><button data-t="me">👤 بطاقتي</button><button data-t="souk">🛒 السوق</button><button data-t="log">📜 السجل</button>
+    </nav>
+    <section class="pane on" data-p="play">
+      <div class="event" id="event" hidden></div>
+      <div class="chips" id="chips"></div>
+      <div class="status" id="status"></div>
+      <button class="mini" id="mini" type="button"></button>
+      <div class="card">
+        <div class="board" id="board"></div>
+        <div class="legend" id="legend"></div>
       </div>
-    </div>
-
-    <div class="card" id="goodsCard"></div>
-
-    <div class="card">
-      <div class="board" id="board"></div>
-      <div class="legend" id="legend"></div>
-    </div>
-
-    <div class="card log"><h3>📜 سجل الأحداث</h3><div id="log"></div></div>
+    </section>
+    <section class="pane" data-p="me">
+      <div class="card">
+        <div class="who" id="who"></div>
+        <div class="stats" id="stats"></div>
+        <div class="clock" id="clock"></div>
+        <div class="prog">
+          <div class="prog-top"><span id="phase"></span><span id="progtxt"></span></div>
+          <div class="bar" role="progressbar" aria-label="تقدم الخروج من سباق الفئران"><i id="prog"></i></div>
+        </div>
+      </div>
+    </section>
+    <section class="pane" data-p="souk"><div class="card" id="goodsCard"></div></section>
+    <section class="pane" data-p="log"><div class="card log"><h3>📜 سجل الأحداث</h3><div id="log"></div></div></section>
   </div>
 </div>
 
@@ -375,7 +387,11 @@ const CUSTOMERS=[
  {w:"صاحب المجلس",e:"🛖",s:"يستقبل ضيوفاً هذا المساء",goods:["coffee","dates","perfume"]},
  {w:"الخيّاط أبو يوسف",e:"🧵",s:"يشتغل على طلبات العيد",goods:["fabric"]}
 ];
-const CTRL_ICON={local:"👤",bot1:"🤖",bot2:"🤖",remote:"🌐"};
+const CTRL_ICON={local:"👤",bot1:"🐣",botm:"🤖",bot2:"🤖",botx:"🧠",botl:"👑",remote:"🌐"};
+const BOTLV={bot1:1,botm:2,bot2:3,botx:4,botl:5};
+const BOTN={bot1:"مبتدئ",botm:"متوسط",bot2:"ماهر",botx:"خبير",botl:"أسطوري"};
+const lv=p=>BOTLV[p.ctrl]||1;
+const at=(p,a)=>a[Math.min(5,Math.max(1,lv(p)))-1]; // قيمة حسب مستوى الروبوت (١ إلى ٥)
 
 /* ---------- الحالة العامة ---------- */
 let QDECK=[], FDECK=[], lastFlash=null, SOUND=true;
@@ -391,7 +407,8 @@ const evMult=t=>{const m=G&&G.event&&G.event.mult;return m&&m[t]?m[t]:1};
 const effInc=a=>Math.round(a.inc*evMult(a.t));
 const loanRate=()=>0.1*((G&&G.event&&G.event.loanMult)||1);
 const expenses=p=>Math.round((Object.values(p.exp).reduce((a,b)=>a+b,0)+p.children*p.childCost)*inflation())+p.loans*loanRate();
-const passive=p=>p.assets.reduce((a,b)=>a+effInc(b),0);
+const BOTB={botx:1.05,botl:1.12};                      // علاوة خبرة شفافة لأعلى مستويين
+const passive=p=>Math.round(p.assets.reduce((a,b)=>a+effInc(b),0)*(BOTB[p.ctrl]||1));
 const fastMode=()=>!!(G&&G.mode==="fast");
 const hard=()=>!!(G&&G.mode!=="fast");                       // الوضع العادي أصعب من «السريعة»
 const hd=c=>hard()?{...c,down:Math.round(c.down*1.08/100)*100,inc:Math.round(c.inc*0.97)}:c; // صفقات أغلى ودخل أقل في الوضع العادي
@@ -412,7 +429,7 @@ const canSell=(p,k)=>!!p.inv[k]&&p.hold[k]!==G.round;
 function love(p,n){p.st.love+=Math.round(n*(p.perk.loveMult||1))}
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const cashflow=p=>p.salary+passive(p)-expenses(p);
-const isBot=p=>p.ctrl==="bot1"||p.ctrl==="bot2";
+const isBot=p=>p.ctrl in BOTLV;
 const colr=p=>/^#[0-9a-f]{6}$/i.test(p.color)?p.color:"#0f766e";
 const isMine=p=>Net.role==="guest"?p.id===Net.myPid:p.ctrl==="local";
 function log(t){G.log.unshift(t);if(G.log.length>50)G.log.length=50}
@@ -631,7 +648,10 @@ async function resolveTile(p,k){
     const d=DREAMS[FAST.slice(0,p.pos).filter(x=>x==="dream").length];
     const dc=dreamCost(d),afford=p.cash>=dc;
     const i=await ask(p,{kind:"dream",title:`⭐ ${d.n}`,body:`<p>السعر: <b>${fmt(dc)}</b> — نقدك ${fmt(p.cash)}.</p>`,opts:afford?["حقّق الحلم","لاحقاً"]:["لا يكفي النقد"],alt:afford?[false,true]:[true],data:{afford}});
-    if(afford&&i===0){p.cash-=dc;win(p,d)}
+    if(afford&&i===0){
+      p.cash-=dc;win(p,d);
+      if(!over()&&!isBot(p)){const n=G.placed.indexOf(p.id)+1;await ack(p,`🏅 حققت حلمك! المركز ${n}`,`<p>مبروك، <b>${esc(d.n)}</b> صار لك.</p><p class="sub">أنت الآن في المركز ${n}، وتنتظر انتهاء الباقين من أدوارهم. تابع منافسيك على الشاشة.</p>`,"أتابع المنافسين")}
+    }
     return}
   case"quiz":{
     if(!QDECK.length)QDECK=shuffle([...QUIZ.keys()]);
@@ -861,10 +881,10 @@ async function soukTrade(p){
   await offerTrade(p,b,g,q,options[pi].u);
 }
 async function botSouk(p){
-  const pro=p.ctrl==="bot2",res=expenses(p)*2;
+  const L=lv(p),pro=L>=3,res=expenses(p)*2;
   Object.keys(p.inv).filter(k=>canSell(p,k)).forEach(k=>{
     const g=GOODS.find(x=>x.k===k),o=p.inv[k],pr=sellPrice(p,k),gain=pr*o.q-o.c;
-    if(pro?(pr>=o.c/o.q*1.12||pr>=g.base*1.25):(gain>0&&Math.random()<0.6))doSell(p,g,o.q);
+    if(pro?(pr>=o.c/o.q*at(p,[1,1,1.12,1.10,1.08])||pr>=g.base*at(p,[1,1,1.25,1.22,1.2])):(gain>0&&Math.random()<at(p,[0.6,0.8])))doSell(p,g,o.q);
   });
   const buy=(g,maxQ)=>{
     const pr=buyPrice(p,g.k),room=INV_CAP-invCount(p),q=Math.min(room,maxQ,Math.floor((p.cash-res)/pr));
@@ -875,9 +895,9 @@ async function botSouk(p){
       const have=(p.inv[o.k]&&p.inv[o.k].q)||0,miss=o.q-have,pr=buyPrice(p,o.k);
       if(miss>0&&o.u>=pr*1.15&&INV_CAP-invCount(p)>=miss&&p.cash-miss*pr>=res){const cost=miss*pr,g=GOODS.find(x=>x.k===o.k);p.cash-=cost;addInv(p,o.k,miss,cost);p.hold[o.k]=G.round;log(`🛒 ${p.name} اشترى ${miss} ${g.n} بـ ${fmt(cost)} لطلب ${o.who}.`)}
     });
-    GOODS.slice().sort((a,b)=>buyPrice(p,a.k)/a.base-buyPrice(p,b.k)/b.base).forEach(g=>{if(buyPrice(p,g.k)<=g.base*0.92)buy(g,3)});
-  }else if(Math.random()<0.5&&p.cash>res*2)buy(rnd(GOODS),2);
-  if(pro&&G.players.length>1&&Object.keys(p.inv).some(k=>canSell(p,k))&&Math.random()<0.35){
+    GOODS.slice().sort((a,b)=>buyPrice(p,a.k)/a.base-buyPrice(p,b.k)/b.base).forEach(g=>{if(buyPrice(p,g.k)<=g.base*at(p,[1,1,0.92,0.9,0.88]))buy(g,at(p,[1,1,3,4,5]))});
+  }else if(Math.random()<at(p,[0.5,0.65])&&p.cash>res*2)buy(rnd(GOODS),2);
+  if(pro&&G.players.length>1&&Object.keys(p.inv).some(k=>canSell(p,k))&&Math.random()<at(p,[0,0,0.35,0.5,0.65])){
     const k=Object.keys(p.inv).filter(k=>canSell(p,k)).sort((a,b)=>p.inv[b].q-p.inv[a].q)[0],g=GOODS.find(x=>x.k===k),q=Math.min(3,p.inv[k].q);
     const bs=G.players.filter(b=>b!==p&&b.cash>gPrice(k)*q&&invCount(b)+q<=INV_CAP).sort((a,b)=>b.cash-a.cash);
     if(bs.length)await offerTrade(p,bs[0],g,q,gPrice(k));
@@ -929,8 +949,7 @@ async function orderTile(p){
   else if(choice.startsWith("أقبل")){p.orders.push(o);log(`📦 ${p.name} قبل طلب ${o.who}: ${o.q} ${g.n} بـ ${fmt(total)}.`)}
 }
 function botOrders(p){
-  const pro=p.ctrl==="bot2";
-  [...p.orders,...G.openOrders].forEach(o=>{if(canFill(p,o)&&(pro||Math.random()<0.6))fillOrder(p,o)});
+  [...p.orders,...G.openOrders].forEach(o=>{if(canFill(p,o)&&Math.random()<at(p,[0.5,0.8,1,1,1]))fillOrder(p,o)});
 }
 async function auction(p){
   const base=hd(rnd(BIG));
@@ -997,15 +1016,17 @@ function win(p,d){
   log(`🏆 ${p.name} حقق حلمه: ${d.n}! (المركز ${n})`);
   flash(n===1?`🏆 ${p.name} فاز بتحقيق حلمه!`:`🏅 ${p.name} حقق حلمه ويحتل المركز ${n}`);cue("win");
   const rest=G.players.filter(q=>!G.placed.includes(q.id));
-  if(G.cont&&rest.length>1)return;
-  if(G.cont&&rest.length===1)G.placed.push(rest[0].id);
+  if(rest.length>1)return;                              // تستمر المباراة حتى يبقى لاعب واحد
+  if(rest.length===1)G.placed.push(rest[0].id);
   G.phase="over";
   G.summary={dream:G.dream0,rows:standings(),awards:awards()};
 }
-function continueGame(){
-  if(Net.role==="guest"||!over()||G.cont)return;
-  G.cont=true;G.phase="await_roll";G.summary=null;resultShown=false;closeModal();
-  flash("▶️ تكملة اللعب: يستمر الباقون حتى تكتمل المراكز");sync();loop();
+function endNow(){
+  if(Net.role==="guest"||!G||over()||!G.placed.length)return;
+  const rest=standings().filter(r=>!G.placed.includes(r.id));
+  rest.forEach(r=>G.placed.push(r.id));
+  log("🏁 أنهى المضيف المباراة ورتّب الباقين حسب تقدمهم.");
+  G.phase="over";G.summary={dream:G.dream0,rows:standings(),awards:awards()};sync();
 }
 async function loop(){
   const my=RUN;
@@ -1027,10 +1048,11 @@ async function loop(){
 
 /* ---------- لاعب آلي ---------- */
 function botChoose(p,pr,secret){
-  const pro=p.ctrl==="bot2",d=pr.data||{};
+  const L=lv(p),pro=L>=3,d=pr.data||{};
+  const PB=at(p,[0,70,40,44,48]); // أقصى مدة استرداد مقبولة بالأشهر
   switch(pr.kind){
-  case"order":return d.canNow?0:((pro||Math.random()<0.6)?0:1);
-  case"tradeoffer":return(pro?d.u<=d.m*1.02:Math.random()<0.5)?0:1;
+  case"order":return d.canNow?0:((pro||Math.random()<at(p,[0.4,0.6]))?0:1);
+  case"tradeoffer":return(pro?d.u<=d.m*at(p,[1,1,1.02,1.0,0.98]):Math.random()<0.5)?0:1;
   case"family":{
     const costs=d.costs||[],last=costs.length-1;
     const aff=costs.map((c,i)=>({c,i})).filter(x=>x.c>0&&p.cash-x.c>=expenses(p)*2);
@@ -1038,22 +1060,23 @@ function botChoose(p,pr,secret){
     if(!pro)return Math.random()<0.5?last:aff[0].i;
     return aff.sort((a,b)=>b.c-a.c)[0].i}
   case"duelpick":return Math.random()<0.6?Math.floor(Math.random()*(pr.opts.length-1)):pr.opts.length-1;
-  case"partnerpick":return pro?(d.payback<=40?0:d.n+1):(Math.random()<0.5?0:d.n+1);
-  case"partner":return(pro?d.inc>0&&d.down/d.inc<=40:Math.random()<0.55)?0:1;
-  case"quiz":{const ok=Math.random()<(pro?0.75:0.45);return ok?secret:(secret+1+Math.floor(Math.random()*2))%3}
-  case"auction":{const payback=d.inc>0?d.down/d.inc:Infinity;return(pro?payback<=45:(p.cash-d.down>=0&&Math.random()<0.5))?0:1}
-  case"dealsize":return p.cash>=(pro?70000:110000)?1:0;
+  case"partnerpick":return pro?(d.payback<=PB?0:d.n+1):(Math.random()<0.5?0:d.n+1);
+  case"partner":return(pro?d.inc>0&&d.down/d.inc<=PB:Math.random()<0.55)?0:1;
+  case"quiz":{const ok=Math.random()<at(p,[0.4,0.55,0.75,0.88,0.97]);return ok?secret:(secret+1+Math.floor(Math.random()*2))%3}
+  case"auction":{const payback=d.inc>0?d.down/d.inc:Infinity;return(pro?payback<=PB+5:(p.cash-d.down>=0&&Math.random()<at(p,[0.5,0.65])))?0:1}
+  case"dealsize":return p.cash>=at(p,[110000,90000,70000,55000,45000])?1:0;
   case"offer":{
     const payback=d.inc>0?d.down/d.inc:Infinity,after=p.cash-d.down;
     if(d.inc<=0)return(pro&&after>expenses(p)*5&&Math.random()<0.4)?0:1;
-    if(pro)return payback<=40?0:1;
+    if(pro)return(payback<=PB&&(L<4||after>=expenses(p)*at(p,[0,0,0,0.5,0.3])))?0:1;
+    if(L===2)return(after>=0&&payback<=PB)?0:1;
     return(after>=0&&Math.random()<0.6)?0:1}
   case"loan":
     if(d.forced)return 0;
-    return(d.need*0.1<=d.inc*(pro?0.6:0.25))?0:1;
+    return(d.need*0.1<=d.inc*at(p,[0.25,0.4,0.6,0.8,1.0]))?0:1;
   case"market":{
     const gain=d.price-d.cost;
-    if(pro)return(gain>=d.cost*0.5&&(d.inc<=0||d.inc*24<gain))?0:1;
+    if(pro)return(gain>=d.cost*at(p,[1,1,0.5,0.45,0.4])&&(d.inc<=0||d.inc*24<gain))?0:1;
     return(gain>0&&Math.random()<0.6)?0:1}
   case"charity":return pro?(p.cash>=d.c*3?0:1):(Math.random()<0.4?0:1);
   default:return 0;
@@ -1106,7 +1129,7 @@ function perimeter(n){
 }
 function render(){
   const has=!!G;
-  $("#welcome").hidden=has;$("#game").hidden=!has;
+  $("#welcome").hidden=has;$("#game").hidden=!has;document.body.classList.toggle("ingame",has);
   $("#roll").disabled=true;
   if(!has){$("#roll").textContent="🎲 ارمِ النرد";return}
   const me=viewP(),cp=G.players[G.cur];
@@ -1147,6 +1170,8 @@ function render(){
    +(()=>{const ords=[...(me.orders||[]),...(G.openOrders||[])];return ords.length?`<div class="ords">${ords.map(o=>{const g=GOODS.find(x=>x.k===o.k);return `<div class="ord ${o.open?"open":""}">${esc(o.e)} <b>${esc(o.who)}</b>: ${o.q} ${g?esc(g.n):""} × ${fmt(o.u)} ${o.open?"🌐 مفتوح":""} · ${o.left} ج ${canFill(me,o)?"✅":""}</div>`}).join("")}</div>`:""})();
   $("#stats").innerHTML=cells.map(([i,k,v,c])=>`<div class="stat"><small>${i} ${k}</small><b class="${c}">${v}</b></div>`).join("");
   const nd=nextPayday(me);
+  $("#mini").innerHTML=`<span>${esc(me.avatar)} <b>${esc(me.name)}</b></span><span>💵 <b>${fmt(me.cash)}</b></span><span>🌱 <b class="good">${fmt(passive(me))}</b>/<b class="bad">${fmt(exitNeed(me))}</b></span><span>⏭️ <b>${nd}</b></span>`;
+  document.body.classList.add("ingame");
   $("#clock").innerHTML=`<span>📅 مرّ <b>${me.months}</b> شهراً</span><span>⏭️ الراتب القادم بعد <b>${nd}</b> ${nd===1?"خانة":"خانات"}</span><span>❤️ <b>${(me.st&&me.st.love)||0}</b></span><span>💰 ستقبض <b class="${(me.fast?passive(me)*12:cf)>=0?"good":"bad"}">${me.fast?"+"+fmt(passive(me)*12):(cf>=0?"+":"")+fmt(cf)}</b></span>`;
   const need=exitNeed(me),ratio=need?Math.min(1,passive(me)/need):0;
   $("#prog").style.width=(me.fast?100:ratio*100)+"%";
@@ -1219,6 +1244,9 @@ function openModal(kind,title,body,btns,keep){
   });
   $("#modal").classList.add("on");
 }
+let TAB="play";
+function setTab(t){TAB=t;document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));document.querySelectorAll(".pane").forEach(x=>x.classList.toggle("on",x.dataset.p===t));window.scrollTo(0,0)}
+document.addEventListener("click",e=>{const b=e.target.closest("#tabs button");if(b)setTab(b.dataset.t);else if(e.target.closest("#mini"))setTab("me")});
 function closeModal(){$("#modal").classList.remove("on");modalKind=""}
 
 function showResult(){
@@ -1228,12 +1256,11 @@ function showResult(){
   const mine=isMine(win);
   const aw=(s.awards||[]).map(a=>`<div class="award"><b>${esc(a.icon)} ${esc(a.title)}</b>${esc(a.av)} ${esc(a.name)}</div>`).join("");
   openModal("result",mine?"🏆 فزت!":`🏁 فاز ${esc(win.name)}`,
-    `${Object.prototype.hasOwnProperty.call(IMG,win.pk)?`<img class="portrait big" src="${IMG[win.pk]}" alt="">`:""}<p>${mine?"حققت حلمك":esc(win.name)+" حقق حلمه"}: <b>${esc(s.dream)}</b>${G.cont?" وأكمل الباقون اللعب حتى تحدد المراكز":""} · الجولة ${G.round}.</p>
+    `${Object.prototype.hasOwnProperty.call(IMG,win.pk)?`<img class="portrait big" src="${IMG[win.pk]}" alt="">`:""}<p>${mine?"حققت حلمك":esc(win.name)+" حقق حلمه"}: <b>${esc(s.dream)}</b>${G.players.length>2?" وأكمل الباقون اللعب حتى تحدد المراكز":""} · الجولة ${G.round}.</p>
      ${aw?`<div class="awards">${aw}</div>`:""}
      <table class="rank"><tr><th></th><th>اللاعب</th><th>الدخل التلقائي</th><th>النقد</th></tr>${rows}</table>`,[]);
   const row=$("#sheet .row");
   const add=(label,fn,alt,keep)=>{const b=document.createElement("button");b.textContent=label;if(alt)b.className="alt";b.onclick=()=>{if(!keep)closeModal();fn&&fn()};row.appendChild(b)};
-  if(Net.role!=="guest"&&!G.cont&&G.players.filter(q=>!G.placed.includes(q.id)).length>1)add("▶️ تابع اللعب (لترتيب الباقين)",continueGame);
   if(Net.role!=="guest")add("🔁 إعادة المباراة",rematch);
   add("📤 مشاركة النتيجة",shareResult,true,true);
   if(Net.role!=="guest")add("لعبة جديدة",()=>openSetup(),true);
@@ -1318,7 +1345,7 @@ const HELP=[
   <p>في «لعبة جديدة» تضيف حتى <b>٤ لاعبين</b>، ولكل واحد نوع:</p>
   <dl>
    <dt>👤 أنا / لاعب على نفس الجهاز</dt><dd>تتناوبون على نفس الجوال: يرمي كل لاعب عند دوره.</dd>
-   <dt>🤖 منافس آلي (مبتدئ / ماهر)</dt><dd>يلعب وحده ويقرر الشراء والبيع والاقتراض. «الماهر» يحسب الجدوى ويتجنب القروض الضارة.</dd>
+   <dt>🤖 منافس آلي (٥ مستويات: مبتدئ ← متوسط ← ماهر ← خبير ← أسطوري)</dt><dd>يلعب وحده ويقرر الشراء والبيع والاقتراض. «المبتدئ» يقرر شبه عشوائياً، «المتوسط» يشتري ما يقدر عليه، «الماهر» يحسب الجدوى، «الخبير» يستثمر بجرأة ويتاجر بذكاء، و«الأسطوري» (وله علاوة خبرة +١٢٪ على دخل أصوله، والخبير +٥٪) يقتنص الفرص بأسرع استرداد ويجيب الأسئلة المالية تقريباً دون خطأ ويستخدم القروض والتجارة والطلبات بأقصى كفاءة.</dd>
    <dt>🌐 صديق عن بُعد</dt><dd>يلعب من جواله هو. لا يحتاج حساباً ولا خادماً: تتبادلان <b>رمزين</b> فقط (نسخ ولصق) عبر واتساب مثلاً.</dd>
   </dl>
   <h3>الاتصال بصديق (٣ خطوات)</h3>
@@ -1331,7 +1358,7 @@ const HELP=[
   <p class="sub">كل لاعب يحاول الخروج من سباق الفئران في لوحته الخاصة، وتتنافسون على من يحقق حلماً أولاً. اضغط على بطاقة أي لاعب في الأعلى لترى أرقامه ولوحته.</p>`],
  ["الحماس والتفاعل",()=>`<dl>
   <dt>🔥 مستوى الصعوبة</dt><dd><b>الوضع «عادية»</b> أصعب: التضخم يرفع مصاريفك ٢٫٥٪ كل ١٠ جولات (حتى ١٠٪)، والصفقات أغلى بنحو ٨٪ ودخلها أقل ٣٪، والمصاريف الطارئة أكبر بـ٢٠٪، وسعر عرض السوق أقل سخاءً، والضريبة والقضية أثقل، والأحلام أغلى بـ١٠٪، وفي سباق الفئران خانة ضريبة وخانتا مصروف إضافيتان بدل صفقتين. <b>«سريعة وسهلة»</b> تبقي الأسعار الأخف للعب أقصر.</dd>
-  <dt>🎲 الرمية والجولة</dt><dd>في وسط اللوحة ترى «الجولة ٣ · الرمية الخامسة»: الجولة تكتمل بدور كل اللاعبين، والرمية هي عدد رميات صاحب الدور. وبعد أن يفوز أول لاعب تستطيع الضغط «▶️ تابع اللعب» ليكمل الباقون حتى تتحدد كل المراكز، فلا تنتهي المتعة باختصار.</dd>
+  <dt>🎲 الرمية والجولة</dt><dd>في وسط اللوحة ترى «الجولة ٣ · الرمية الخامسة»: الجولة تكتمل بدور كل اللاعبين، والرمية هي عدد رميات صاحب الدور. وبعد أن يفوز أول لاعب يحجز المركز الأول وتستمر اللعبة للباقين حتى يبقى لاعب واحد فقط (آخر المراكز)؛ وللمضيف خيار «أنهِ المباراة الآن» في القائمة ☰ إن طال الانتظار.</dd>
   <dt>🌍 أحداث الجولة</dt><dd>أحياناً يقع حدث يشمل الجميع لمدة جولتين: ازدهار عقاري، موسم سياحي، ركود، ارتفاع الفائدة، تخفيضات… يظهر في شريط ذهبي أعلى الشاشة ويغيّر دخلك التلقائي أو مصاريفك.</dd>
   <dt>🧠 سؤال مالي</dt><dd>خانة فيها سؤال بثلاثة خيارات. الجواب الصحيح يمنحك نصف مصاريف شهر.</dd>
   <dt>🔔 المزاد</dt><dd>صفقة كبيرة بخصم 15% تُعرض على اللاعبين بالترتيب. إن مرّرت قد يسبقك غيرك!</dd>
@@ -1397,8 +1424,7 @@ function drawSetup(){
     <div class="t"><span>${AV[i]} اللاعب ${i+1}</span>${i>0?'<button class="x" data-x="'+i+'" aria-label="حذف">✕</button>':""}</div>
     <select data-k="ctrl" ${i===0?"disabled":""}>
       <option value="local" ${s.ctrl==="local"?"selected":""}>👤 ${i===0?"أنا":"لاعب على نفس الجهاز"}</option>
-      <option value="bot1" ${s.ctrl==="bot1"?"selected":""}>🤖 منافس آلي (مبتدئ)</option>
-      <option value="bot2" ${s.ctrl==="bot2"?"selected":""}>🤖 منافس آلي (ماهر)</option>
+      ${Object.keys(BOTLV).map(k=>`<option value="${k}" ${s.ctrl===k?"selected":""}>${CTRL_ICON[k]} منافس آلي (${BOTN[k]})</option>`).join("")}
       ${i>0?`<option value="remote" ${s.ctrl==="remote"?"selected":""}>🌐 صديق عن بُعد</option>`:""}
     </select>
     <button class="profbtn" data-k="profbtn">${s.prof>=0&&PROFS[s.prof]?`<img class="pi" src="${IMG[PROFS[s.prof].k]}" alt=""> ${PROFS[s.prof].n}`:"🎲 مهنة عشوائية"} ▾</button>
@@ -1674,6 +1700,7 @@ function menu(){
   const btns=[
     ["🎮 لعبة جديدة",()=>{if(!G||over()||confirm("بدء لعبة جديدة؟ سيُمسح التقدم الحالي."))openSetup()}],
     ["🌐 انضمام لصديق",()=>{if(!G||over()||Net.role==="guest"||confirm("ستترك اللعبة الحالية. متابعة؟"))openJoin()}],
+    ...(Net.role!=="guest"&&G&&!over()&&G.placed.length?[["🏁 أنهِ المباراة الآن (ترتيب الباقين بتقدمهم)",()=>{if(confirm("إنهاء المباراة وترتيب الباقين حسب تقدمهم الحالي؟"))endNow()},true]]:[]),
     ["❓ كيف ألعب؟",()=>help(0)],
     [SOUND?"🔊 الصوت: يعمل":"🔇 الصوت: مكتوم",()=>{SOUND=!SOUND;try{localStorage.setItem("darb-sound",SOUND?"1":"0")}catch(e){}toast(SOUND?"تم تشغيل الصوت":"تم كتم الصوت");if(SOUND)playCue("good")},true],
     ["إغلاق",null,true]];
