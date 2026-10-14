@@ -1,7 +1,7 @@
 /* درب الثراء — عامل الخدمة: يعمل بلا إنترنت بعد أول فتح */
-const VER = "darb-pwa-v1";
+const VER = "darb-pwa-v2";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest",
-  "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png"];
+  "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png", "./icons/favicon-64.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VER).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
