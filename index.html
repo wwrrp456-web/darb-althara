@@ -94,6 +94,10 @@ header .sp{margin-inline-start:auto;display:flex;gap:8px}
 .tile{aspect-ratio:1;min-width:0;overflow:visible;word-break:break-word;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.56rem;text-align:center;position:relative;color:#16202a;line-height:1.15;padding:2px;border:1px solid rgba(0,0,0,.06);transition:transform .15s}
 @media(prefers-color-scheme:dark){.tile{color:#eef2f6;border-color:rgba(255,255,255,.07)}}
 .tile .ic{font-size:1.05rem}
+.board.dense{gap:2px}
+.board.dense .tile{font-size:0;border-radius:6px;padding:0}
+.board.dense .tile .ic{font-size:.85rem}
+.board.dense .tk{width:16px;height:16px;font-size:.62rem}
 .tile.me{outline:3px solid var(--brand);outline-offset:1px;transform:scale(1.07);z-index:2;box-shadow:0 4px 12px rgba(0,0,0,.25)}
 .tks{position:absolute;top:-10px;inset-inline-end:-6px;display:flex;flex-direction:row-reverse;z-index:3}
 .tk{width:20px;height:20px;border-radius:50%;background:var(--card);border:2px solid var(--pc);display:grid;place-items:center;font-size:.78rem;margin-inline-start:-6px;box-shadow:0 1px 3px rgba(0,0,0,.35)}
@@ -101,7 +105,10 @@ header .sp{margin-inline-start:auto;display:flex;gap:8px}
 .center{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px;gap:6px;direction:rtl}
 .center .big{font-size:1rem;font-weight:700}
 .center .mut{color:var(--muted);font-size:.8rem}
-.dice{font-size:3.6rem;line-height:1;color:var(--brand);user-select:none}
+.dice{display:flex;gap:14px;line-height:1;user-select:none}
+.die{width:clamp(3.4rem,17vw,5.4rem);aspect-ratio:1;background:#fff;border-radius:14px;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:9%;box-shadow:0 3px 10px rgba(0,0,0,.28),inset 0 -3px 0 rgba(0,0,0,.08)}
+.die i{display:block;margin:12%;border-radius:50%}
+.die i.on{background:#16202a}
 .dice.roll{animation:shake .12s infinite}
 @keyframes shake{0%{transform:rotate(-8deg)}50%{transform:rotate(8deg) scale(1.06)}100%{transform:rotate(-8deg)}}
 .legend{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:10px;font-size:.72rem;color:var(--muted)}
@@ -296,8 +303,8 @@ const PROFS=[
  {k:"pharmacist",n:"صيدلي",e:"💊",salary:7000,tax:1300,home:1050,car:260,cards:200,other:430,childCost:230,cash:5000,debt:"قرض صيدلية 140,000",perk:{itemDisc:{honey:0.2,saffron:0.2}},pt:"عسل وزعفران أرخص ٢٠٪"},
  {k:"pilot",n:"طيار",e:"✈️",salary:11000,tax:2300,home:1900,car:420,cards:360,other:760,childCost:360,cash:8500,debt:"قرض سكن 260,000",perk:{itemDisc:{perfume:0.15,fabric:0.15}},pt:"عطور وأقمشة أرخص ١٥٪ (من أسفاره)"}
 ];
-const RAT=["payday","deal","lm_cafe","deal","lm_mall","souk","order","payday","deal","lm_bank","market","fun","family","partner","payday","deal","lm_uni","child","quiz","lm_hospital","deal","payday","layoff","jamia","deal","auction","lm_hotel","charity"];
-const FAST=["payday","biz","dream","lm_tower","lawsuit","fun","payday","dream","biz","tax","lm_airport","dream"];
+const RAT=["payday","deal","lm_cafe","deal","order","lm_mall","souk","deal","fun","lm_bank","market","child","payday","deal","family","lm_hospital","quiz","deal","partner","lm_uni","deal","jamia","charity","deal","payday","deal","souk","lm_hotel","order","deal","fun","market","layoff","deal","auction","family","payday","deal","quiz","fun","deal","jamia","partner","deal","charity","fun","deal","order"];
+const FAST=["payday","biz","dream","lm_tower","lawsuit","fun","biz","tax","lm_airport","dream","payday","biz","lawsuit","fun","market","tax","dream","biz","fun","market"];
 const DPTS=[10,25,45];              // نقاط الحلم: الأصغر، المتوسط، الأكبر
 const DORD=[5,3,1,0];              // علاوة الأسبقية في الشراء
 const DTIER=["الأصغر","المتوسط","الأكبر"];
@@ -610,7 +617,7 @@ function mkPlayer(slot,i){
 }
 function mkGame(slots,mode){
   const players=slots.map(mkPlayer);
-  const g={v:8,lm:{},fund:null,jam:null,hist:[],orderSeq:0,openOrders:[],goods:Object.fromEntries(GOODS.map(x=>[x.k,{p:x.base,prev:x.base}])),nextF:Object.fromEntries(GOODS.map(x=>[x.k,0.8+Math.random()*0.45])),mode:LVL[mode]?mode:'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,placed:[],cont:false,dream0:null,rolling:false,dice:1,summary:null};
+  const g={v:9,lm:{},lmLv:{},fund:null,jam:null,hist:[],orderSeq:0,openOrders:[],goods:Object.fromEntries(GOODS.map(x=>[x.k,{p:x.base,prev:x.base}])),nextF:Object.fromEntries(GOODS.map(x=>[x.k,0.8+Math.random()*0.45])),mode:LVL[mode]?mode:'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,placed:[],cont:false,dream0:null,rolling:false,dice:1,summary:null};
   return g;
 }
 
@@ -741,12 +748,13 @@ function pay(p){
 async function takeTurn(p){
   p.turns++;
   if(p.skip>0){p.skip--;log(`⏸️ فاتك الدور يا ${p.name} (تسريح). متبقٍ ${p.skip}.`);sync();await w(600);return}
-  const dice=p.charity>0&&!p.fast?2:1;
-  if(p.charity>0)p.charity--;
+  const roll2=()=>[1+Math.floor(Math.random()*6),1+Math.floor(Math.random()*6)];
+  let ds=roll2();
+  if(p.charity>0){p.charity--;if(!p.fast){const e=roll2();if(e[0]+e[1]>ds[0]+ds[1]){ds=e;log(`🎁 بركة العطاء: ${p.name} اختار الأفضل من رميتين.`)}}}
   G.phase="move";G.rolling=true;cue("roll");sync();await w(560);G.rolling=false;
-  let d=0;const ds=[];for(let i=0;i<dice;i++){const x=1+Math.floor(Math.random()*6);ds.push(x);d+=x}
-  G.dice=ds[0];p.last=ds[0];
-  log(`🎲 ${p.name} رمى ${ds.join(" + ")}${dice>1?" = "+d:""} (${thr(p.turns)}).`);sync();await w(250);
+  const d=ds[0]+ds[1];
+  G.dice=ds[0];G.dice2=ds;p.last=d;
+  log(`🎲 ${p.name} رمى ${ds[0]} + ${ds[1]} = ${d} (${thr(p.turns)}).`);sync();await w(250);
   const track=p.fast?FAST:RAT;
   for(let i=0;i<d;i++){
     p.pos=(p.pos+1)%track.length;
@@ -790,7 +798,7 @@ async function resolveTile(p,k){
   case"charity":{
     const c=Math.round((p.salary+passive(p))*0.1),f=G.fund,fa=Math.max(500,Math.round(Math.max(expenses(p),1500)*0.4/50)*50);
     const opts=["تبرّع",...(f?[`ساهم في «${f.n}» (${fmt(fa)})`]:[]),"تجاوز"];
-    const i=await ask(p,{kind:"charity",title:"🎁 فرصة تبرّع",body:`<p>تبرّع بـ <b>${fmt(c)}</b> (10% من دخلك) فترمي نردين لمدة ٣ أدوار.</p>${f?`<p>أو ساهم في <b>${f.e} ${esc(f.n)}</b>: تجمّع ${fmt(f.have)} من ${fmt(f.goal)}. إن اكتمل الهدف يفوز الجميع بمكافأة وسعادة!</p>`:""}`,opts,alt:opts.map((_,k)=>k===opts.length-1),data:{c,fa,hasFund:!!f}});
+    const i=await ask(p,{kind:"charity",title:"🎁 فرصة تبرّع",body:`<p>تبرّع بـ <b>${fmt(c)}</b> (10% من دخلك) فترمي في كل دور من الأدوار الثلاثة التالية رميتين وتأخذ الأفضل.</p>${f?`<p>أو ساهم في <b>${f.e} ${esc(f.n)}</b>: تجمّع ${fmt(f.have)} من ${fmt(f.goal)}. إن اكتمل الهدف يفوز الجميع بمكافأة وسعادة!</p>`:""}`,opts,alt:opts.map((_,k)=>k===opts.length-1),data:{c,fa,hasFund:!!f}});
     if(i===0){if(p.cash<c)log(`${p.name}: لا يكفي النقد للتبرع.`);else{p.cash-=c;p.charity=3;p.st.charity++;gainHap(p,4);cue("good",p);log(`🎁 ${p.name} تبرّع بـ ${fmt(c)} — نردان لـ٣ أدوار.`)}}
     else if(f&&i===1)await donateFund(p,fa);
     return}
@@ -865,7 +873,7 @@ async function investorOffer(p,a,price,last){
   const i=await ask(p,{kind:"market",title:last?"💼 عرض مستثمر (آخر فرصة)":"💼 عرض مستثمر",
     body:`<p>مستثمر يرغب بشراء «${a.n}» ويعرض <b>${fmt(price)}</b> (قيمتها ${fmt(a.cost)}).<br>${gain>=0?"ربح":"خسارة"}: <b class="${gain>=0?"good":"bad"}">${fmt(Math.abs(gain))}</b></p><p class="sub">لو بعت، تخسر دخلها الشهري ${fmt(a.inc)}${back?` — والربح يعوّضه خلال ${back} شهراً`:""}.${last?" هذا العرض ينتهي بعد هذا الدور.":" إن احتفظت يبقى العرض قائماً لدورك القادم."}</p>`,
     opts:["بِع","احتفظ"],alt:[false,true],data:{price,cost:a.cost,inc:a.inc,t:a.t}});
-  if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);if(a.lm)G.lm[a.lm]=null;cue("pay",p);log(`💼 ${p.name} باع «${a.n}» لمستثمر بـ ${fmt(price)}.`);if(gain>0&&G.players.length>1&&price>=100000)flash(`💼 ${p.name} باع «${a.n}» بربح ${fmt(gain)}!`);return true}
+  if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);if(a.lm){G.lm[a.lm]=null;G.lmLv[a.lm]=0}cue("pay",p);log(`💼 ${p.name} باع «${a.n}» لمستثمر بـ ${fmt(price)}.`);if(gain>0&&G.players.length>1&&price>=100000)flash(`💼 ${p.name} باع «${a.n}» بربح ${fmt(gain)}!`);return true}
   log(`💼 ${p.name} رفض عرض مستثمر على «${a.n}».`);
   if(!last){(p.pend=p.pend||[]).push({n:a.n,cost:a.cost,price,exp:G.round+1})}
   return false;
@@ -1012,21 +1020,38 @@ async function landPerk(p,k,own){
   else if(L.perk==="souk"){await souk(p)}
   else if(L.perk==="learn"){await learnTile(p,own?0.7:0.7)}
 }
+const LM_RENT=[1,1.4,1.9,2.5],LM_INC=0.3;
+const lmLv=k=>(G.lmLv&&G.lmLv[k])||0;
+const lmRent=k=>Math.round(LAND[k].rent*LM_RENT[lmLv(k)]/50)*50;
+const lmUpCost=k=>Math.round(LAND[k].cost*0.15/1000)*1000;
+function lmCanUp(p,k){
+  const lv=lmLv(k);
+  return G.lm[k]===p.id&&lv<(p.fast?3:1)&&p.cash>=lmUpCost(k)&&G.phase==="await_roll"&&G.players[G.cur]===p&&!G.prompt;
+}
+function upgradeLm(pid,k){
+  const p=G.players[pid];
+  if(!p||!LAND[k]||!lmCanUp(p,k))return;
+  const a=p.assets.find(x=>x.lm===k);if(!a)return;
+  const L=LAND[k],c=lmUpCost(k);
+  p.cash-=c;a.cost+=c;a.inc+=Math.round(L.inc*LM_INC);G.lmLv[k]=lmLv(k)+1;
+  log(`🏗️ ${p.name} طوّر «${L.n}» إلى المستوى ${lmLv(k)} (دخل ${fmt(a.inc)}، إيجار ${fmt(lmRent(k))}).`);
+  cue("buy",p);sync();
+}
 async function landTile(p,k){
   const L=LAND[k],own=G.lm[k];
   if(own==null){
     const c=hd({n:`${L.e} ${L.n}`,t:"معلم",down:Math.round(L.cost*0.3/1000)*1000,inc:L.inc,cost:L.cost,lm:k,
-      note:`<b>ميزة المعلم:</b> ${L.d}.<br><b>إيجار الزوار:</b> حتى ${fmt(L.rent)} كلما وقف عليه لاعب آخر (يُدفع لك).<br>دخله الشهري الثابت يدخل في <b>دخلك التلقائي</b>.`});
+      note:`<b>ميزة المعلم:</b> ${L.d}.<br><b>إيجار الزوار:</b> حتى ${fmt(lmRent(k))} كلما وقف عليه لاعب آخر (يُدفع لك).<br>دخله الشهري الثابت يدخل في <b>دخلك التلقائي</b>.`});
     await offer(p,c);
     if(p.assets.some(a=>a.lm===k)){G.lm[k]=p.id;flash(`${L.e} ${p.name} اشترى «${L.n}»!`);log(`${L.e} ${p.name} صار مالك «${L.n}».`);}
     return;
   }
   const o=G.players[own];
   if(own===p.id){log(`${L.e} ${p.name} زار معلمه «${L.n}».`);await landPerk(p,k,true);return}
-  const cap=Math.round(expenses(p)*1.5/10)*10,rent=Math.max(0,Math.min(L.rent,cap,Math.round(p.cash)));
+  const cap=Math.round(expenses(p)*1.5/10)*10,rent=Math.max(0,Math.min(lmRent(k),cap,Math.round(p.cash)));
   p.cash-=rent;o.cash+=rent;o.st.rentIn=(o.st.rentIn||0)+rent;p.st.rentOut=(p.st.rentOut||0)+rent;
   log(`${L.e} ${p.name} دفع إيجار ${fmt(rent)} لـ${o.name} في «${L.n}».`);cue("bad",p);flash(`${L.e} ${p.name} دفع ${fmt(rent)} إيجاراً لـ${o.name}`);
-  await ack(p,`${L.e} ${L.n} — ملك ${esc(o.name)}`,`<p>دفعتَ إيجاراً <b class="bad">${fmt(rent)}</b> لـ${esc(o.avatar)} ${esc(o.name)}.</p>${rent<L.rent?`<p class="sub">(الإيجار الأصلي ${fmt(L.rent)}، لكن سقفه شهر ونصف من مصاريفك أو ما تملك.)</p>`:""}`,"ادفع");
+  await ack(p,`${L.e} ${L.n} — ملك ${esc(o.name)}`,`<p>دفعتَ إيجاراً <b class="bad">${fmt(rent)}</b> لـ${esc(o.avatar)} ${esc(o.name)}.</p>${rent<lmRent(k)?`<p class="sub">(الإيجار الأصلي ${fmt(lmRent(k))}، لكن سقفه شهر ونصف من مصاريفك أو ما تملك.)</p>`:""}`,"ادفع");
   await landPerk(p,k,false);
 }
 async function insureTile(p){
@@ -1317,6 +1342,7 @@ async function orderTile(p){
   else if(choice.startsWith("أقبل")){p.orders.push(o);log(`📦 ${p.name} قبل طلب ${o.who}: ${o.q} ${g.n} بـ ${fmt(total)}.`)}
 }
 function botOrders(p){
+  Object.keys(LAND).forEach(k=>{if(lmCanUp(p,k)&&p.cash-lmUpCost(k)>=expenses(p)*at(p,[99,6,3,2,1.5])&&Math.random()<0.7)upgradeLm(p.id,k)});
   [...p.orders,...G.openOrders].forEach(o=>{if(canFill(p,o)&&Math.random()<at(p,[0.5,0.8,1,1,1]))fillOrder(p,o)});
 }
 async function auction(p){
@@ -1518,9 +1544,9 @@ function loadSaved(){
   try{
     const r=localStorage.getItem(KEY);if(!r)return false;
     const g=JSON.parse(r);
-    if(!g||g.v!==8||!Array.isArray(g.players)||!g.players.length||g.phase==="over")return false;
+    if(!g||g.v!==9||!Array.isArray(g.players)||!g.players.length||g.phase==="over")return false;
     if(g.players.some(p=>p.ctrl==="remote"))return false;
-    G=g;G.phase="idle";G.prompt=null;G.rolling=false;return true;
+    G=g;G.lmLv=G.lmLv||{};G.phase="idle";G.prompt=null;G.rolling=false;return true;
   }catch(e){}
   return false;
 }
@@ -1544,6 +1570,9 @@ function nextPayday(p){
   for(let k=1;k<=tr.length;k++)if(tr[(p.pos+k)%tr.length]==="payday")return k;
   return 0;
 }
+const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+const dieHtml=v=>`<div class="die">${[0,1,2,3,4,5,6,7,8].map(i=>`<i${PIPS[v].includes(i)?' class="on"':""}></i>`).join("")}</div>`;
+const diceHtml=ds=>ds.map(dieHtml).join("");
 function perimeter(n){
   const a=[];
   for(let c=0;c<n;c++)a.push([0,c]);
@@ -1602,7 +1631,7 @@ function render(){
    <div class="lrow"><span>🛡️ التأمين</span><b>${insured(me)?"ساري حتى الجولة "+me.ins:"غير مؤمَّن"}</b></div>
    <div class="lrow"><span>📚 الدورات</span><b>${me.learn}/3</b></div>
    <div class="lrow"><span>🏦 سقف الاقتراض</span><b>${fmt(me.loans)} / ${fmt(loanCap(me))}</b></div>
-   <div class="lrow"><span>🏨 معالمي</span><b>${Object.entries(G.lm||{}).filter(([k,v])=>v===me.id).map(([k])=>LAND[k].e).join(" ")||"لا شيء بعد"}</b></div>
+   <div class="lrow"><span>🏨 معالمي</span><b>${Object.entries(G.lm||{}).filter(([k,v])=>v===me.id).map(([k])=>LAND[k].e+(lmLv(k)?"★".repeat(lmLv(k)):"")).join(" ")||"لا شيء بعد"}</b></div>
    <div class="lrow"><span>🏘️ الجمعية</span><b>${j?`قسط ${fmt(j.fee)} · القبض: ${esc(j.members[j.idx].name)}`:"لا جمعية الآن"}</b></div>
    ${f?`<div class="lrow"><span>${f.e} ${esc(f.n)}</span><b>${fmt(f.have)} / ${fmt(f.goal)}</b></div><div class="bar"><i style="width:${Math.min(100,f.have/f.goal*100)}%"></i></div>`:""}
    <p class="sub" style="margin:8px 0 0">${me.hap<30?"⚠️ سعادتك منخفضة: دخلك يتأثر وقد تنهار! اذهب لخانة 🎡 الترفيه.":me.hap>=80?"✨ مبتهج: أرباح الطلبات +10٪.":"حافظ على سعادتك فوق 50 لتشتري الحلم، وفوق 30 لتخرج من السباق."}</p>`}
@@ -1615,23 +1644,22 @@ function render(){
   $("#progtxt").textContent=me.fast?"اشترِ حلمك لتفوز":`دخل تلقائي ${fmt(passive(me))} من ${fmt(need)}`;
 
   // اللوحة
-  const track=me.fast?FAST:RAT,n=me.fast?4:Math.round(RAT.length/4)+1;
-  const b=$("#board");b.style.gridTemplateColumns=`repeat(${n},minmax(0,1fr))`;
+  const track=me.fast?FAST:RAT,n=Math.round(track.length/4)+1;
+  const b=$("#board");b.style.gridTemplateColumns=`repeat(${n},minmax(0,1fr))`;b.classList.toggle("dense",n>=10);
   const cells2=perimeter(n);
   const here=G.players.filter(p=>p.fast===me.fast);
   let html="";
   for(let r=0;r<n;r++)for(let c=0;c<n;c++){
     const i=cells2.findIndex(x=>x[0]===r&&x[1]===c);
     if(i<0){
-      const ctr=`<div class="dice ${G.rolling?"roll":""}" id="dice">${FACES[(G.dice||1)-1]}</div><div class="big">دور ${esc(cp.name)}</div><div class="mut">الجولة ${G.round} · ${thr(cp.turns+1)}</div>`;
-      if(n===8&&r===1&&c===1)html+=`<div class="center" style="grid-column:2/8;grid-row:2/8">${ctr}</div>`;
-      if(n===4&&r===1&&c===1)html+=`<div class="center" style="grid-column:2/4;grid-row:2/4">${ctr}</div>`;
+      const ctr=`<div class="dice ${G.rolling?"roll":""}" id="dice">${diceHtml(G.dice2||[G.dice||1,G.dice||1])}</div><div class="big">دور ${esc(cp.name)}</div><div class="mut">الجولة ${G.round} · ${thr(cp.turns+1)}</div>`;
+      if(r===1&&c===1)html+=`<div class="center" style="grid-column:2/${n};grid-row:2/${n}">${ctr}</div>`;
       continue;
     }
     const [ic,name,col]=TILE[track[i]];
     const tks=here.filter(p=>p.pos===i).map(p=>`<span class="tk ${p.id===G.cur?"cur":""}" style="--pc:${colr(p)}">${esc(p.avatar)}</span>`).join("");
     const ow=(typeof track[i]==="string"&&track[i].startsWith("lm_")&&G.lm)?G.lm[track[i].slice(3)]:null,ob=ow!=null&&G.players[ow]?`<span class="own" style="--pc:${colr(G.players[ow])}">${esc(G.players[ow].avatar)}</span>`:"";
-    html+=`<div class="tile ${i===me.pos?"me":""}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${ic}</span>${name}${ob}${tks?`<span class="tks">${tks}</span>`:""}</div>`;
+    html+=`<div class="tile ${i===me.pos?"me":""}" title="${name}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${ic}</span>${name}${ob}${tks?`<span class="tks">${tks}</span>`:""}</div>`;
   }
   b.innerHTML=html;
   const used=[...new Set(track)];
@@ -1640,7 +1668,7 @@ function render(){
   G.log.forEach(t=>{const p=document.createElement("p");p.textContent=t;lg.appendChild(p)});
 
   // النرد المتحرك
-  if(G.rolling&&!diceTimer){diceTimer=setInterval(()=>{const d=$("#dice");if(d)d.textContent=rnd(FACES)},80/SPEED)}
+  if(G.rolling&&!diceTimer){diceTimer=setInterval(()=>{const d=$("#dice");if(d)d.innerHTML=diceHtml([1+Math.floor(Math.random()*6),1+Math.floor(Math.random()*6)])},80/SPEED)}
   if(!G.rolling&&diceTimer){clearInterval(diceTimer);diceTimer=null}
 
   // الزر السفلي والحالة
@@ -1813,6 +1841,7 @@ function sheet(p){
   const canRepay=own&&p.loans>0&&p.cash>=1000&&G.phase==="await_roll"&&G.players[G.cur]===p&&!G.prompt;
   if(canRepay)btns.unshift(["سدّ قرضاً 1,000",()=>{if(Net.role==="guest")send({t:"repay"});else repay(p.id)}]);
   const canAct=own&&G.phase==="await_roll"&&G.players[G.cur]===p&&!G.prompt;
+  if(own)Object.keys(LAND).filter(k=>lmCanUp(p,k)).forEach(k=>btns.unshift([`🏗️ طوّر ${LAND[k].e} ${LAND[k].n} → م${lmLv(k)+1} (${fmt(lmUpCost(k))})`,()=>{if(Net.role==="guest")send({t:"upgrade",k});else upgradeLm(p.id,k)}]));
   const myOrds=[...p.orders,...G.openOrders];
   if(canAct)myOrds.filter(o=>canFill(p,o)).forEach(o=>{const g=GOODS.find(x=>x.k===o.k);btns.unshift([`📦 سلّم ${o.who} (${o.q} ${g?g.n:""} = ${fmt(o.u*o.q)})`,()=>{if(Net.role==="guest")send({t:"deliver",id:o.id});else deliver(p.id,o.id)}])});
   const ordHtml=myOrds.length?`<details open><summary>📦 الطلبات (${myOrds.length})</summary><table>${myOrds.map(o=>{const g=GOODS.find(x=>x.k===o.k);return `<tr><td>${esc(o.e)} ${esc(o.who)}${o.open?" 🌐":""}<br><span class="sub">${o.q} ${g?esc(g.n):""} × ${fmt(o.u)} · متبقٍ ${o.left} جولات</span></td><td class="good">${fmt(o.u*o.q)}</td></tr>`}).join("")}</table></details>`:"";
@@ -1834,13 +1863,13 @@ const HELP=[
   <p>أنت موظف براتب، لكن مصاريفك تلتهمه. اللعبة هي أن تبني <b>دخلاً تلقائياً</b> (إيجارات ومشاريع وأسهم) حتى يغطي <b>كل مصاريفك الشهرية</b>. عندها تخرج من «سباق الفئران».</p>
   <div class="tip"><b>الفوز على مرحلتين:</b><br>① <b>سباق الفئران 🐀:</b> ابنِ دخلاً تلقائياً أكبر من مصاريفك.<br>② <b>المسار السريع 🚀:</b> اجمع نقداً واشترِ أحد أحلامك الثلاثة.<br>ومع المنافسين: <b>الحلم الأكبر يتفوق على الأصغر</b> (⭐ 10 / 25 / 45 نقطة + علاوة أسبقية صغيرة)</div>
   <h3>الدور الواحد</h3>
-  <p>١) ارمِ النرد 🎲 ← ٢) تتحرك قطعتك ← ٣) تنفّذ الخانة التي وقفت عليها ← ٤) ينتقل الدور للاعب التالي.</p>`],
+  <p>١) ارمِ النردين 🎲🎲 (مجموعهما هو عدد خطواتك) ← ٢) تتحرك قطعتك ← ٣) تنفّذ الخانة التي وقفت عليها ← ٤) ينتقل الدور للاعب التالي.</p>`],
  ["الراتب والشهور",()=>`
   <p><b>سؤال شائع: متى يزيد الراتب؟</b> الراتب نفسه <b>ثابت ولا يزيد</b>. الذي يزيد هو <b>الدخل التلقائي</b> كلما اشتريت أصلاً، فيكبر المبلغ الذي تقبضه.</p>
   <div class="tip"><b>متى أقبض؟</b> كلما <b>مررت أو وقفت</b> على خانة <span class="chip" style="background:var(--t-payday)">💰 يوم الراتب</span>. كل خانة راتب = <b>شهر جديد</b>.</div>
   <ul>
-   <li>لوحة سباق الفئران ٢٨ خانة فيها <b>٤ خانات راتب</b>: أي أن اللفة الواحدة = ٤ أشهر.</li>
-   <li>لوحة المسار السريع ١٢ خانة فيها <b>خانتا راتب</b>، وكل واحدة تدفع <b>١٢ شهراً</b> من الدخل التلقائي (لا راتب وظيفة هناك).</li>
+   <li>لوحة سباق الفئران ٤٨ خانة فيها <b>٤ خانات راتب</b> (كل ١٢ خانة): أي أن اللفة الواحدة = ٤ أشهر.</li>
+   <li>لوحة المسار السريع ٢٠ خانة فيها <b>خانتا راتب</b>، وكل واحدة تدفع <b>١٢ شهراً</b> من الدخل التلقائي (لا راتب وظيفة هناك).</li>
    <li>باقي الخانات ليست أشهراً: هي أحداث وقرارات.</li>
   </ul>
   <h3>الحساب في كل «يوم راتب»</h3>
@@ -1855,7 +1884,7 @@ const HELP=[
    ["market","عرض مستثمر: في بداية كل سنة يأتيك عرضان إلى ثلاثة على أصولك (ويظهر عرض مفاجئ عند خانة 💼). إن احتفظت يبقى العرض قائماً لدورك القادم فقط. بِع إن كان الربح يستحق فقدان دخل الأصل."],
    ["doodad","مصروف طارئ لا يعطي دخلاً. تدفعه مباشرة."],
    ["child","مولود جديد: تزيد مصاريفك الشهرية."],
-   ["charity","تبرّع بـ10% من دخلك لترمي نردين ٣ أدوار."],
+   ["charity","تبرّع بـ10% من دخلك لترمي رميتين وتأخذ الأفضل ٣ أدوار."],
    ["layoff","تسريح: تدفع مصاريف شهر وتفوتك دورتان."],
    ["dream","(المسار السريع) اشترِ حلمك إن كان نقدك يكفي فتفوز."],
    ["lawsuit","قضية تأخذ 20% من نقدك."],
@@ -2120,6 +2149,7 @@ function onHostMsg(m){
     if(a&&a.pid===Net.remotePid&&Number.isInteger(m.id)&&Number.isInteger(m.idx))answerAsk(m.id,m.idx);
   }else if(m.t==="deliver"){if(Number.isInteger(m.id))deliver(Net.remotePid,m.id)}
   else if(m.t==="repay")repay(Net.remotePid);
+  else if(m.t==="upgrade"){if(typeof m.k==="string")upgradeLm(Net.remotePid,m.k)}
   else if(m.t==="react"){
     if(REACTS.includes(m.e)&&Date.now()-lastRemoteReact>600){lastRemoteReact=Date.now();const q=G.players[Net.remotePid];floatReact(q.name,q.avatar,m.e);send({t:"react",pid:Net.remotePid,e:m.e})}
   }
@@ -2281,7 +2311,7 @@ else{
 }
 $("#hero").src=IMG.hero;
 // للاختبار الآلي فقط
-window.__darb={get G(){return G},get Net(){return Net},setFamilyDeck(a){FDECK=a}};
+window.__darb={upgradeLm,lmRent,get G(){return G},get Net(){return Net},setFamilyDeck(a){FDECK=a}};
 })();
 </script>
 </body>
