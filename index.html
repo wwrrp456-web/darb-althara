@@ -296,6 +296,9 @@ const PROFS=[
 ];
 const RAT=["payday","deal","doodad","deal","market","souk","tax","order","payday","deal","fun","deal","family","child","partner","payday","learn","insure","quiz","deal","layoff","jamia","auction","charity"];
 const FAST=["payday","biz","dream","biz","lawsuit","fun","payday","dream","biz","tax","biz","dream"];
+const DPTS=[10,25,45];              // نقاط الحلم: الأصغر، المتوسط، الأكبر
+const DORD=[5,3,1,0];              // علاوة الأسبقية في الشراء
+const DTIER=["الأصغر","المتوسط","الأكبر"];
 const DREAMS=[
  {n:"رحلة حول العالم مع العائلة",cost:180000},
  {n:"مدرسة خيرية باسمك",cost:320000},
@@ -581,7 +584,7 @@ function mkPlayer(slot,i){
   const pl={id:i,name:slot.name,ctrl:slot.ctrl,avatar:av,color:COL[i],prof:p.n,pe:p.e,pk:p.k,perk:p.perk||{},pt:p.pt||"",inv:{},hold:{},orders:[],st:{rounds:0,hapOk:0,lux:0,regret:0,luxLoans:0,burn:0,ins:0,jam:0,learn:0,fund:0,charity:0,loans:0,doodads:0,quiz:0,quizOk:0,auction:0,love:0,partner:0,duel:0,trade:0,deals:0,orders:0,exitRound:null},
     salary:p.salary,cash:p.cash,
     exp:{"ضرائب":p.tax,"قسط السكن":p.home,"قسط السيارة":p.car,"بطاقات ائتمان":p.cards,"مصاريف أخرى":p.other},
-    childCost:p.childCost,children:0,loans:0,debt:p.debt,assets:[],pos:0,skip:0,charity:0,fast:false,turns:0,months:0,last:1,hap:60,lux:[],ins:0,learn:0,jam:0};
+    childCost:p.childCost,children:0,loans:0,debt:p.debt,assets:[],pos:0,skip:0,charity:0,fast:false,turns:0,months:0,last:1,hap:60,lux:[],ins:0,learn:0,jam:0,dp:0,dream:null};
   Object.entries(pl.perk.startInv||{}).forEach(([k,q])=>addInv(pl,k,q,q*GOODS.find(g=>g.k===k).base));
   return pl;
 }
@@ -767,12 +770,14 @@ async function resolveTile(p,k){
     return offer(p,i===0?hd(rnd(SMALL)):hd(rnd(BIG)))}
   case"biz":return offer(p,hd(rnd(BIZ)));
   case"dream":{
-    const d=DREAMS[FAST.slice(0,p.pos).filter(x=>x==="dream").length];
+    const tier=FAST.slice(0,p.pos).filter(x=>x==="dream").length,d=DREAMS[tier];
     const dc=dreamCost(d),afford=p.cash>=dc&&p.hap>=50;
-    const i=await ask(p,{kind:"dream",title:`⭐ ${d.n}`,body:`<p>السعر: <b>${fmt(dc)}</b> — نقدك ${fmt(p.cash)}.</p><p class="${p.hap>=50?"sub":"bad"}">😊 السعادة المطلوبة 50 على الأقل — سعادتك ${p.hap}. حلم بلا سعادة لا قيمة له!</p>`,opts:afford?["حقّق الحلم","لاحقاً"]:[p.cash<dc?"لا يكفي النقد":"سعادتك منخفضة"],alt:afford?[false,true]:[true],data:{afford}});
+    const costs=DREAMS.map(x=>dreamCost(x));
+    const list=DREAMS.map((x,k)=>`<div class="lrow"><span>${k===tier?"👉 ":""}${esc(x.n)}</span><b>${fmt(costs[k])} · ⭐ ${DPTS[k]}</b></div>`).join("");
+    const i=await ask(p,{kind:"dream",title:`⭐ ${d.n}`,body:`<p>هذا هو الحلم <b>${DTIER[tier]}</b> (⭐ ${DPTS[tier]} نقطة)، سعره <b>${fmt(dc)}</b> ونقدك ${fmt(p.cash)}.</p>${list}<p class="sub">من يشتري حلماً أكبر يتفوّق على من اشترى حلماً أصغر مهما كان أسبق (علاوة الأسبقية صغيرة: +5 للأول، +3، +1). لكن بعد الشراء تخرج من الأدوار وتنتظر الباقين.</p><p class="${p.hap>=50?"sub":"bad"}">😊 تحتاج سعادة 50 على الأقل — سعادتك ${p.hap}.</p>`,opts:afford?["حقّق الحلم","لاحقاً (أنتظر حلماً أكبر)"]:[p.cash<dc?"لا يكفي النقد":"سعادتك منخفضة"],alt:afford?[false,true]:[true],data:{afford,tier,cash:p.cash,costs,cost:dc}});
     if(afford&&i===0){
-      p.cash-=dc;win(p,d);
-      if(!over()&&!isBot(p)){const n=G.placed.indexOf(p.id)+1;await ack(p,`🏅 حققت حلمك! المركز ${n}`,`<p>مبروك، <b>${esc(d.n)}</b> صار لك.</p><p class="sub">أنت الآن في المركز ${n}، وتنتظر انتهاء الباقين من أدوارهم. تابع منافسيك على الشاشة.</p>`,"أتابع المنافسين")}
+      p.cash-=dc;win(p,d,tier);
+      if(!over()&&!isBot(p)){await ack(p,`🏅 حققت حلمك: ${d.n}`,`<p>مبروك! حصلت على <b>⭐ ${p.dp} نقطة</b> (حلم ${DTIER[tier]}).</p><p class="sub">تنتظر الآن انتهاء الباقين من أدوارهم، وقد يتفوّق عليك من يشتري حلماً أكبر. تابع منافسيك على الشاشة.</p>`,"أتابع المنافسين")}
     }
     return}
   case"quiz":{
@@ -1193,6 +1198,7 @@ function awards(){
   pick("orders",1,"📦","خادم الحي");
   pick(p=>p.st.rounds>=8?Math.round(100*p.st.hapOk/p.st.rounds):0,80,"⚖️","متوازن الحياة");
   pick("regret",1,"💸","المسرف");
+  pick(p=>p.dream&&p.dream.t===2?1:0,1,"👑","صاحب الحلم الأكبر");
   pick("partner",1,"👥","الشريك الذهبي");
   pick("duel",1,"🎲","بطل التحديات");
   let ex=null;pl.forEach(p=>{if(p.st.exitRound!=null&&(!ex||p.st.exitRound<ex.v))ex={p,v:p.st.exitRound}});
@@ -1200,30 +1206,42 @@ function awards(){
   return out.slice(0,8);
 }
 function standings(){
-  const rows=G.players.map(p=>({id:p.id,name:p.name,avatar:p.avatar,fast:p.fast,passive:passive(p),exp:expenses(p),cash:p.cash,months:p.months,turns:p.turns,won:p.id===G.winner}));
+  const rows=G.players.map(p=>({id:p.id,name:p.name,avatar:p.avatar,fast:p.fast,passive:passive(p),exp:expenses(p),cash:p.cash,months:p.months,turns:p.turns,dp:p.dp||0,dream:p.dream,won:p.id===G.winner}));
   const pi=id=>{const i=G.placed.indexOf(id);return i<0?99:i};
-  rows.sort((a,b)=>(pi(a.id)-pi(b.id))||(b.won-a.won)||(b.fast-a.fast)||((b.passive/b.exp)-(a.passive/a.exp)));
+  rows.sort((a,b)=>(b.dp-a.dp)||(pi(a.id)-pi(b.id))||(b.won-a.won)||(b.fast-a.fast)||((b.passive/b.exp)-(a.passive/a.exp)));
   return rows;
 }
-function win(p,d){
+function finishGame(){
+  // من لم يُنهِ دوره: شراء ختامي لأكبر حلم يقدر عليه (بلا علاوة أسبقية) إن كان في المسار السريع وسعادته 50+
+  G.players.forEach(q=>{
+    if(q.dp)return;
+    for(let t=2;t>=0;t--){const c=dreamCost(DREAMS[t]);if(q.fast&&q.hap>=50&&q.cash>=c){q.cash-=c;q.dp=DPTS[t];q.dream={n:DREAMS[t].n,t,last:true};log(`🛒 ${q.name}: شراء ختامي لحلم «${DREAMS[t].n}» (⭐ ${q.dp}).`);break}}
+  });
+  const rows=standings();
+  G.winner=rows[0].id;const w=G.players[G.winner];
+  G.phase="over";
+  G.hist.push([G.round,...G.players.map(q=>[Math.round(q.cash),passive(q),Math.round(expenses(q)),q.hap])]);
+  G.summary={dream:w.dream?w.dream.n:"—",rows:standings(),awards:awards()};
+}
+function win(p,d,tier){
+  tier=Number.isInteger(tier)?tier:0;
+  p.dp=DPTS[tier]+(DORD[G.placed.length]||0);p.dream={n:d.n,t:tier};
   if(!G.placed.includes(p.id))G.placed.push(p.id);
-  if(G.winner==null){G.winner=p.id;G.dream0=d.n}
+  if(G.winner==null)G.winner=p.id;
   const n=G.placed.length;
-  log(`🏆 ${p.name} حقق حلمه: ${d.n}! (المركز ${n})`);
-  flash(n===1?`🏆 ${p.name} فاز بتحقيق حلمه!`:`🏅 ${p.name} حقق حلمه ويحتل المركز ${n}`);cue("win");
+  log(`🏆 ${p.name} حقق حلمه «${d.n}» (حلم ${DTIER[tier]}) ⭐ ${p.dp} نقطة!`);
+  flash(`🏅 ${p.name} حقق «${d.n}» (⭐ ${p.dp})${n===1?" — أول المحققين":""}`);cue("win");
   const rest=G.players.filter(q=>!G.placed.includes(q.id));
   if(rest.length>1)return;                              // تستمر المباراة حتى يبقى لاعب واحد
   if(rest.length===1)G.placed.push(rest[0].id);
-  G.phase="over";
-  G.hist.push([G.round,...G.players.map(q=>[Math.round(q.cash),passive(q),Math.round(expenses(q)),q.hap])]);
-  G.summary={dream:G.dream0,rows:standings(),awards:awards()};
+  finishGame();
 }
 function endNow(){
   if(Net.role==="guest"||!G||over()||!G.placed.length)return;
   const rest=standings().filter(r=>!G.placed.includes(r.id));
   rest.forEach(r=>G.placed.push(r.id));
   log("🏁 أنهى المضيف المباراة ورتّب الباقين حسب تقدمهم.");
-  G.phase="over";G.hist.push([G.round,...G.players.map(q=>[Math.round(q.cash),passive(q),Math.round(expenses(q)),q.hap])]);G.summary={dream:G.dream0,rows:standings(),awards:awards()};sync();
+  finishGame();sync();
 }
 async function loop(){
   const my=RUN;
@@ -1248,6 +1266,11 @@ function botChoose(p,pr,secret){
   const L=lv(p),pro=L>=3,d=pr.data||{};
   const PB=at(p,[0,70,40,44,48]); // أقصى مدة استرداد مقبولة بالأشهر
   switch(pr.kind){
+  case"dream":{
+    if(!d.afford)return 0;
+    if(d.tier>=2||G.placed.length>0||L<3)return 0;
+    const next=d.costs[d.tier+1];                       // الخبير والأسطوري ينتظران الحلم الأكبر إن كان قريباً
+    return(d.cash>=next*at(p,[1,1,0.75,0.6,0.5])&&p.hap>=50)?1:0}
   case"fun":{
     const n=d.cs.length,skip=n,res=d.res;
     const ok=d.cs.map((c,i)=>({i,c,g:d.gs[i]})).filter(x=>x.c===0||d.cash-x.c>=res);
@@ -1355,7 +1378,7 @@ function render(){
   if(G.flash){if(lastFlash===null)lastFlash=G.flash.id;else if(G.flash.id!==lastFlash){lastFlash=G.flash.id;toast(G.flash.text)}}else lastFlash=0;
   $("#reactBtn").hidden=G.players.length<2;if(G.players.length<2)$("#reactTray").hidden=true;
   // الشريط العلوي للاعبين
-  const score=q=>G.placed.includes(q.id)?100-G.placed.indexOf(q.id):(q.fast?1+Math.min(1,q.cash/dreamCost(DREAMS[0])):Math.min(1,passive(q)/Math.max(1,exitNeed(q))));
+  const score=q=>G.placed.includes(q.id)?1000+(q.dp||0):(q.fast?1+Math.min(1,q.cash/dreamCost(DREAMS[0])):Math.min(1,passive(q)/Math.max(1,exitNeed(q))));
   const rank=[...G.players].sort((a,b)=>score(b)-score(a)).map(q=>q.id);
   $("#chips").innerHTML=G.players.map(p=>{
     const r=exitNeed(p)?Math.min(1,passive(p)/exitNeed(p)):0;
@@ -1498,7 +1521,7 @@ function closeModal(){$("#modal").classList.remove("on");modalKind=""}
 const CH=[
  {id:"orders3",t:"📦 سلّم ٣ طلبات من الحي",ok:p=>p.st.orders>=3},
  {id:"calm",t:"😊 حافظ على سعادتك فوق 50 طوال المباراة (٨ جولات على الأقل)",ok:p=>p.st.rounds>=8&&p.st.hapOk===p.st.rounds},
- {id:"nodebt",t:"🏦 افز بالمركز الأول دون أي قرض",ok:p=>p.st.loans===0&&G.placed[0]===p.id},
+ {id:"nodebt",t:"🏦 افز بالمركز الأول دون أي قرض",ok:p=>p.st.loans===0&&G.winner===p.id},
  {id:"assets3",t:"💼 امتلك ٣ أصول أو أكثر",ok:p=>p.assets.length>=3},
  {id:"trade1k",t:"🧳 اربح ١٬٠٠٠ من التجارة",ok:p=>p.st.trade>=1000},
  {id:"exit30",t:"🚀 اخرج من سباق الفئران قبل الجولة ٣٠",ok:p=>p.st.exitRound!=null&&p.st.exitRound<=30},
@@ -1562,13 +1585,13 @@ function showReport(){
 function showResult(){
   const s=G.summary;if(!s)return;
   const win=G.players[G.winner];
-  const rows=s.rows.map((r,i)=>`<tr><td>${i===0?"🏆":i+1}</td><td>${esc(r.avatar)} ${esc(r.name)}</td><td>${r.fast?"🚀":"🐀"} ${fmt(r.passive)}</td><td>${fmt(r.cash)}</td></tr>`).join("");
+  const rows=s.rows.map((r,i)=>`<tr><td>${i===0?"🏆":i+1}</td><td>${esc(r.avatar)} ${esc(r.name)}</td><td>${r.dp?"⭐ "+r.dp:"—"}</td><td>${r.dream?esc(DTIER[r.dream.t]):(r.fast?"🚀":"🐀")}</td><td>${fmt(r.cash)}</td></tr>`).join("");
   const mine=isMine(win);
   const aw=(s.awards||[]).map(a=>`<div class="award"><b>${esc(a.icon)} ${esc(a.title)}</b>${esc(a.av)} ${esc(a.name)}</div>`).join("");
   openModal("result",mine?"🏆 فزت!":`🏁 فاز ${esc(win.name)}`,
-    `${Object.prototype.hasOwnProperty.call(IMG,win.pk)?`<img class="portrait big" src="${IMG[win.pk]}" alt="">`:""}<p>${mine?"حققت حلمك":esc(win.name)+" حقق حلمه"}: <b>${esc(s.dream)}</b>${G.players.length>2?" وأكمل الباقون اللعب حتى تحدد المراكز":""} · الجولة ${G.round}.</p>
+    `${Object.prototype.hasOwnProperty.call(IMG,win.pk)?`<img class="portrait big" src="${IMG[win.pk]}" alt="">`:""}<p>${win.dp?`${mine?"حققت حلمك":esc(win.name)+" حقق حلمه"}: <b>${esc(s.dream)}</b> (⭐ ${win.dp} نقطة)`:`${esc(win.name)} الأفضل تقدماً`}${G.players.length>2?" وأكمل الباقون اللعب حتى تحدد المراكز":""} · الجولة ${G.round}.</p>
      ${aw?`<div class="awards">${aw}</div>`:""}
-     <table class="rank"><tr><th></th><th>اللاعب</th><th>الدخل التلقائي</th><th>النقد</th></tr>${rows}</table>`,[]);
+     <table class="rank"><tr><th></th><th>اللاعب</th><th>النقاط</th><th>الحلم</th><th>النقد</th></tr>${rows}</table>`,[]);
   const row=$("#sheet .row");
   const add=(label,fn,alt,keep)=>{const b=document.createElement("button");b.textContent=label;if(alt)b.className="alt";b.onclick=()=>{if(!keep)closeModal();fn&&fn()};row.appendChild(b)};
   if(G.hist&&G.hist.length>1)add("📊 تقرير المباراة",showReport,false,true);
@@ -1579,9 +1602,9 @@ function showResult(){
 }
 function shareResult(){
   const s=G.summary,win=G.players[G.winner];
-  const lines=s.rows.map((r,i)=>`${i===0?"🏆":(i+1)+"."} ${r.avatar} ${r.name} — دخل تلقائي ${fmt(r.passive)}`);
+  const lines=s.rows.map((r,i)=>`${i===0?"🏆":(i+1)+"."} ${r.avatar} ${r.name} — ${r.dp?"⭐ "+r.dp+" ("+r.dream.n+")":"بلا حلم"}`);
   const url=/^https?:/.test(location.href)?"\nالعب معنا: "+location.href.split("?")[0]:"";
-  shareText(`🏁 «درب الثراء»\nفاز ${win.name} بتحقيق حلمه: ${s.dream} (الجولة ${G.round})\n${lines.join("\n")}${url}`);
+  shareText(`🏁 «درب الثراء»\nفاز ${win.name} بأعلى نقاط (⭐ ${win.dp}) بتحقيق حلمه: ${s.dream} (الجولة ${G.round})\n${lines.join("\n")}${url}`);
 }
 function rematch(){
   const sl=G.players.map(q=>({ctrl:q.ctrl,name:q.name.replace(/ 🤖$/,""),prof:-1,avatar:q.avatar}));
@@ -1617,7 +1640,7 @@ function repay(pid){
 const HELP=[
  ["الفكرة",()=>`
   <p>أنت موظف براتب، لكن مصاريفك تلتهمه. اللعبة هي أن تبني <b>دخلاً تلقائياً</b> (إيجارات ومشاريع وأسهم) حتى يغطي <b>كل مصاريفك الشهرية</b>. عندها تخرج من «سباق الفئران».</p>
-  <div class="tip"><b>الفوز على مرحلتين:</b><br>① <b>سباق الفئران 🐀:</b> ابنِ دخلاً تلقائياً أكبر من مصاريفك.<br>② <b>المسار السريع 🚀:</b> اجمع نقداً واشترِ أحد أحلامك الثلاثة.<br>ومع المنافسين: <b>أول من يحقق حلماً يفوز</b>.</div>
+  <div class="tip"><b>الفوز على مرحلتين:</b><br>① <b>سباق الفئران 🐀:</b> ابنِ دخلاً تلقائياً أكبر من مصاريفك.<br>② <b>المسار السريع 🚀:</b> اجمع نقداً واشترِ أحد أحلامك الثلاثة.<br>ومع المنافسين: <b>الحلم الأكبر يتفوق على الأصغر</b> (⭐ 10 / 25 / 45 نقطة + علاوة أسبقية صغيرة)</div>
   <h3>الدور الواحد</h3>
   <p>١) ارمِ النرد 🎲 ← ٢) تتحرك قطعتك ← ٣) تنفّذ الخانة التي وقفت عليها ← ٤) ينتقل الدور للاعب التالي.</p>`],
  ["الراتب والشهور",()=>`
@@ -1672,6 +1695,7 @@ const HELP=[
   <div class="tip warn">الاتصال مباشر بين الجهازين. إن فشل (بعض شبكات الجوال تمنعه) جرّبا الواي فاي نفسه، أو العبا على جهاز واحد بالتناوب.</div>
   <p class="sub">كل لاعب يحاول الخروج من سباق الفئران في لوحته الخاصة، وتتنافسون على من يحقق حلماً أولاً. اضغط على بطاقة أي لاعب في الأعلى لترى أرقامه ولوحته.</p>`],
  ["الحماس والتفاعل",()=>`<dl>
+  <dt>⭐ نقاط الأحلام</dt><dd>الأحلام الثلاثة تعطي نقاطاً: الأصغر ⭐10، المتوسط ⭐25، الأكبر ⭐45، ومعها علاوة أسبقية (+5 للأول، +3، +1). <b>الفوز لصاحب أعلى نقاط</b>، فمن ينتظر ويشتري حلماً أكبر يتفوق على من استعجل بالأصغر. بعد الشراء تخرج من الأدوار وتنتظر الباقين. وإن انتهت المباراة وبقي لاعب بلا حلم يشتري تلقائياً أكبر حلم يقدر عليه (بلا علاوة).</dd>
   <dt>😊 بار السعادة</dt><dd>لكل متسابق شريط سعادة (٠–١٠٠) يبدأ عند ٦٠ وينقص كل جولة. املأه بخانة 🎡 الترفيه، لكن <b>ضبط النفس مطلوب</b>: التكرار يقلّل الأثر، ثم «ندم الإسراف» يخسّرك مالاً وسعادة، والقرض الاستهلاكي يكلّفك ٣٠٪ فائدة. وإن أهملته: تحت ٥٠ تُمنع من شراء الحلم، وتحت ٣٠ يقلّ دخلك ويُسحب جزء من نقدك ولا تخرج من سباق الفئران، وعند الصفر <b>تنهار</b> وتدفع علاجاً وتفوتك دورتان. فوق ٨٠ ترتفع أرباح الطلبات ١٠٪.</dd>
   <dt>🏡 هدف العائلة</dt><dd>صندوق مشترك تساهم فيه من خانة 🎁 التبرّع. إن اكتمل ينال الجميع مكافأة وسعادة.</dd>
   <dt>🎯 التحديات</dt><dd>تحدي يومي وآخر أسبوعي يظهران في الشاشة الرئيسية، تُنجزهما في أي مباراة وتُحفظ على جوالك. بعد المباراة اضغط «📊 تقرير المباراة» لترى رسوم تقدمك ودروسك.</dd>
@@ -1748,7 +1772,7 @@ function drawSetup(){
     <button class="profbtn" data-k="profbtn">${s.prof>=0&&PROFS[s.prof]?`<img class="pi" src="${IMG[PROFS[s.prof].k]}" alt=""> ${PROFS[s.prof].n}`:"🎲 مهنة عشوائية"} ▾</button>
     <div class="nmrow"><select data-k="avatar" class="avsel" aria-label="الصورة">${AVATARS.map(a=>`<option ${a===s.avatar?"selected":""}>${a}</option>`).join("")}</select><input type="text" data-k="name" maxlength="14" value="${esc(s.name)}" placeholder="الاسم"></div>
   </div>`).join("");
-  $("#sheet").innerHTML=`<h2>🎮 لعبة جديدة</h2><p class="sub">اختر اللاعبين (حتى ٤). أول من يحقق حلماً يفوز.</p>${rows}
+  $("#sheet").innerHTML=`<h2>🎮 لعبة جديدة</h2><p class="sub">اختر اللاعبين (حتى ٤). الفوز لمن يجمع أعلى نقاط من أحلامه.</p>${rows}
     <label class="l">مستوى الصعوبة</label><select id="sMode">${Object.keys(LVL).map(k=>`<option value="${k}" ${setupMode===k?"selected":""}>${LVLTXT[k]}</option>`).join("")}</select>
     <div class="row">${slots.length<MAXP?'<button class="alt" id="sAdd">➕ إضافة لاعب</button>':""}<button class="alt" id="sHelp">❓ كيف ألعب؟</button></div>
     <div class="row"><button id="sStart">ابدأ اللعبة</button></div>`;
@@ -1796,7 +1820,7 @@ function showBriefing(){
     <div class="bg"><span>💵 نقد البداية <b>${fmt(p.cash)}</b></span><span>💼 الراتب <b>${fmt(p.salary)}</b></span><span>🧾 المصاريف <b class="bad">${fmt(expenses(p))}</b></span><span>💰 فائضك شهرياً <b class="${cf>=0?"good":"bad"}">${fmt(cf)}</b></span></div>
     <div class="goal">🎯 للخروج من سباق الفئران: دخل تلقائي <b>${fmt(need)}</b> شهرياً${hard()&&!fastMode()?" <small>(يرتفع قليلاً مع التضخم)</small>":""}</div></div>`}).join("");
   const d=DREAMS.map(x=>fmt(dreamCost(x))).join(" · ");
-  openModal("brief","🏁 قبل أن نبدأ: هدف كل متسابق",`<p class="sub">الدخل التلقائي هو ما تدرّه أصولك (إيجارات ومشاريع وأسهم) بلا عمل. حين يبلغ الهدف أدناه تخرج من سباق الفئران إلى المسار السريع.</p><div class="briefs">${rows}</div>${chHtml()}<div class="tip">بعد الخروج: أول من يشتري أحد الأحلام (${d}) يفوز بالمركز الأول.</div>`,[["ابدأ المباراة 🎲",null]]);
+  openModal("brief","🏁 قبل أن نبدأ: هدف كل متسابق",`<p class="sub">الدخل التلقائي هو ما تدرّه أصولك (إيجارات ومشاريع وأسهم) بلا عمل. حين يبلغ الهدف أدناه تخرج من سباق الفئران إلى المسار السريع.</p><div class="briefs">${rows}</div>${chHtml()}<div class="tip">بعد الخروج: اشترِ حلماً من ثلاثة (${d}). لكل حلم نقاط: ⭐10 و⭐25 و⭐45، والفوز لصاحب أعلى نقاط، فالأكبر يتفوق على الأصغر.</div>`,[["ابدأ المباراة 🎲",null]]);
 }
 function launch(sl,remote,mode){
   if(!remote)closeNet(false);
