@@ -54,6 +54,7 @@ body.shake .wrap{animation:shake .5s}
 .chrow.ok{background:color-mix(in srgb,var(--good) 16%,var(--soft))}.chrow b{white-space:nowrap}.chrow i{font-style:normal}
 .chart{width:100%;height:auto;color:var(--ink);background:var(--soft);border-radius:12px}.rh{font-size:.84rem;margin:10px 0 4px}.tips{padding-inline-start:18px;margin:4px 0;font-size:.84rem;line-height:1.8}
 .inst{padding-inline-start:20px;line-height:1.9;font-size:.9rem}
+.goal.dr{margin-bottom:4px;background:var(--soft)}
 .lrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:.86rem}.hapbar.wide{flex:1;width:auto;max-width:90px}
 .hm{display:inline-flex;align-items:center;gap:4px}.hapbar{display:inline-block;width:42px;height:7px;border-radius:5px;background:var(--line);overflow:hidden;position:relative}.hapbar u{display:block;height:100%;transition:width .5s,background .5s}
 .mini b{font-size:.92rem}.mini .bad{color:var(--bad,#c0392b)}.mini .good{color:var(--good,#1b8a4a)}
@@ -299,10 +300,10 @@ const FAST=["payday","biz","dream","biz","lawsuit","fun","payday","dream","biz",
 const DPTS=[10,25,45];              // نقاط الحلم: الأصغر، المتوسط، الأكبر
 const DORD=[5,3,1,0];              // علاوة الأسبقية في الشراء
 const DTIER=["الأصغر","المتوسط","الأكبر"];
-const DREAMS=[
- {n:"رحلة حول العالم مع العائلة",cost:180000},
- {n:"مدرسة خيرية باسمك",cost:320000},
- {n:"منزل الأحلام على الشاطئ",cost:450000}
+const DREAMS=[                   // m = مضاعف المصاريف السنوية الأساسية للاعب (٢٥ ضعفاً = الاستقلال المالي الكامل)
+ {n:"رحلة حول العالم مع العائلة",m:10},
+ {n:"مدرسة خيرية باسمك",m:18},
+ {n:"منزل الأحلام على الشاطئ",m:25}
 ];
 const TILE={
  payday:["💰","يوم الراتب","--t-payday"],deal:["🤝","فرصة","--t-deal"],doodad:["🛍️","مصروف طارئ","--t-doodad"],
@@ -449,9 +450,9 @@ const passive=p=>Math.round(p.assets.reduce((a,b)=>a+effInc(b),0)*(BOTB[p.ctrl]|
 const fastMode=()=>!!(G&&G.mode==="fast");
 const LVL={
  fast:  {n:"سهلة وسريعة",exit:0.7,dream:0.6,infl:0,  cap:0,   down:1,   inc:1,   doodad:1,   tax:0.10,suit:0.20,sk:[0.5,2.2],ok:[1.05,0.9],hap:2,fun:0.8},
- normal:{n:"عادية",      exit:1.0,dream:1.1,infl:0.025,cap:0.10,down:1.08,inc:0.97,doodad:1.2, tax:0.15,suit:0.25,sk:[0.45,2.1],ok:[1.0,0.8],hap:3,fun:1.0},
- hard:  {n:"صعبة",       exit:1.1,dream:1.2,infl:0.04, cap:0.20,down:1.15,inc:0.93,doodad:1.4, tax:0.20,suit:0.30,sk:[0.4,1.9],ok:[0.95,0.7],hap:4,fun:1.1},
- legend:{n:"أسطورية",    exit:1.2,dream:1.3,infl:0.05, cap:0.30,down:1.25,inc:0.90,doodad:1.6, tax:0.25,suit:0.35,sk:[0.35,1.7],ok:[0.9,0.6],hap:5,fun:1.25}
+ normal:{n:"عادية",      exit:1.0,dream:1.0,infl:0.025,cap:0.10,down:1.08,inc:0.97,doodad:1.2, tax:0.15,suit:0.25,sk:[0.45,2.1],ok:[1.0,0.8],hap:3,fun:1.0},
+ hard:  {n:"صعبة",       exit:1.1,dream:1.1,infl:0.04, cap:0.20,down:1.15,inc:0.93,doodad:1.4, tax:0.20,suit:0.30,sk:[0.4,1.9],ok:[0.95,0.7],hap:4,fun:1.1},
+ legend:{n:"أسطورية",    exit:1.2,dream:1.2,infl:0.05, cap:0.30,down:1.25,inc:0.90,doodad:1.6, tax:0.25,suit:0.35,sk:[0.35,1.7],ok:[0.9,0.6],hap:5,fun:1.25}
 };
 const LVLTXT={fast:"🟢 سهلة وسريعة (خروج أسهل وأحلام أرخص)",normal:"🟡 عادية",hard:"🟠 صعبة (تضخم وضرائب أثقل)",legend:"🔴 أسطورية (للأذكياء فقط)"};
 const D=()=>LVL[G&&G.mode]||LVL.normal;
@@ -459,7 +460,8 @@ const hard=()=>!!(G&&G.mode!=="fast");                       // الوضع ال�
 const hd=c=>hard()?{...c,down:Math.round(c.down*D().down/100)*100,inc:Math.round(c.inc*D().inc)}:c; // صفقات أغلى ودخل أقل في الوضع العادي
 const inflation=()=>hard()?1+Math.min(D().cap,D().infl*Math.floor(((G&&G.round)||1)/10)):1; // التضخم: +٥٪ على المصاريف كل ٨ جولات
 const exitNeed=p=>expenses(p)*D().exit;
-const dreamCost=d=>Math.round(d.cost*D().dream/1000)*1000;
+const basicAnnual=p=>12*(Object.values(p.exp).reduce((a,b)=>a+b,0)+p.children*p.childCost); // المصاريف الأساسية السنوية (بلا قروض ولا تضخم)
+const dreamCost=(d,p)=>Math.round(basicAnnual(p)*d.m*D().dream/1000)*1000;
 const evGoods=k=>{const m=G&&G.event&&G.event.goods;return m&&m[k]?m[k]:1};
 const gPrice=k=>Math.round(G.goods[k].p*evGoods(k));
 const buyPrice=(p,k)=>Math.max(1,Math.round(gPrice(k)*(1-(p.perk.buyDisc||0)-((p.perk.itemDisc&&p.perk.itemDisc[k])||0))));
@@ -771,10 +773,10 @@ async function resolveTile(p,k){
   case"biz":return offer(p,hd(rnd(BIZ)));
   case"dream":{
     const tier=FAST.slice(0,p.pos).filter(x=>x==="dream").length,d=DREAMS[tier];
-    const dc=dreamCost(d),afford=p.cash>=dc&&p.hap>=50;
-    const costs=DREAMS.map(x=>dreamCost(x));
+    const dc=dreamCost(d,p),afford=p.cash>=dc&&p.hap>=50;
+    const costs=DREAMS.map(x=>dreamCost(x,p));
     const list=DREAMS.map((x,k)=>`<div class="lrow"><span>${k===tier?"👉 ":""}${esc(x.n)}</span><b>${fmt(costs[k])} · ⭐ ${DPTS[k]}</b></div>`).join("");
-    const i=await ask(p,{kind:"dream",title:`⭐ ${d.n}`,body:`<p>هذا هو الحلم <b>${DTIER[tier]}</b> (⭐ ${DPTS[tier]} نقطة)، سعره <b>${fmt(dc)}</b> ونقدك ${fmt(p.cash)}.</p>${list}<p class="sub">من يشتري حلماً أكبر يتفوّق على من اشترى حلماً أصغر مهما كان أسبق (علاوة الأسبقية صغيرة: +5 للأول، +3، +1). لكن بعد الشراء تخرج من الأدوار وتنتظر الباقين.</p><p class="${p.hap>=50?"sub":"bad"}">😊 تحتاج سعادة 50 على الأقل — سعادتك ${p.hap}.</p>`,opts:afford?["حقّق الحلم","لاحقاً (أنتظر حلماً أكبر)"]:[p.cash<dc?"لا يكفي النقد":"سعادتك منخفضة"],alt:afford?[false,true]:[true],data:{afford,tier,cash:p.cash,costs,cost:dc}});
+    const i=await ask(p,{kind:"dream",title:`⭐ ${d.n}`,body:`<p>هذا هو الحلم <b>${DTIER[tier]}</b> (⭐ ${DPTS[tier]} نقطة)، سعره <b>${fmt(dc)}</b> = ${d.m} ضعف مصاريفك الأساسية السنوية. نقدك ${fmt(p.cash)}.</p>${list}<p class="sub">من يشتري حلماً أكبر يتفوّق على من اشترى حلماً أصغر مهما كان أسبق (علاوة الأسبقية صغيرة: +5 للأول، +3، +1). لكن بعد الشراء تخرج من الأدوار وتنتظر الباقين.</p><p class="${p.hap>=50?"sub":"bad"}">😊 تحتاج سعادة 50 على الأقل — سعادتك ${p.hap}.</p>`,opts:afford?["حقّق الحلم","لاحقاً (أنتظر حلماً أكبر)"]:[p.cash<dc?"لا يكفي النقد":"سعادتك منخفضة"],alt:afford?[false,true]:[true],data:{afford,tier,cash:p.cash,costs,cost:dc}});
     if(afford&&i===0){
       p.cash-=dc;win(p,d,tier);
       if(!over()&&!isBot(p)){await ack(p,`🏅 حققت حلمك: ${d.n}`,`<p>مبروك! حصلت على <b>⭐ ${p.dp} نقطة</b> (حلم ${DTIER[tier]}).</p><p class="sub">تنتظر الآن انتهاء الباقين من أدوارهم، وقد يتفوّق عليك من يشتري حلماً أكبر. تابع منافسيك على الشاشة.</p>`,"أتابع المنافسين")}
@@ -1215,7 +1217,7 @@ function finishGame(){
   // من لم يُنهِ دوره: شراء ختامي لأكبر حلم يقدر عليه (بلا علاوة أسبقية) إن كان في المسار السريع وسعادته 50+
   G.players.forEach(q=>{
     if(q.dp)return;
-    for(let t=2;t>=0;t--){const c=dreamCost(DREAMS[t]);if(q.fast&&q.hap>=50&&q.cash>=c){q.cash-=c;q.dp=DPTS[t];q.dream={n:DREAMS[t].n,t,last:true};log(`🛒 ${q.name}: شراء ختامي لحلم «${DREAMS[t].n}» (⭐ ${q.dp}).`);break}}
+    for(let t=2;t>=0;t--){const c=dreamCost(DREAMS[t],q);if(q.fast&&q.hap>=50&&q.cash>=c){q.cash-=c;q.dp=DPTS[t];q.dream={n:DREAMS[t].n,t,last:true};log(`🛒 ${q.name}: شراء ختامي لحلم «${DREAMS[t].n}» (⭐ ${q.dp}).`);break}}
   });
   const rows=standings();
   G.winner=rows[0].id;const w=G.players[G.winner];
@@ -1298,7 +1300,7 @@ function botChoose(p,pr,secret){
   case"partner":return(pro?d.inc>0&&d.down/d.inc<=PB:Math.random()<0.55)?0:1;
   case"quiz":{const ok=Math.random()<at(p,[0.4,0.55,0.75,0.88,0.97]);return ok?secret:(secret+1+Math.floor(Math.random()*2))%3}
   case"auction":{const payback=d.inc>0?d.down/d.inc:Infinity;return(pro?payback<=PB+5:(p.cash-d.down>=0&&Math.random()<at(p,[0.5,0.65])))?0:1}
-  case"dealsize":return p.cash>=at(p,[110000,90000,70000,55000,45000])?1:0;
+  case"dealsize":return p.cash>=at(p,[110000,90000,55000,45000,38000])?1:0;
   case"offer":{
     const payback=d.inc>0?d.down/d.inc:Infinity,after=p.cash-d.down;
     if(d.inc<=0)return(pro&&after>expenses(p)*5&&Math.random()<0.4)?0:1;
@@ -1378,7 +1380,7 @@ function render(){
   if(G.flash){if(lastFlash===null)lastFlash=G.flash.id;else if(G.flash.id!==lastFlash){lastFlash=G.flash.id;toast(G.flash.text)}}else lastFlash=0;
   $("#reactBtn").hidden=G.players.length<2;if(G.players.length<2)$("#reactTray").hidden=true;
   // الشريط العلوي للاعبين
-  const score=q=>G.placed.includes(q.id)?1000+(q.dp||0):(q.fast?1+Math.min(1,q.cash/dreamCost(DREAMS[0])):Math.min(1,passive(q)/Math.max(1,exitNeed(q))));
+  const score=q=>G.placed.includes(q.id)?1000+(q.dp||0):(q.fast?1+Math.min(1,q.cash/dreamCost(DREAMS[0],q)):Math.min(1,passive(q)/Math.max(1,exitNeed(q))));
   const rank=[...G.players].sort((a,b)=>score(b)-score(a)).map(q=>q.id);
   $("#chips").innerHTML=G.players.map(p=>{
     const r=exitNeed(p)?Math.min(1,passive(p)/exitNeed(p)):0;
@@ -1695,11 +1697,11 @@ const HELP=[
   <div class="tip warn">الاتصال مباشر بين الجهازين. إن فشل (بعض شبكات الجوال تمنعه) جرّبا الواي فاي نفسه، أو العبا على جهاز واحد بالتناوب.</div>
   <p class="sub">كل لاعب يحاول الخروج من سباق الفئران في لوحته الخاصة، وتتنافسون على من يحقق حلماً أولاً. اضغط على بطاقة أي لاعب في الأعلى لترى أرقامه ولوحته.</p>`],
  ["الحماس والتفاعل",()=>`<dl>
-  <dt>⭐ نقاط الأحلام</dt><dd>الأحلام الثلاثة تعطي نقاطاً: الأصغر ⭐10، المتوسط ⭐25، الأكبر ⭐45، ومعها علاوة أسبقية (+5 للأول، +3، +1). <b>الفوز لصاحب أعلى نقاط</b>، فمن ينتظر ويشتري حلماً أكبر يتفوق على من استعجل بالأصغر. بعد الشراء تخرج من الأدوار وتنتظر الباقين. وإن انتهت المباراة وبقي لاعب بلا حلم يشتري تلقائياً أكبر حلم يقدر عليه (بلا علاوة).</dd>
+  <dt>⭐ نقاط الأحلام</dt><dd>أسعار الأحلام الثلاثة تناسب مصاريف كل لاعب (١٠ و١٨ و٢٥ ضعفاً من مصاريفه السنوية الأساسية، فأكبرها يمثل الاستقلال المالي الكامل) وتعطي نقاطاً: الأصغر ⭐10، المتوسط ⭐25، الأكبر ⭐45، ومعها علاوة أسبقية (+5 للأول، +3، +1). <b>الفوز لصاحب أعلى نقاط</b>، فمن ينتظر ويشتري حلماً أكبر يتفوق على من استعجل بالأصغر. بعد الشراء تخرج من الأدوار وتنتظر الباقين. وإن انتهت المباراة وبقي لاعب بلا حلم يشتري تلقائياً أكبر حلم يقدر عليه (بلا علاوة).</dd>
   <dt>😊 بار السعادة</dt><dd>لكل متسابق شريط سعادة (٠–١٠٠) يبدأ عند ٦٠ وينقص كل جولة. املأه بخانة 🎡 الترفيه، لكن <b>ضبط النفس مطلوب</b>: التكرار يقلّل الأثر، ثم «ندم الإسراف» يخسّرك مالاً وسعادة، والقرض الاستهلاكي يكلّفك ٣٠٪ فائدة. وإن أهملته: تحت ٥٠ تُمنع من شراء الحلم، وتحت ٣٠ يقلّ دخلك ويُسحب جزء من نقدك ولا تخرج من سباق الفئران، وعند الصفر <b>تنهار</b> وتدفع علاجاً وتفوتك دورتان. فوق ٨٠ ترتفع أرباح الطلبات ١٠٪.</dd>
   <dt>🏡 هدف العائلة</dt><dd>صندوق مشترك تساهم فيه من خانة 🎁 التبرّع. إن اكتمل ينال الجميع مكافأة وسعادة.</dd>
   <dt>🎯 التحديات</dt><dd>تحدي يومي وآخر أسبوعي يظهران في الشاشة الرئيسية، تُنجزهما في أي مباراة وتُحفظ على جوالك. بعد المباراة اضغط «📊 تقرير المباراة» لترى رسوم تقدمك ودروسك.</dd>
-  <dt>🔥 مستوى الصعوبة</dt><dd>أربعة مستويات: سهلة وسريعة، عادية، صعبة، أسطورية (تضخم وضرائب وأحلام أغلى كلما ارتفع المستوى). <b>الوضع «عادية»</b>: التضخم يرفع مصاريفك ٢٫٥٪ كل ١٠ جولات (حتى ١٠٪)، والصفقات أغلى بنحو ٨٪ ودخلها أقل ٣٪، والمصاريف الطارئة أكبر بـ٢٠٪، وسعر عرض السوق أقل سخاءً، والضريبة والقضية أثقل، والأحلام أغلى بـ١٠٪، وفي سباق الفئران خانة ضريبة وخانتا مصروف إضافيتان بدل صفقتين. <b>«سريعة وسهلة»</b> تبقي الأسعار الأخف للعب أقصر.</dd>
+  <dt>🔥 مستوى الصعوبة</dt><dd>أربعة مستويات: سهلة وسريعة، عادية، صعبة، أسطورية (تضخم وضرائب وأحلام أغلى كلما ارتفع المستوى). <b>الوضع «عادية»</b>: التضخم يرفع مصاريفك ٢٫٥٪ كل ١٠ جولات (حتى ١٠٪)، والصفقات أغلى بنحو ٨٪ ودخلها أقل ٣٪، والمصاريف الطارئة أكبر بـ٢٠٪، وسعر عرض السوق أقل سخاءً، والضريبة والقضية أثقل، وأسعار الأحلام تتناسب مع مصاريفك (١٠ و١٨ و٢٥ ضعفاً من مصاريفك السنوية الأساسية، ×٠٫٦ في السهلة و×١٫١ في الصعبة و×١٫٢ في الأسطورية)، وفي سباق الفئران خانة ضريبة وخانتا مصروف إضافيتان بدل صفقتين. <b>«سريعة وسهلة»</b> تبقي الأسعار الأخف للعب أقصر.</dd>
   <dt>🎲 الرمية والجولة</dt><dd>في وسط اللوحة ترى «الجولة ٣ · الرمية الخامسة»: الجولة تكتمل بدور كل اللاعبين، والرمية هي عدد رميات صاحب الدور. وبعد أن يفوز أول لاعب يحجز المركز الأول وتستمر اللعبة للباقين حتى يبقى لاعب واحد فقط (آخر المراكز)؛ وللمضيف خيار «أنهِ المباراة الآن» في القائمة ☰ إن طال الانتظار.</dd>
   <dt>🌍 أحداث الجولة</dt><dd>أحياناً يقع حدث يشمل الجميع لمدة جولتين: ازدهار عقاري، موسم سياحي، ركود، ارتفاع الفائدة، تخفيضات… يظهر في شريط ذهبي أعلى الشاشة ويغيّر دخلك التلقائي أو مصاريفك.</dd>
   <dt>🧠 سؤال مالي</dt><dd>خانة فيها سؤال بثلاثة خيارات. الجواب الصحيح يمنحك نصف مصاريف شهر.</dd>
@@ -1818,9 +1820,9 @@ function showBriefing(){
     const need=Math.round(exitNeed(p)),cf=p.salary-expenses(p),hp=Object.prototype.hasOwnProperty;
     return `<div class="brief"><div class="bh">${hp.call(IMG,p.pk)?`<img class="portrait" src="${IMG[p.pk]}" alt="">`:""}<div><b>${esc(p.avatar)} ${esc(p.name)}</b> ${esc(CTRL_ICON[p.ctrl]||"")}<div class="sub">${esc(p.pe)} ${esc(p.prof)}${isBot(p)?" · "+BOTN[p.ctrl]:""}</div></div></div>
     <div class="bg"><span>💵 نقد البداية <b>${fmt(p.cash)}</b></span><span>💼 الراتب <b>${fmt(p.salary)}</b></span><span>🧾 المصاريف <b class="bad">${fmt(expenses(p))}</b></span><span>💰 فائضك شهرياً <b class="${cf>=0?"good":"bad"}">${fmt(cf)}</b></span></div>
+    <div class="goal dr">⭐ أحلامك (٢٥ ضعف مصاريفك السنوية هو أكبرها): <b>${DREAMS.map(x=>fmt(dreamCost(x,p))).join(" · ")}</b></div>
     <div class="goal">🎯 للخروج من سباق الفئران: دخل تلقائي <b>${fmt(need)}</b> شهرياً${hard()&&!fastMode()?" <small>(يرتفع قليلاً مع التضخم)</small>":""}</div></div>`}).join("");
-  const d=DREAMS.map(x=>fmt(dreamCost(x))).join(" · ");
-  openModal("brief","🏁 قبل أن نبدأ: هدف كل متسابق",`<p class="sub">الدخل التلقائي هو ما تدرّه أصولك (إيجارات ومشاريع وأسهم) بلا عمل. حين يبلغ الهدف أدناه تخرج من سباق الفئران إلى المسار السريع.</p><div class="briefs">${rows}</div>${chHtml()}<div class="tip">بعد الخروج: اشترِ حلماً من ثلاثة (${d}). لكل حلم نقاط: ⭐10 و⭐25 و⭐45، والفوز لصاحب أعلى نقاط، فالأكبر يتفوق على الأصغر.</div>`,[["ابدأ المباراة 🎲",null]]);
+  openModal("brief","🏁 قبل أن نبدأ: هدف كل متسابق",`<p class="sub">الدخل التلقائي هو ما تدرّه أصولك (إيجارات ومشاريع وأسهم) بلا عمل. حين يبلغ الهدف أدناه تخرج من سباق الفئران إلى المسار السريع.</p><div class="briefs">${rows}</div>${chHtml()}<div class="tip">بعد الخروج: اشترِ حلماً من ثلاثة، وأسعارها تتناسب مع مصاريفك (١٠ أضعاف و١٨ و٢٥ ضعفاً من مصاريفك السنوية الأساسية). لكل حلم نقاط: ⭐10 و⭐25 و⭐45، والفوز لصاحب أعلى نقاط، فالأكبر يتفوق على الأصغر.</div>`,[["ابدأ المباراة 🎲",null]]);
 }
 function launch(sl,remote,mode){
   if(!remote)closeNet(false);
