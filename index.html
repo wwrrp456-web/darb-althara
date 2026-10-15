@@ -849,24 +849,43 @@ async function offer(p,c){
   log(`✅ ${p.name} اشترى «${c.n}» بدفعة ${fmt(c.down)}.`);cue("buy",p);
   if(G.players.length>1&&c.down>=100000)flash(`💼 ${p.name} اشترى «${c.n}»!`);
 }
-async function market(p){return investorOffer(p,true)}
-async function investorOffer(p,force){
+async function market(p){
   const owned=p.assets.filter(a=>a.cost&&!/شراكة/.test(a.n));
-  if(!owned.length){if(force)log(`📈 السوق نشط لكن ${p.name} لا يملك أصولاً للبيع.`);return}
-  const a=rnd(owned);
-  const f=a.t==="أسهم"?D().sk[0]+Math.random()*D().sk[1]:a.t==="ذهب"?(1.05+Math.random()*0.35)*((G.event&&G.event.goldMult)||1):a.t==="صكوك"?1.02+Math.random()*0.1:(D().ok[0]+0.2)+Math.random()*(D().ok[1]+0.1);
-  const price=Math.round(a.cost*f/100)*100, gain=price-a.cost;
-  const i=await ask(p,{kind:"market",title:"💼 عرض مستثمر",
-    body:`<p>مستثمر يرغب بشراء «${a.n}» ويعرض <b>${fmt(price)}</b> (قيمتها ${fmt(a.cost)}).<br>${gain>=0?"ربح":"خسارة"}: <b class="${gain>=0?"good":"bad"}">${fmt(Math.abs(gain))}</b></p><p class="sub">لو بعت، تخسر دخلها الشهري ${fmt(a.inc)}. العرض لا يتكرر.</p>`,
+  if(!owned.length){log(`📈 السوق نشط لكن ${p.name} لا يملك أصولاً للبيع.`);return}
+  return investorOffer(p,rnd(owned))
+}
+function offerPrice(a){
+  const crisis=G.event&&G.event.id==="crisis";
+  const f=a.t==="أسهم"?D().sk[0]+Math.random()*D().sk[1]:a.t==="ذهب"?(1.05+Math.random()*0.35)*((G.event&&G.event.goldMult)||1):a.t==="صكوك"?1.02+Math.random()*0.1:(1.15+Math.random()*0.55)*(crisis?0.85:1);
+  return Math.round(a.cost*f/100)*100;
+}
+async function investorOffer(p,a,price,last){
+  price=price||offerPrice(a);const gain=price-a.cost;
+  const back=gain>0&&a.inc>0?Math.ceil(gain/a.inc):0;
+  const i=await ask(p,{kind:"market",title:last?"💼 عرض مستثمر (آخر فرصة)":"💼 عرض مستثمر",
+    body:`<p>مستثمر يرغب بشراء «${a.n}» ويعرض <b>${fmt(price)}</b> (قيمتها ${fmt(a.cost)}).<br>${gain>=0?"ربح":"خسارة"}: <b class="${gain>=0?"good":"bad"}">${fmt(Math.abs(gain))}</b></p><p class="sub">لو بعت، تخسر دخلها الشهري ${fmt(a.inc)}${back?` — والربح يعوّضه خلال ${back} شهراً`:""}.${last?" هذا العرض ينتهي بعد هذا الدور.":" إن احتفظت يبقى العرض قائماً لدورك القادم."}</p>`,
     opts:["بِع","احتفظ"],alt:[false,true],data:{price,cost:a.cost,inc:a.inc,t:a.t}});
-  if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);if(a.lm)G.lm[a.lm]=null;cue("pay",p);log(`💼 ${p.name} باع «${a.n}» لمستثمر بـ ${fmt(price)}.`);if(gain>0&&G.players.length>1&&price>=100000)flash(`💼 ${p.name} باع «${a.n}» بربح ${fmt(gain)}!`)}
-  else log(`💼 ${p.name} رفض عرض مستثمر على «${a.n}».`);
+  if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);if(a.lm)G.lm[a.lm]=null;cue("pay",p);log(`💼 ${p.name} باع «${a.n}» لمستثمر بـ ${fmt(price)}.`);if(gain>0&&G.players.length>1&&price>=100000)flash(`💼 ${p.name} باع «${a.n}» بربح ${fmt(gain)}!`);return true}
+  log(`💼 ${p.name} رفض عرض مستثمر على «${a.n}».`);
+  if(!last){(p.pend=p.pend||[]).push({n:a.n,cost:a.cost,price,exp:G.round+1})}
+  return false;
+}
+async function yearInvestors(p){
+  const owned=p.assets.filter(a=>a.cost&&!/شراكة/.test(a.n));
+  if(!owned.length||G.round<2)return;
+  const k=Math.min(owned.length,owned.length>=6?3:owned.length>=3?2:1);
+  const picks=[...owned].sort(()=>Math.random()-0.5).slice(0,k);
+  log(`💼 موسم المستثمرين: ${k} عرض لـ ${p.name}.`);
+  for(const a of picks){if(p.assets.includes(a))await investorOffer(p,a)}
 }
 async function maybeInvestor(p){
-  const n=p.assets.filter(a=>a.cost&&!/شراكة/.test(a.n)).length;
-  if(!n||G.round<2)return;
-  if(p.invCd>0){p.invCd--;return}
-  if(Math.random()<Math.min(0.45,0.15+0.06*n)){p.invCd=2;await investorOffer(p,false)}
+  if(!p.pend||!p.pend.length)return;
+  const list=p.pend;p.pend=[];
+  for(const o of list){
+    if(o.exp<G.round)continue;
+    const a=p.assets.find(x=>x.n===o.n&&x.cost===o.cost);
+    if(a)await investorOffer(p,a,o.price,true);
+  }
 }
 async function partner(p){
   const c=hd(rnd(BIG)),half=Math.round(c.down/2/100)*100,halfInc=Math.round(c.inc/2);
@@ -1401,7 +1420,7 @@ async function loop(){
     while(!over()&&my===RUN){
       const p=G.players[G.cur];
       if(G.placed.includes(p.id)){G.cur=(G.cur+1)%G.players.length;if(G.cur===0){G.round++;rollEvent();tickHappiness()}continue}
-      if(Math.floor((G.round-1)/6)>p.year){await yearStart(p);if(my!==RUN)return}
+      if(Math.floor((G.round-1)/6)>p.year){await yearStart(p);if(my!==RUN)return;await yearInvestors(p);if(my!==RUN)return}
       await maybeInvestor(p);if(my!==RUN)return;
       G.phase="await_roll";saveLocal();sync();
       if(isBot(p)){botOrders(p);sync();await w(750+Math.random()*500)}else await waitRoll(p);
@@ -1833,7 +1852,7 @@ const HELP=[
    ["payday","تقبض تدفقك الشهري (الراتب + الدخل التلقائي − المصاريف). وتقبضه كذلك عند المرور بالخانة."],
    ["deal","فرصة استثمارية: اختر صفقة صغيرة أو كبيرة. تدفع دفعة أولى وتحصل على دخل شهري."],
    ["biz","(المسار السريع) مشروع كبير بدفعة أولى ضخمة ودخل عالٍ."],
-   ["market","عرض مستثمر: يظهر أحياناً في بداية دورك (بعد أن تملك أصولاً)، وعند الوقوف على خانة المستثمر 💼. يعرض سعراً أعلى غالباً على أحد أصولك؛ بِع إن كان الربح يستحق فقدان دخلها الشهري."],
+   ["market","عرض مستثمر: في بداية كل سنة يأتيك عرضان إلى ثلاثة على أصولك (ويظهر عرض مفاجئ عند خانة 💼). إن احتفظت يبقى العرض قائماً لدورك القادم فقط. بِع إن كان الربح يستحق فقدان دخل الأصل."],
    ["doodad","مصروف طارئ لا يعطي دخلاً. تدفعه مباشرة."],
    ["child","مولود جديد: تزيد مصاريفك الشهرية."],
    ["charity","تبرّع بـ10% من دخلك لترمي نردين ٣ أدوار."],
