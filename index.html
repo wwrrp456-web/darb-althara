@@ -296,7 +296,7 @@ const PROFS=[
  {k:"pharmacist",n:"صيدلي",e:"💊",salary:7000,tax:1300,home:1050,car:260,cards:200,other:430,childCost:230,cash:5000,debt:"قرض صيدلية 140,000",perk:{itemDisc:{honey:0.2,saffron:0.2}},pt:"عسل وزعفران أرخص ٢٠٪"},
  {k:"pilot",n:"طيار",e:"✈️",salary:11000,tax:2300,home:1900,car:420,cards:360,other:760,childCost:360,cash:8500,debt:"قرض سكن 260,000",perk:{itemDisc:{perfume:0.15,fabric:0.15}},pt:"عطور وأقمشة أرخص ١٥٪ (من أسفاره)"}
 ];
-const RAT=["payday","deal","lm_cafe","deal","lm_mall","souk","order","payday","deal","lm_bank","deal","fun","family","partner","payday","deal","lm_uni","child","quiz","lm_hospital","deal","payday","layoff","jamia","deal","auction","lm_hotel","charity"];
+const RAT=["payday","deal","lm_cafe","deal","lm_mall","souk","order","payday","deal","lm_bank","market","fun","family","partner","payday","deal","lm_uni","child","quiz","lm_hospital","deal","payday","layoff","jamia","deal","auction","lm_hotel","charity"];
 const FAST=["payday","biz","dream","lm_tower","lawsuit","fun","payday","dream","biz","tax","lm_airport","dream"];
 const DPTS=[10,25,45];              // نقاط الحلم: الأصغر، المتوسط، الأكبر
 const DORD=[5,3,1,0];              // علاوة الأسبقية في الشراء
@@ -308,7 +308,7 @@ const DREAMS=[                   // m = مضاعف المصاريف السنوي
 ];
 const TILE={
  payday:["💰","يوم الراتب","--t-payday"],deal:["🤝","فرصة","--t-deal"],doodad:["🛍️","مصروف طارئ","--t-doodad"],
- market:["📈","السوق","--t-market"],child:["👶","مولود","--t-child"],charity:["🎁","تبرّع","--t-charity"],
+ market:["💼","مستثمر","--t-market"],child:["👶","مولود","--t-child"],charity:["🎁","تبرّع","--t-charity"],
  layoff:["📉","تسريح","--t-layoff"],biz:["🏢","مشروع كبير","--t-deal"],dream:["⭐","حلم","--t-dream"],
  lawsuit:["⚖️","قضية","--t-lawsuit"],tax:["🧾","ضريبة","--t-tax"],
  fun:["🎡","ترفيه","--t-fun"],insure:["🛡️","تأمين","--t-insure"],learn:["📚","دورة","--t-learn"],jamia:["🏘️","جمعية","--t-jamia"],
@@ -849,16 +849,24 @@ async function offer(p,c){
   log(`✅ ${p.name} اشترى «${c.n}» بدفعة ${fmt(c.down)}.`);cue("buy",p);
   if(G.players.length>1&&c.down>=100000)flash(`💼 ${p.name} اشترى «${c.n}»!`);
 }
-async function market(p){
-  const owned=p.assets.filter(a=>a.cost);
-  if(!owned.length){log(`📈 السوق نشط لكن ${p.name} لا يملك أصولاً للبيع.`);return}
+async function market(p){return investorOffer(p,true)}
+async function investorOffer(p,force){
+  const owned=p.assets.filter(a=>a.cost&&!/شراكة/.test(a.n));
+  if(!owned.length){if(force)log(`📈 السوق نشط لكن ${p.name} لا يملك أصولاً للبيع.`);return}
   const a=rnd(owned);
-  const f=a.t==="أسهم"?D().sk[0]+Math.random()*D().sk[1]:a.t==="ذهب"?(1.05+Math.random()*0.35)*((G.event&&G.event.goldMult)||1):a.t==="صكوك"?1.02+Math.random()*0.1:D().ok[0]+Math.random()*D().ok[1];
+  const f=a.t==="أسهم"?D().sk[0]+Math.random()*D().sk[1]:a.t==="ذهب"?(1.05+Math.random()*0.35)*((G.event&&G.event.goldMult)||1):a.t==="صكوك"?1.02+Math.random()*0.1:(D().ok[0]+0.2)+Math.random()*(D().ok[1]+0.1);
   const price=Math.round(a.cost*f/100)*100, gain=price-a.cost;
-  const i=await ask(p,{kind:"market",title:"📈 عرض من السوق",
-    body:`<p>مشترٍ يعرض <b>${fmt(price)}</b> على «${a.n}» (قيمتها ${fmt(a.cost)}).<br>${gain>=0?"ربح":"خسارة"}: <b class="${gain>=0?"good":"bad"}">${fmt(Math.abs(gain))}</b></p><p class="sub">لو بعت، تخسر دخلها الشهري ${fmt(a.inc)}.</p>`,
+  const i=await ask(p,{kind:"market",title:"💼 عرض مستثمر",
+    body:`<p>مستثمر يرغب بشراء «${a.n}» ويعرض <b>${fmt(price)}</b> (قيمتها ${fmt(a.cost)}).<br>${gain>=0?"ربح":"خسارة"}: <b class="${gain>=0?"good":"bad"}">${fmt(Math.abs(gain))}</b></p><p class="sub">لو بعت، تخسر دخلها الشهري ${fmt(a.inc)}. العرض لا يتكرر.</p>`,
     opts:["بِع","احتفظ"],alt:[false,true],data:{price,cost:a.cost,inc:a.inc,t:a.t}});
-  if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);if(a.lm)G.lm[a.lm]=null;cue("pay",p);log(`📈 ${p.name} باع «${a.n}» بـ ${fmt(price)}.`)}
+  if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);if(a.lm)G.lm[a.lm]=null;cue("pay",p);log(`💼 ${p.name} باع «${a.n}» لمستثمر بـ ${fmt(price)}.`);if(gain>0&&G.players.length>1&&price>=100000)flash(`💼 ${p.name} باع «${a.n}» بربح ${fmt(gain)}!`)}
+  else log(`💼 ${p.name} رفض عرض مستثمر على «${a.n}».`);
+}
+async function maybeInvestor(p){
+  const n=p.assets.filter(a=>a.cost&&!/شراكة/.test(a.n)).length;
+  if(!n||G.round<2)return;
+  if(p.invCd>0){p.invCd--;return}
+  if(Math.random()<Math.min(0.45,0.15+0.06*n)){p.invCd=2;await investorOffer(p,false)}
 }
 async function partner(p){
   const c=hd(rnd(BIG)),half=Math.round(c.down/2/100)*100,halfInc=Math.round(c.inc/2);
@@ -1394,6 +1402,7 @@ async function loop(){
       const p=G.players[G.cur];
       if(G.placed.includes(p.id)){G.cur=(G.cur+1)%G.players.length;if(G.cur===0){G.round++;rollEvent();tickHappiness()}continue}
       if(Math.floor((G.round-1)/6)>p.year){await yearStart(p);if(my!==RUN)return}
+      await maybeInvestor(p);if(my!==RUN)return;
       G.phase="await_roll";saveLocal();sync();
       if(isBot(p)){botOrders(p);sync();await w(750+Math.random()*500)}else await waitRoll(p);
       if(my!==RUN)return;
@@ -1470,7 +1479,7 @@ function botChoose(p,pr,secret){
     return(d.need*0.1<=d.inc*at(p,[0.25,0.4,0.6,0.8,1.0]))?0:1;
   case"market":{
     const gain=d.price-d.cost;
-    if(pro)return(gain>=d.cost*at(p,[1,1,0.5,0.45,0.4])&&(d.inc<=0||d.inc*24<gain))?0:1;
+    if(pro)return(gain>=d.cost*at(p,[0.3,0.3,0.3,0.28,0.25])&&(d.inc<=0||d.inc*24<gain))?0:1;
     return(gain>0&&Math.random()<0.6)?0:1}
   case"charity":{
     const last=pr.opts.length-1;
@@ -1824,7 +1833,7 @@ const HELP=[
    ["payday","تقبض تدفقك الشهري (الراتب + الدخل التلقائي − المصاريف). وتقبضه كذلك عند المرور بالخانة."],
    ["deal","فرصة استثمارية: اختر صفقة صغيرة أو كبيرة. تدفع دفعة أولى وتحصل على دخل شهري."],
    ["biz","(المسار السريع) مشروع كبير بدفعة أولى ضخمة ودخل عالٍ."],
-   ["market","مشترٍ يعرض سعراً على أحد أصولك. بِع إن كان الربح يستحق فقدان دخلها."],
+   ["market","عرض مستثمر: يظهر أحياناً في بداية دورك (بعد أن تملك أصولاً)، وعند الوقوف على خانة المستثمر 💼. يعرض سعراً أعلى غالباً على أحد أصولك؛ بِع إن كان الربح يستحق فقدان دخلها الشهري."],
    ["doodad","مصروف طارئ لا يعطي دخلاً. تدفعه مباشرة."],
    ["child","مولود جديد: تزيد مصاريفك الشهرية."],
    ["charity","تبرّع بـ10% من دخلك لترمي نردين ٣ أدوار."],
