@@ -18,12 +18,12 @@
   --brand:#0f766e;--brand-2:#14b8a6;--brand-ink:#fff;--gold:#c8901a;
   --good:#15803d;--bad:#b91c1c;--soft:#efeadd;--shadow:0 2px 10px rgba(30,40,50,.08);
   --t-payday:#c9f3d6;--t-deal:#cfe2fb;--t-doodad:#fcd3d3;--t-market:#fbe7a4;
-  --t-fun:#ffe1ef;--t-insure:#d8e6ff;--t-learn:#e7ddff;--t-jamia:#ffe8c7;--t-order:#f0e0c0;--t-souk:#cdeee8;--t-quiz:#d3eef2;--t-auction:#fde2c8;--t-partner:#d9ecd0;--t-family:#ffdfd2;
+  --t-land:#fbe9b7;--t-fun:#ffe1ef;--t-insure:#d8e6ff;--t-learn:#e7ddff;--t-jamia:#ffe8c7;--t-order:#f0e0c0;--t-souk:#cdeee8;--t-quiz:#d3eef2;--t-auction:#fde2c8;--t-partner:#d9ecd0;--t-family:#ffdfd2;
   --t-child:#f9d2e6;--t-charity:#e1daf9;--t-layoff:#dcdfe3;--t-dream:#fddcb8;--t-lawsuit:#fcd3d3;--t-tax:#e6e8eb;
 }
 @media (prefers-color-scheme:dark){
   :root{--bg:#12171c;--card:#1b232b;--ink:#e8edf2;--muted:#98a4b0;--line:#2b3641;--soft:#222c35;--brand:#2dd4bf;--brand-2:#0f766e;--brand-ink:#06201d;--gold:#f0b43c;--shadow:none;
-  --t-fun:#5a2340;--t-insure:#1f3558;--t-learn:#36294f;--t-jamia:#58401a;--t-order:#4d3f22;--t-souk:#17483f;--t-quiz:#164650;--t-auction:#6a3b12;--t-partner:#29481f;--t-family:#5a2b1f;
+  --t-land:#5b4a1c;--t-fun:#5a2340;--t-insure:#1f3558;--t-learn:#36294f;--t-jamia:#58401a;--t-order:#4d3f22;--t-souk:#17483f;--t-quiz:#164650;--t-auction:#6a3b12;--t-partner:#29481f;--t-family:#5a2b1f;
   --t-payday:#17482b;--t-deal:#1d3a60;--t-doodad:#5a2020;--t-market:#5a4710;--t-child:#582044;--t-charity:#3a2f68;--t-layoff:#38414a;--t-dream:#693a12;--t-lawsuit:#5a2020;--t-tax:#343b43}
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -55,6 +55,7 @@ body.shake .wrap{animation:shake .5s}
 .chart{width:100%;height:auto;color:var(--ink);background:var(--soft);border-radius:12px}.rh{font-size:.84rem;margin:10px 0 4px}.tips{padding-inline-start:18px;margin:4px 0;font-size:.84rem;line-height:1.8}
 .inst{padding-inline-start:20px;line-height:1.9;font-size:.9rem}
 .goal.dr{margin-bottom:4px;background:var(--soft)}
+.tile .own{position:absolute;top:-5px;inset-inline-start:-5px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.62rem;background:var(--card);border:2px solid var(--pc,var(--brand));box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .lrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:.86rem}.hapbar.wide{flex:1;width:auto;max-width:90px}
 .hm{display:inline-flex;align-items:center;gap:4px}.hapbar{display:inline-block;width:42px;height:7px;border-radius:5px;background:var(--line);overflow:hidden;position:relative}.hapbar u{display:block;height:100%;transition:width .5s,background .5s}
 .mini b{font-size:.92rem}.mini .bad{color:var(--bad,#c0392b)}.mini .good{color:var(--good,#1b8a4a)}
@@ -295,8 +296,8 @@ const PROFS=[
  {k:"pharmacist",n:"صيدلي",e:"💊",salary:7000,tax:1300,home:1050,car:260,cards:200,other:430,childCost:230,cash:5000,debt:"قرض صيدلية 140,000",perk:{itemDisc:{honey:0.2,saffron:0.2}},pt:"عسل وزعفران أرخص ٢٠٪"},
  {k:"pilot",n:"طيار",e:"✈️",salary:11000,tax:2300,home:1900,car:420,cards:360,other:760,childCost:360,cash:8500,debt:"قرض سكن 260,000",perk:{itemDisc:{perfume:0.15,fabric:0.15}},pt:"عطور وأقمشة أرخص ١٥٪ (من أسفاره)"}
 ];
-const RAT=["payday","deal","doodad","deal","market","souk","order","payday","deal","tax","deal","fun","family","partner","payday","deal","learn","child","quiz","insure","deal","payday","layoff","jamia","deal","auction","market","charity"];
-const FAST=["payday","biz","dream","biz","lawsuit","fun","payday","dream","biz","tax","biz","dream"];
+const RAT=["payday","deal","lm_cafe","deal","lm_mall","souk","order","payday","deal","lm_bank","deal","fun","family","partner","payday","deal","lm_uni","child","quiz","lm_hospital","deal","payday","layoff","jamia","deal","auction","lm_hotel","charity"];
+const FAST=["payday","biz","dream","lm_tower","lawsuit","fun","payday","dream","biz","tax","lm_airport","dream"];
 const DPTS=[10,25,45];              // نقاط الحلم: الأصغر، المتوسط، الأكبر
 const DORD=[5,3,1,0];              // علاوة الأسبقية في الشراء
 const DTIER=["الأصغر","المتوسط","الأكبر"];
@@ -313,6 +314,18 @@ const TILE={
  fun:["🎡","ترفيه","--t-fun"],insure:["🛡️","تأمين","--t-insure"],learn:["📚","دورة","--t-learn"],jamia:["🏘️","جمعية","--t-jamia"],
  quiz:["🧠","سؤال مالي","--t-quiz"],auction:["🔔","مزاد","--t-auction"],souk:["🛒","سوق الحي","--t-souk"],order:["📦","طلب الحي","--t-order"],partner:["👥","صفقة شراكة","--t-partner"],family:["🎴","مفاجأة عائلية","--t-family"]
 };
+/* ---------- معالم اللوحة: تُشترى بالوقوف عليها، ويدفع الزائر إيجاراً لمالكها ---------- */
+const LAND={
+ cafe:{e:"☕",n:"مقهى الحي",cost:40000,inc:450,rent:900,perk:"hap",pv:4,d:"الزائر +4 سعادة"},
+ mall:{e:"🏬",n:"مول الحي",cost:100000,inc:1100,rent:1800,perk:"souk",d:"الزائر يتاجر في السوق"},
+ uni:{e:"🎓",n:"جامعة",cost:90000,inc:1000,rent:1500,perk:"learn",d:"الزائر يدرس بخصم ٣٠٪"},
+ hospital:{e:"🏥",n:"مستشفى خاص",cost:110000,inc:1200,rent:1600,perk:"hap",pv:6,d:"الزائر +6 سعادة، ومالكه يربح نصف علاج الانهيار"},
+ hotel:{e:"🏨",n:"فندق",cost:120000,inc:1300,rent:2200,perk:"hap",pv:10,d:"النزيل +10 سعادة"},
+ bank:{e:"🏦",n:"بنك",cost:150000,inc:1600,rent:2000,perk:"bank",d:"مالكه يربح ٥٪ من قروض الآخرين"},
+ tower:{e:"🏙️",n:"برج الأعمال",cost:700000,inc:5500,rent:12000,perk:"hap",pv:6,d:"الزائر +6 سعادة"},
+ airport:{e:"✈️",n:"مطار",cost:1000000,inc:8000,rent:16000,perk:"hap",pv:10,d:"الزائر +10 سعادة"}
+};
+Object.entries(LAND).forEach(([k,v])=>{TILE["lm_"+k]=[v.e,v.n,"--t-land"]});
 const SMALL=[
  {n:"شقة صغيرة للإيجار",t:"عقار",down:3000,cost:38000,inc:160},
  {n:"كشك قهوة عند محطة",t:"مشروع",down:4000,cost:9000,inc:230},
@@ -321,7 +334,9 @@ const SMALL=[
  {n:"غرفة مؤجرة للطلاب",t:"عقار",down:2000,cost:22000,inc:110},
  {n:"حزمة أسهم شركة غذاء",t:"أسهم",down:1800,cost:1800,inc:20},
  {n:"عربة وجبات سريعة",t:"مشروع",down:5000,cost:14000,inc:300},
- {n:"مغسلة ملابس بالقطعة",t:"مشروع",down:3500,cost:9500,inc:190}
+ {n:"مغسلة ملابس بالقطعة",t:"مشروع",down:3500,cost:9500,inc:190},
+ {n:"سبائك ذهب صغيرة",t:"ذهب",down:6000,cost:6000,inc:0},
+ {n:"صكوك حكومية",t:"صكوك",down:9000,cost:9000,inc:95}
 ];
 const BIG=[
  {n:"عمارة سكنية ٨ شقق",t:"عقار",down:60000,cost:520000,inc:1850},
@@ -331,7 +346,9 @@ const BIG=[
  {n:"قطعة أرض للتطوير",t:"عقار",down:30000,cost:30000,inc:0},
  {n:"حزمة أسهم شركة طاقة",t:"أسهم",down:35000,cost:35000,inc:450},
  {n:"مجمّع محلات تجارية",t:"عقار",down:90000,cost:620000,inc:2900},
- {n:"مصنع تعبئة صغير",t:"مشروع",down:70000,cost:150000,inc:2100}
+ {n:"مصنع تعبئة صغير",t:"مشروع",down:70000,cost:150000,inc:2100},
+ {n:"سبائك ذهب كبيرة",t:"ذهب",down:40000,cost:40000,inc:0},
+ {n:"صكوك شركات كبرى",t:"صكوك",down:60000,cost:60000,inc:650}
 ];
 const BIZ=[
  {n:"سلسلة مقاهٍ من ٦ فروع",t:"مشروع",down:120000,inc:3200},
@@ -347,9 +364,10 @@ const DOODADS=[
 const EVENTS=[
  {id:"re",icon:"🏠",name:"ازدهار عقاري",text:"دخل العقارات ×1.3",mult:{"عقار":1.3}},
  {id:"tour",icon:"🏖️",name:"موسم سياحي",text:"دخل المشاريع ×1.25",mult:{"مشروع":1.25}},
- {id:"slump",icon:"📉",name:"ركود اقتصادي",text:"دخل المشاريع ×0.8",mult:{"مشروع":0.8}},
+ {id:"slump",icon:"📉",name:"ركود اقتصادي",text:"دخل المشاريع ×0.8 والذهب ×1.2",mult:{"مشروع":0.8},goldMult:1.2},
  {id:"stk",icon:"📈",name:"سوق أسهم صاعد",text:"دخل الأسهم ×3",mult:{"أسهم":3}},
- {id:"rate",icon:"🏦",name:"ارتفاع الفائدة",text:"أقساط القروض ×1.5",loanMult:1.5},
+ {id:"rate",icon:"🏦",name:"ارتفاع الفائدة",text:"أقساط القروض ×1.5 ودخل الصكوك ×1.25",loanMult:1.5,mult:{"صكوك":1.25}},
+ {id:"crisis",icon:"🌪️",name:"أزمة مالية",text:"دخل الأسهم ×0.4 والمشاريع ×0.85، والذهب يرتفع ×1.5",mult:{"أسهم":0.4,"مشروع":0.85},goldMult:1.5},
  {id:"sale",icon:"🛍️",name:"موسم التخفيضات",text:"المصاريف الطارئة بنصف قيمتها",doodadMult:0.5},
  {id:"ram",icon:"🌙",name:"موسم رمضان",text:"أسعار التمور والقهوة ×1.4",goods:{dates:1.4,coffee:1.4}},
  {id:"umra",icon:"🕌",name:"موسم العمرة",text:"أسعار العطور والأقمشة ×1.35",goods:{perfume:1.35,fabric:1.35}},
@@ -442,17 +460,17 @@ const Net={role:"solo",pc:null,dc:null,myPid:null,open:false,remotePid:null,lobb
 
 const P=id=>G.players[id];
 const evMult=t=>{const m=G&&G.event&&G.event.mult;return m&&m[t]?m[t]:1};
-const effInc=a=>Math.round(a.inc*evMult(a.t));
+const effInc=a=>Math.round(a.inc*evMult(a.t)*(a.t==="صكوك"?inflation():1));   // الصكوك يتبع دخلها التضخم
 const loanRate=()=>0.1*((G&&G.event&&G.event.loanMult)||1);
 const expenses=p=>Math.round((Object.values(p.exp).reduce((a,b)=>a+b,0)+p.children*p.childCost*((G&&G.event&&G.event.childMult)||1))*inflation())+p.loans*loanRate();
 const BOTB={botx:1.05,botl:1.12};                      // علاوة خبرة شفافة لأعلى مستويين
 const passive=p=>Math.round(p.assets.reduce((a,b)=>a+effInc(b),0)*(BOTB[p.ctrl]||1));
 const fastMode=()=>!!(G&&G.mode==="fast");
 const LVL={
- fast:  {n:"سهلة وسريعة",exit:0.7,dream:0.6,infl:0,  cap:0,   down:1,   inc:1,   doodad:1,   tax:0.10,suit:0.20,sk:[0.5,2.2],ok:[1.05,0.9],hap:1,fun:0.7},
- normal:{n:"عادية",      exit:1.0,dream:1.0,infl:0.025,cap:0.10,down:1.08,inc:0.97,doodad:1.2, tax:0.15,suit:0.25,sk:[0.45,2.1],ok:[1.0,0.8],hap:2,fun:0.85},
- hard:  {n:"صعبة",       exit:1.1,dream:1.1,infl:0.04, cap:0.20,down:1.15,inc:0.93,doodad:1.4, tax:0.20,suit:0.30,sk:[0.4,1.9],ok:[0.95,0.7],hap:3,fun:1.0},
- legend:{n:"أسطورية",    exit:1.2,dream:1.2,infl:0.05, cap:0.30,down:1.25,inc:0.90,doodad:1.6, tax:0.25,suit:0.35,sk:[0.35,1.7],ok:[0.9,0.6],hap:4,fun:1.15}
+ fast:  {n:"سهلة وسريعة",exit:0.7,dream:0.6,infl:0,  cap:0,   down:1,   inc:1,   doodad:1,   tax:0.10,suit:0.20,sk:[0.5,2.2],ok:[1.05,0.9],hap:0,fun:0.7},
+ normal:{n:"عادية",      exit:1.0,dream:1.0,infl:0.025,cap:0.10,down:1.08,inc:0.97,doodad:1.2, tax:0.15,suit:0.25,sk:[0.45,2.1],ok:[1.0,0.8],hap:0,fun:0.85},
+ hard:  {n:"صعبة",       exit:1.1,dream:1.1,infl:0.04, cap:0.20,down:1.15,inc:0.93,doodad:1.4, tax:0.20,suit:0.30,sk:[0.4,1.9],ok:[0.95,0.7],hap:0,fun:1.0},
+ legend:{n:"أسطورية",    exit:1.2,dream:1.2,infl:0.05, cap:0.30,down:1.25,inc:0.90,doodad:1.6, tax:0.25,suit:0.35,sk:[0.35,1.7],ok:[0.9,0.6],hap:0,fun:1.15}
 };
 const LVLTXT={fast:"🟢 سهلة وسريعة (خروج أسهل وأحلام أرخص)",normal:"🟡 عادية",hard:"🟠 صعبة (تضخم وضرائب أثقل)",legend:"🔴 أسطورية (للأذكياء فقط)"};
 const D=()=>LVL[G&&G.mode]||LVL.normal;
@@ -586,13 +604,13 @@ function mkPlayer(slot,i){
   const pl={id:i,name:slot.name,ctrl:slot.ctrl,avatar:av,color:COL[i],prof:p.n,pe:p.e,pk:p.k,perk:p.perk||{},pt:p.pt||"",inv:{},hold:{},orders:[],st:{rounds:0,hapOk:0,lux:0,regret:0,luxLoans:0,burn:0,ins:0,jam:0,learn:0,fund:0,charity:0,loans:0,doodads:0,quiz:0,quizOk:0,auction:0,love:0,partner:0,duel:0,trade:0,deals:0,orders:0,exitRound:null},
     salary:p.salary,cash:p.cash,
     exp:{"ضرائب":p.tax,"قسط السكن":p.home,"قسط السيارة":p.car,"بطاقات ائتمان":p.cards,"مصاريف أخرى":p.other},
-    childCost:p.childCost,children:0,loans:0,debt:p.debt,assets:[],pos:0,skip:0,charity:0,fast:false,turns:0,months:0,last:1,hap:60,lux:[],ins:0,learn:0,jam:0,dp:0,dream:null};
+    childCost:p.childCost,children:0,loans:0,debt:p.debt,assets:[],pos:0,skip:0,charity:0,fast:false,turns:0,months:0,last:1,hap:60,lux:[],ins:0,learn:0,jam:0,dp:0,dream:null,year:-1,ySnap:null};
   Object.entries(pl.perk.startInv||{}).forEach(([k,q])=>addInv(pl,k,q,q*GOODS.find(g=>g.k===k).base));
   return pl;
 }
 function mkGame(slots,mode){
   const players=slots.map(mkPlayer);
-  const g={v:7,fund:null,jam:null,hist:[],orderSeq:0,openOrders:[],goods:Object.fromEntries(GOODS.map(x=>[x.k,{p:x.base,prev:x.base}])),nextF:Object.fromEntries(GOODS.map(x=>[x.k,0.8+Math.random()*0.45])),mode:LVL[mode]?mode:'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,placed:[],cont:false,dream0:null,rolling:false,dice:1,summary:null};
+  const g={v:8,lm:{},fund:null,jam:null,hist:[],orderSeq:0,openOrders:[],goods:Object.fromEntries(GOODS.map(x=>[x.k,{p:x.base,prev:x.base}])),nextF:Object.fromEntries(GOODS.map(x=>[x.k,0.8+Math.random()*0.45])),mode:LVL[mode]?mode:'normal',event:null,flash:null,players,cur:0,round:1,phase:"idle",prompt:null,promptSeq:0,log:[],winner:null,placed:[],cont:false,dream0:null,rolling:false,dice:1,summary:null};
   return g;
 }
 
@@ -621,18 +639,29 @@ function actRoll(pid){
 }
 function ack(p,title,body,label){return ask(p,{kind:"ack",title,body,opts:[label||"حسناً"],alt:[false]})}
 
+const loanCap=p=>Math.round((5*p.salary+4*passive(p))/1000)*1000;   // سقف الاقتراض: ٥ رواتب + ٤ أضعاف الدخل التلقائي
+function bankFee(p,need){const b=G.lm&&G.lm.bank;if(b!=null&&b!==p.id){const o=G.players[b];const f=Math.round(need*0.05/10)*10;o.cash+=f;o.st.rentIn=(o.st.rentIn||0)+f}}
+function takeLoan(p,need){
+  const over=p.loans+need>loanCap(p),debt=over?Math.round(need*1.5):need;
+  p.cash+=need;p.loans+=debt;p.st.loans+=debt;bankFee(p,need);
+  return over;
+}
 async function ensureCash(p,amount,forced,ctx){
   if(p.cash>=amount)return true;
-  const need=Math.ceil((amount-p.cash)/1000)*1000;
-  const idx=await ask(p,{kind:"loan",title:"🏦 تحتاج إلى قرض",
-    body:`<p>ينقصك ${fmt(amount-p.cash)}. البنك يقرضك <b>${fmt(need)}</b> بقسط شهري ${fmt(need*0.1)} (10%) يُضاف إلى مصاريفك.</p>`,
-    opts:forced?["اقترض"]:["اقترض","لا"],alt:forced?[false]:[false,true],data:{need,forced,inc:ctx?ctx.inc:0}});
-  if(forced||idx===0){p.cash+=need;p.loans+=need;p.st.loans+=need;log(`🏦 ${p.name} اقترض ${fmt(need)}.`);return true}
+  const need=Math.ceil((amount-p.cash)/1000)*1000,cap=loanCap(p),over=p.loans+need>cap;
+  if(over&&!forced){
+    await ack(p,"🚫 تجاوزت سقف الاقتراض",`<p>ينقصك ${fmt(amount-p.cash)} لكن سقف اقتراضك <b>${fmt(cap)}</b> وعليك ${fmt(p.loans)}. البنك لا يقرضك أكثر. ادّخر أو بِع أصلاً أو ابنِ دخلاً أكبر.</p>`,"فهمت");
+    return false;
+  }
+  const idx=await ask(p,{kind:"loan",title:over?"🆘 قرض طوارئ":"🏦 تحتاج إلى قرض",
+    body:`<p>ينقصك ${fmt(amount-p.cash)}. ${over?`تجاوزتَ سقف اقتراضك (<b>${fmt(cap)}</b>) فيمنحك مُقرض الطوارئ <b>${fmt(need)}</b> لكنك تردّ <b class="bad">${fmt(Math.round(need*1.5))}</b> (١٫٥ ضعفاً).`:`البنك يقرضك <b>${fmt(need)}</b> بقسط شهري ${fmt(need*0.1)} (10%) يُضاف إلى مصاريفك.`}</p><p class="sub">سقف اقتراضك ${fmt(cap)} (عليك ${fmt(p.loans)}).</p>`,
+    opts:forced?["اقترض"]:["اقترض","لا"],alt:forced?[false]:[false,true],data:{need,forced,over,inc:ctx?ctx.inc:0}});
+  if(forced||idx===0){takeLoan(p,need);log(`🏦 ${p.name} اقترض ${fmt(need)}${over?" (طوارئ)":""}.`);return true}
   return false;
 }
 /* ---------- السعادة والترفيه ---------- */
 function autoLoan(p){
-  if(p.cash<0){const need=Math.ceil(-p.cash/1000)*1000;p.cash+=need;p.loans+=need;p.st.loans+=need;log(`🏦 رصيد ${p.name} سالب، فاقترض ${fmt(need)} تلقائياً.`)}
+  if(p.cash<0){const need=Math.ceil(-p.cash/1000)*1000,o=takeLoan(p,need);log(`🏦 رصيد ${p.name} سالب، فاقترض ${fmt(need)} تلقائياً${o?" (طوارئ)":""}.`)}
 }
 function tickHappiness(){
   if(G.round%2===1){G.hist.push([G.round,...G.players.map(q=>[Math.round(q.cash),passive(q),Math.round(expenses(q)),q.hap])]);if(G.hist.length>70)G.hist.shift()}
@@ -644,6 +673,7 @@ function tickHappiness(){
     if(p.hap<=0){
       const c=Math.round((expenses(p)-p.loans*loanRate())*(insured(p)?0.3:1)/10)*10;
       p.cash-=c;autoLoan(p);p.skip=Math.max(p.skip,2);p.hap=25;p.st.burn++;
+      {const h=G.lm.hospital;if(h!=null&&h!==p.id){const fee=Math.round(c*0.5/10)*10;G.players[h].cash+=fee;G.players[h].st.rentIn=(G.players[h].st.rentIn||0)+fee}}
       log(`😵 ${p.name} انهار من الإرهاق! علاج ${fmt(c)} ويفوته دوران.`);flash(`😵 ${p.name} انهار من الإرهاق!`);cue("bad",p);
     }else if(p.hap<30){
       const c=Math.round(Math.max(0,p.cash)*0.04/10)*10;
@@ -706,11 +736,7 @@ function pay(p){
   p.cash+=amt;
   log(`💰 ${p.name}: يوم الراتب (الشهر ${p.months}) ${amt>=0?"+":""}${fmt(amt)}`);
   if(amt>0)cue("pay",p);
-  if(p.cash<0){
-    const need=Math.ceil(-p.cash/1000)*1000;
-    p.cash+=need;p.loans+=need;p.st.loans+=need;
-    log(`🏦 رصيد ${p.name} سالب، فاقترض ${fmt(need)} تلقائياً.`);
-  }
+  autoLoan(p);
 }
 async function takeTurn(p){
   p.turns++;
@@ -729,6 +755,8 @@ async function takeTurn(p){
   }
   await w(150);
   await resolveTile(p,track[p.pos]);
+  if(over()||G.placed.includes(p.id))return;
+  await lifeCard(p);
   if(over()||G.placed.includes(p.id))return;
   if(!p.fast&&passive(p)>0&&passive(p)>=exitNeed(p)&&p.hap<30){
     if(G.round-(p.lockNote||0)>=2){p.lockNote=G.round;log(`🔒 ${p.name} بلغ هدف الخروج لكن سعادته (${p.hap}) منخفضة؛ يجب أن تبلغ 30 ليخرج.`);flash(`🔒 ${p.name}: ارفع سعادتك لتخرج من السباق!`)}
@@ -796,6 +824,7 @@ async function resolveTile(p,k){
     return}
   case"auction":return auction(p);
   case"fun":return funTile(p);
+  default:if(typeof k==="string"&&k.startsWith("lm_"))return landTile(p,k.slice(3));return;
   case"insure":return insureTile(p);
   case"learn":return learnTile(p);
   case"jamia":return jamiaTile(p);
@@ -812,11 +841,11 @@ async function offer(p,c){
   if(dd)c={...c,down:Math.round(c.down*(1-dd)/100)*100};
   const inc=c.inc?`الدخل الشهري الصافي: <b class="good">+${fmt(c.inc)}</b>`:"لا دخل شهرياً — الربح من إعادة البيع.";
   const i=await ask(p,{kind:"offer",title:c.n,
-    body:`<p>النوع: ${c.t}${c.cost?` — القيمة: ${fmt(c.cost)}`:""}<br>الدفعة الأولى: <b>${fmt(c.down)}</b><br>${inc}</p><p class="sub">نقدك: ${fmt(p.cash)}</p>`,
+    body:`<p>النوع: ${c.t}${c.cost?` — القيمة: ${fmt(c.cost)}`:""}<br>الدفعة الأولى: <b>${fmt(c.down)}</b><br>${inc}</p>${c.note?`<p>${c.note}</p>`:""}<p class="sub">نقدك: ${fmt(p.cash)}</p>`,
     opts:["اشترِ","تجاوز"],alt:[false,true],data:{down:c.down,inc:c.inc,cost:c.cost||c.down,t:c.t}});
   if(i!==0)return;
   if(!(await ensureCash(p,c.down,false,c)))return;
-  p.cash-=c.down;p.assets.push({n:c.n,t:c.t,inc:c.inc,cost:c.cost||c.down});
+  p.cash-=c.down;p.assets.push({n:c.n,t:c.t,inc:c.inc,cost:c.cost||c.down,...(c.lm?{lm:c.lm}:{})});
   log(`✅ ${p.name} اشترى «${c.n}» بدفعة ${fmt(c.down)}.`);cue("buy",p);
   if(G.players.length>1&&c.down>=100000)flash(`💼 ${p.name} اشترى «${c.n}»!`);
 }
@@ -824,12 +853,12 @@ async function market(p){
   const owned=p.assets.filter(a=>a.cost);
   if(!owned.length){log(`📈 السوق نشط لكن ${p.name} لا يملك أصولاً للبيع.`);return}
   const a=rnd(owned);
-  const f=a.t==="أسهم"?D().sk[0]+Math.random()*D().sk[1]:D().ok[0]+Math.random()*D().ok[1];
+  const f=a.t==="أسهم"?D().sk[0]+Math.random()*D().sk[1]:a.t==="ذهب"?(1.05+Math.random()*0.35)*((G.event&&G.event.goldMult)||1):a.t==="صكوك"?1.02+Math.random()*0.1:D().ok[0]+Math.random()*D().ok[1];
   const price=Math.round(a.cost*f/100)*100, gain=price-a.cost;
   const i=await ask(p,{kind:"market",title:"📈 عرض من السوق",
     body:`<p>مشترٍ يعرض <b>${fmt(price)}</b> على «${a.n}» (قيمتها ${fmt(a.cost)}).<br>${gain>=0?"ربح":"خسارة"}: <b class="${gain>=0?"good":"bad"}">${fmt(Math.abs(gain))}</b></p><p class="sub">لو بعت، تخسر دخلها الشهري ${fmt(a.inc)}.</p>`,
     opts:["بِع","احتفظ"],alt:[false,true],data:{price,cost:a.cost,inc:a.inc,t:a.t}});
-  if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);cue("pay",p);log(`📈 ${p.name} باع «${a.n}» بـ ${fmt(price)}.`)}
+  if(i===0){p.cash+=price;p.assets.splice(p.assets.indexOf(a),1);if(a.lm)G.lm[a.lm]=null;cue("pay",p);log(`📈 ${p.name} باع «${a.n}» بـ ${fmt(price)}.`)}
 }
 async function partner(p){
   const c=hd(rnd(BIG)),half=Math.round(c.down/2/100)*100,halfInc=Math.round(c.inc/2);
@@ -861,6 +890,118 @@ async function partner(p){
   }
 }
 /* ---------- التأمين، التعلّم، الجمعية، صندوق العائلة ---------- */
+/* ---------- قرارات الحياة (بطاقة كل دور): السعادة تُشترى أو تُخسر بقرارك ---------- */
+const LIFE=[
+ {t:"دعوة زواج من الأقارب",e:"💍",o:[{l:"أحضر وأشارك",m:-0.35,h:8},{l:"أعتذر",m:0,h:-4}]},
+ {t:"عرض عمل إضافي",e:"💼",o:[{l:"أقبل (ساعات إضافية)",m:0.5,h:-8},{l:"أرفض وأرتاح",m:0,h:2}]},
+ {t:"رحلة مدرسية للأبناء",e:"🚌",kid:1,o:[{l:"أدفع وأشارك",m:-0.25,h:6,love:1},{l:"أعتذر",m:0,h:-5}]},
+ {t:"هاتف جديد مغرٍ",e:"📱",o:[{l:"أشتريه",m:-0.6,h:12},{l:"أتجاوز",m:0,h:-2}]},
+ {t:"صديق يطلب مساعدة",e:"🤝",o:[{l:"أساعده",m:-0.5,h:7,love:1},{l:"أعتذر",m:0,h:-4}]},
+ {t:"إرهاق صحي",e:"🩺",o:[{l:"أفحص وأرتاح",m:-0.2,h:4},{l:"أتجاهل",m:0,h:-4}]},
+ {t:"إجازة عائلية",e:"🏖️",o:[{l:"رحلة كاملة",m:-1.5,h:25,love:2},{l:"نزهة قريبة",m:-0.25,h:8},{l:"أبقى في البيت",m:0,h:-4}]},
+ {t:"فرصة تطوع",e:"🤲",o:[{l:"أشارك",m:-0.1,h:6},{l:"أعتذر",m:0,h:-1}]},
+ {t:"صيانة المنزل",e:"🛠️",o:[{l:"أصلح الآن",m:-0.5,h:3},{l:"أؤجل",m:0,h:-4}]},
+ {t:"يوم عائلي",e:"👨‍👩‍👧",o:[{l:"أقضيه معهم (تفوتك رمية)",m:0,h:8,skip:1,love:1},{l:"أتابع العمل",m:0.2,h:-3}]},
+ {t:"عرض ترقية في فرع بعيد",e:"📈",o:[{l:"أقبل (+١٠٪ راتب دائم)",m:0,h:-10,sal:0.1},{l:"أرفض",m:0,h:0}]},
+ {t:"مصاريف العيد",e:"🎉",o:[{l:"عيدية وملابس جديدة",m:-0.7,h:12,love:1},{l:"ميزانية مقتصدة",m:-0.2,h:-2}]}
+];
+let LDECK=[];
+const lifeBase=p=>Math.max(1500,Math.round(Object.values(p.exp).reduce((a,b)=>a+b,0)+p.children*p.childCost))*D().fun;
+function lifeOpts(p,c){
+  const base=lifeBase(p);
+  return c.o.map(o=>({...o,amt:Math.round(base*Math.abs(o.m)/50)*50}));
+}
+const RL="\u200F";
+const sg=n=>RL+(n>0?"+":n<0?"−":"")+Math.abs(n);
+const eff=(o,cash)=>`${o.m<0?`💵 ${RL}−${fmt(o.amt)}${cash>0?` (${Math.round(100*o.amt/cash)}٪ من نقدك)`:""}`:o.m>0?`💵 ${RL}+${fmt(o.amt)}`:"💵 بلا كلفة"} · 😊 ${sg(o.h)}${o.sal?` · 💼 ${RL}+${Math.round(o.sal*100)}٪`:""}${o.skip?" · ⏸️ رمية":""}`;
+async function lifeCard(p){
+  if(!LDECK.length)LDECK=shuffle([...LIFE.keys()]);
+  let k,guard=0;do{k=LDECK.pop();if(k==null){LDECK=shuffle([...LIFE.keys()]);k=LDECK.pop()}}while(LIFE[k].kid&&!p.children&&++guard<8);
+  const c=LIFE[k],opts=lifeOpts(p,c),st=hapState(p.hap);
+  const i=await ask(p,{kind:"life",title:`${c.e} ${c.t}`,
+    body:`<p>سعادتك ${st[0]} <b>${p.hap}</b>/100 · نقدك ${fmt(p.cash)}.<br>اختر قرارك، وأثر كل خيار مكتوب أمامك.</p>`,
+    opts:opts.map(o=>`${o.l} — ${eff(o,p.cash)}`),alt:opts.map((_,j)=>j>0&&opts[j].m>=0&&opts[j].h<=0),
+    data:{os:opts.map(o=>({m:o.m,h:o.h,amt:o.amt,sal:o.sal||0,skip:o.skip||0})),cash:p.cash,hap:p.hap,res:expenses(p)*2,base:lifeBase(p)}});
+  const o=opts[i];if(!o)return;
+  if(o.m<0){
+    if(!(await ensureCash(p,o.amt,false)))return;
+    p.cash-=o.amt;
+    if(o.amt>0&&o.h>0){p.lux.push({r:G.round,c:o.amt});p.st.lux+=o.amt}
+  }else if(o.m>0){p.cash+=o.amt}
+  gainHap(p,o.h);
+  if(o.love)love(p,o.love);
+  if(o.sal){p.salary=Math.round(p.salary*(1+o.sal));}
+  if(o.skip)p.skip=Math.max(p.skip,o.skip);
+  p.st.life=(p.st.life||0)+1;
+  log(`${c.e} ${p.name}: ${c.t} — ${o.l} (😊 ${p.hap}).`);
+  cue(o.h>=0?"good":"bad",p);
+}
+/* ---------- ميزانية السنة: كل ٦ جولات = سنة ---------- */
+async function yearStart(p){
+  const y=Math.floor((G.round-1)/6);
+  p.year=y;
+  const sn=p.ySnap;
+  if(sn){
+    const dc=Math.round(p.cash-sn.cash),dp=passive(p)-sn.passive;
+    await ack(p,`📅 كشف حساب السنة ${y}`,`<p>${esc(p.avatar)} <b>${esc(p.name)}</b> — ملخص السنة الماضية:</p>
+      <div class="lrow"><span>💵 نقدك</span><b>${fmt(Math.round(p.cash))} <span class="${dc>=0?"good":"bad"}">(${dc>=0?"+":""}${fmt(dc)})</span></b></div>
+      <div class="lrow"><span>🌱 دخلك التلقائي</span><b>${fmt(passive(p))} <span class="${dp>=0?"good":"bad"}">(${dp>=0?"+":""}${fmt(dp)})</span></b></div>
+      <div class="lrow"><span>😊 سعادتك</span><b>${hapState(p.hap)[0]} ${p.hap}</b></div>
+      <div class="lrow"><span>🧱 أصولك</span><b>${p.assets.length}</b></div>
+      <div class="lrow"><span>🎯 هدف الخروج</span><b>${fmt(passive(p))} / ${fmt(Math.round(exitNeed(p)))}</b></div>`,"أتابع");
+    // التزامات السنة الأساسية
+    const tuition=p.children*p.childCost*2,car=Math.round((p.exp["قسط السيارة"]||0)*2),tax=Math.round(p.exp["ضرائب"]||0),tot=tuition+car+tax;
+    if(tot>0){
+      await ack(p,`🧾 التزامات السنة ${y+1} الأساسية`,`<p>تُخصم من رأس مالك الآن:</p>
+        ${tuition?`<div class="lrow"><span>🎒 رسوم الأبناء الدراسية</span><b>${fmt(tuition)}</b></div>`:""}
+        <div class="lrow"><span>🚗 رخص وتأمين وصيانة السيارة</span><b>${fmt(car)}</b></div>
+        <div class="lrow"><span>🧾 ضرائب وزكاة وتجديد وثائق</span><b>${fmt(tax)}</b></div>
+        <div class="lrow"><b>المجموع</b><b class="bad">${fmt(tot)}</b></div>`,"ادفع");
+      if(await ensureCash(p,tot,true)){p.cash-=tot;log(`🧾 ${p.name} دفع التزامات السنة ${fmt(tot)}.`)}
+    }
+  }else{
+    await ack(p,`📅 بداية السنة الأولى`,`<p>${esc(p.avatar)} <b>${esc(p.name)}</b>، كل ٦ جولات = سنة. في أول كل سنة تظهر لك ميزانيتها: التزامات سنوية، ثم قراراتك: تأمين، تعليم، وترفيه. هذه سنة تأسيس بلا التزامات.</p>`,"ابدأ");
+  }
+  flash(`📅 ${p.name}: بداية السنة ${y+1}`);
+  // قرارات الميزانية
+  if(!insured(p))await insureTile(p);
+  if(p.learn<3)await learnTile(p);
+  await yearLeisure(p);
+  p.ySnap={cash:p.cash,passive:passive(p),assets:p.assets.length};
+}
+async function yearLeisure(p){
+  const base=lifeBase(p),opts=[{l:"لا ميزانية للترفيه",m:0,h:-3},{l:"ترفيه متواضع",m:0.5,h:8},{l:"ترفيه جيد",m:1.2,h:20},{l:"ترفيه فاخر",m:2.5,h:40}].map(o=>({...o,amt:Math.round(base*o.m/50)*50}));
+  const i=await ask(p,{kind:"yleisure",title:"🎡 ميزانية الترفيه للسنة",
+    body:`<p>سعادتك ${hapState(p.hap)[0]} <b>${p.hap}</b>/100 · نقدك ${fmt(p.cash)}.<br>كم تخصّص من رأس مالك للترفيه والعائلة هذه السنة؟ الإسراف مؤلم والبخل مؤلم.</p>`,
+    opts:opts.map(o=>`${o.l} — ${o.amt?`💵 −${fmt(o.amt)}${p.cash>0?` (${Math.round(100*o.amt/p.cash)}٪ من نقدك)`:""}`:"بلا كلفة"} · 😊 ${sg(o.h)}`),alt:opts.map((_,j)=>j===0),
+    data:{os:opts.map(o=>({m:o.m,h:o.h,amt:o.amt})),cash:p.cash,hap:p.hap,res:expenses(p)*2,base}});
+  const o=opts[i];if(!o)return;
+  if(o.amt>0){if(!(await ensureCash(p,o.amt,false)))return;p.cash-=o.amt;p.lux.push({r:G.round,c:o.amt});p.st.lux+=o.amt}
+  gainHap(p,o.h);log(`🎡 ${p.name}: ${o.l} (😊 ${p.hap}).`);cue(o.h>=0?"fun":"bad",p);
+}
+async function landPerk(p,k,own){
+  const L=LAND[k];
+  if(L.perk==="hap"){gainHap(p,L.pv);log(`${L.e} ${p.name}: +${L.pv} سعادة في «${L.n}».`)}
+  else if(L.perk==="souk"){await souk(p)}
+  else if(L.perk==="learn"){await learnTile(p,own?0.7:0.7)}
+}
+async function landTile(p,k){
+  const L=LAND[k],own=G.lm[k];
+  if(own==null){
+    const c=hd({n:`${L.e} ${L.n}`,t:"معلم",down:Math.round(L.cost*0.3/1000)*1000,inc:L.inc,cost:L.cost,lm:k,
+      note:`<b>ميزة المعلم:</b> ${L.d}.<br><b>إيجار الزوار:</b> حتى ${fmt(L.rent)} كلما وقف عليه لاعب آخر (يُدفع لك).<br>دخله الشهري الثابت يدخل في <b>دخلك التلقائي</b>.`});
+    await offer(p,c);
+    if(p.assets.some(a=>a.lm===k)){G.lm[k]=p.id;flash(`${L.e} ${p.name} اشترى «${L.n}»!`);log(`${L.e} ${p.name} صار مالك «${L.n}».`);}
+    return;
+  }
+  const o=G.players[own];
+  if(own===p.id){log(`${L.e} ${p.name} زار معلمه «${L.n}».`);await landPerk(p,k,true);return}
+  const cap=Math.round(expenses(p)*1.5/10)*10,rent=Math.max(0,Math.min(L.rent,cap,Math.round(p.cash)));
+  p.cash-=rent;o.cash+=rent;o.st.rentIn=(o.st.rentIn||0)+rent;p.st.rentOut=(p.st.rentOut||0)+rent;
+  log(`${L.e} ${p.name} دفع إيجار ${fmt(rent)} لـ${o.name} في «${L.n}».`);cue("bad",p);flash(`${L.e} ${p.name} دفع ${fmt(rent)} إيجاراً لـ${o.name}`);
+  await ack(p,`${L.e} ${L.n} — ملك ${esc(o.name)}`,`<p>دفعتَ إيجاراً <b class="bad">${fmt(rent)}</b> لـ${esc(o.avatar)} ${esc(o.name)}.</p>${rent<L.rent?`<p class="sub">(الإيجار الأصلي ${fmt(L.rent)}، لكن سقفه شهر ونصف من مصاريفك أو ما تملك.)</p>`:""}`,"ادفع");
+  await landPerk(p,k,false);
+}
 async function insureTile(p){
   const c=Math.round(expenses(p)*0.35/50)*50;
   if(insured(p)){await ack(p,"🛡️ تأمينك ساري",`<p>أنت مغطّى حتى نهاية الجولة <b>${p.ins}</b>: المصروف الطارئ ×0.3، والتسريح بنصف الثمن ودورة واحدة، والضريبة والقضية بالنصف.</p>`,"حسناً");return}
@@ -869,9 +1010,9 @@ async function insureTile(p){
   if(!(await ensureCash(p,c,false)))return;
   p.cash-=c;p.ins=G.round+6;p.st.ins++;gainHap(p,3);cue("buy",p);log(`🛡️ ${p.name} اشترى تأميناً حتى الجولة ${p.ins}.`);
 }
-async function learnTile(p){
+async function learnTile(p,disc=1){
   if(p.learn>=3){await ack(p,"📚 خريج متميز",`<p>أنهيت كل الدورات المتاحة (٣). راتبك الآن <b>${fmt(p.salary)}</b>.</p>`,"حسناً");return}
-  const c=Math.round(p.salary*(0.6+0.4*p.learn)/50)*50,g=[0.08,0.10,0.12][p.learn],names=["دورة مهارات مهنية","شهادة احترافية","ماجستير متخصص"];
+  const c=Math.round(p.salary*(0.6+0.4*p.learn)*disc/50)*50,g=[0.08,0.10,0.12][p.learn],names=["دورة مهارات مهنية","شهادة احترافية","ماجستير متخصص"];
   const ready=p.hap>=40;
   const i=await ask(p,{kind:"learn",title:`📚 ${names[p.learn]}`,body:`<p>التكلفة <b>${fmt(c)}</b> → راتبك يرتفع <b class="good">+${Math.round(g*100)}٪</b> بشكل دائم (إلى ${fmt(Math.round(p.salary*(1+g)))}).<br>الدراسة جهد: <b class="bad">😊 −6</b> وتفوتك دورة.</p>${ready?"":'<div class="tip bad">أنت مرهق للغاية للدراسة (السعادة أقل من 40). ارفع سعادتك أولاً.</div>'}<p class="sub">المستوى ${p.learn}/3 · نقدك ${fmt(p.cash)}</p>`,opts:ready?[`سجّل (${fmt(c)})`,"لاحقاً"]:["مرهق جداً"],alt:ready?[false,true]:[true],data:{c,ready,cash:p.cash,res:expenses(p)*2}});
   if(!ready||i!==0)return;
@@ -1248,9 +1389,11 @@ function endNow(){
 async function loop(){
   const my=RUN;
   try{
+    if(briefP){await briefP;briefP=null;if(my!==RUN)return}
     while(!over()&&my===RUN){
       const p=G.players[G.cur];
       if(G.placed.includes(p.id)){G.cur=(G.cur+1)%G.players.length;if(G.cur===0){G.round++;rollEvent();tickHappiness()}continue}
+      if(Math.floor((G.round-1)/6)>p.year){await yearStart(p);if(my!==RUN)return}
       G.phase="await_roll";saveLocal();sync();
       if(isBot(p)){botOrders(p);sync();await w(750+Math.random()*500)}else await waitRoll(p);
       if(my!==RUN)return;
@@ -1273,6 +1416,21 @@ function botChoose(p,pr,secret){
     if(d.tier>=2||G.placed.length>0||L<3)return 0;
     const next=d.costs[d.tier+1];                       // الخبير والأسطوري ينتظران الحلم الأكبر إن كان قريباً
     return(d.cash>=next*at(p,[1,1,0.75,0.6,0.5])&&p.hap>=50)?1:0}
+  case"life":case"yleisure":{
+    const os=d.os,n=os.length,base=d.base;
+    if(L===1)return Math.floor(Math.random()*n);
+    const w=d.hap<40?3:d.hap<55?1.5:d.hap<70?0.6:0.12;
+    let best=0,bu=-1e9;
+    os.forEach((o,i)=>{
+      const cost=o.m<0?o.amt:0;
+      let u=o.m+o.h*w*0.2+(o.sal?at(p,[0,0.7,1.5,1.5,1.5]):0)-(o.skip?0.3:0);
+      if(pr.kind==="yleisure")u=-o.m*0.9+o.h*w*0.2;      // m موجبة هنا تعني تكلفة
+      const money=pr.kind==="yleisure"?o.amt:cost;
+      if(money&&d.cash-money<d.res)u-=3;
+      if(L===2)u+=(Math.random()-0.5)*1.2;
+      if(u>bu){bu=u;best=i}
+    });
+    return best}
   case"fun":{
     const n=d.cs.length,skip=n,res=d.res;
     const ok=d.cs.map((c,i)=>({i,c,g:d.gs[i]})).filter(x=>x.c===0||d.cash-x.c>=res);
@@ -1332,7 +1490,7 @@ function loadSaved(){
   try{
     const r=localStorage.getItem(KEY);if(!r)return false;
     const g=JSON.parse(r);
-    if(!g||g.v!==7||!Array.isArray(g.players)||!g.players.length||g.phase==="over")return false;
+    if(!g||g.v!==8||!Array.isArray(g.players)||!g.players.length||g.phase==="over")return false;
     if(g.players.some(p=>p.ctrl==="remote"))return false;
     G=g;G.phase="idle";G.prompt=null;G.rolling=false;return true;
   }catch(e){}
@@ -1415,6 +1573,8 @@ function render(){
    <div class="lrow"><span>😊 السعادة</span><span class="hapbar wide"><u style="width:${me.hap}%;background:${me.hap>=50?"var(--good)":me.hap>=30?"#d19a1c":"var(--bad)"}"></u></span><b>${hs[0]} ${me.hap} · ${hs[1]}</b></div>
    <div class="lrow"><span>🛡️ التأمين</span><b>${insured(me)?"ساري حتى الجولة "+me.ins:"غير مؤمَّن"}</b></div>
    <div class="lrow"><span>📚 الدورات</span><b>${me.learn}/3</b></div>
+   <div class="lrow"><span>🏦 سقف الاقتراض</span><b>${fmt(me.loans)} / ${fmt(loanCap(me))}</b></div>
+   <div class="lrow"><span>🏨 معالمي</span><b>${Object.entries(G.lm||{}).filter(([k,v])=>v===me.id).map(([k])=>LAND[k].e).join(" ")||"لا شيء بعد"}</b></div>
    <div class="lrow"><span>🏘️ الجمعية</span><b>${j?`قسط ${fmt(j.fee)} · القبض: ${esc(j.members[j.idx].name)}`:"لا جمعية الآن"}</b></div>
    ${f?`<div class="lrow"><span>${f.e} ${esc(f.n)}</span><b>${fmt(f.have)} / ${fmt(f.goal)}</b></div><div class="bar"><i style="width:${Math.min(100,f.have/f.goal*100)}%"></i></div>`:""}
    <p class="sub" style="margin:8px 0 0">${me.hap<30?"⚠️ سعادتك منخفضة: دخلك يتأثر وقد تنهار! اذهب لخانة 🎡 الترفيه.":me.hap>=80?"✨ مبتهج: أرباح الطلبات +10٪.":"حافظ على سعادتك فوق 50 لتشتري الحلم، وفوق 30 لتخرج من السباق."}</p>`}
@@ -1442,7 +1602,8 @@ function render(){
     }
     const [ic,name,col]=TILE[track[i]];
     const tks=here.filter(p=>p.pos===i).map(p=>`<span class="tk ${p.id===G.cur?"cur":""}" style="--pc:${colr(p)}">${esc(p.avatar)}</span>`).join("");
-    html+=`<div class="tile ${i===me.pos?"me":""}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${ic}</span>${name}${tks?`<span class="tks">${tks}</span>`:""}</div>`;
+    const ow=(typeof track[i]==="string"&&track[i].startsWith("lm_")&&G.lm)?G.lm[track[i].slice(3)]:null,ob=ow!=null&&G.players[ow]?`<span class="own" style="--pc:${colr(G.players[ow])}">${esc(G.players[ow].avatar)}</span>`:"";
+    html+=`<div class="tile ${i===me.pos?"me":""}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${ic}</span>${name}${ob}${tks?`<span class="tks">${tks}</span>`:""}</div>`;
   }
   b.innerHTML=html;
   const used=[...new Set(track)];
@@ -1474,7 +1635,7 @@ function renderPrompt(){
   shownPrompt=pr.id;
   const btns=pr.opts.map((l,i)=>[l,()=>answer(pr.id,i),pr.alt&&pr.alt[i]]);
   openModal("prompt",esc(pr.title),cleanHTML(pr.body),btns,true);
-  if(["quiz","fun","charity","family"].includes(pr.kind))$("#sheet .row").style.flexDirection="column";
+  if(["quiz","fun","charity","family","life","yleisure","learn","insure"].includes(pr.kind))$("#sheet .row").style.flexDirection="column";
 }
 function answer(id,i){
   if(Net.role==="guest")send({t:"choose",id,idx:i});
@@ -1517,7 +1678,8 @@ if("serviceWorker" in navigator&&/^https:|^http:\/\/localhost/.test(location.hre
 let TAB="play";
 function setTab(t){TAB=t;document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));document.querySelectorAll(".pane").forEach(x=>x.classList.toggle("on",x.dataset.p===t));window.scrollTo(0,0)}
 document.addEventListener("click",e=>{const b=e.target.closest("#tabs button");if(b)setTab(b.dataset.t);else if(e.target.closest("#mini"))setTab("me")});
-function closeModal(){$("#modal").classList.remove("on");modalKind=""}
+let briefP=null,briefRes=null;
+function closeModal(){if(modalKind==="brief"&&briefRes){const r=briefRes;briefRes=null;r()}$("#modal").classList.remove("on");modalKind=""}
 
 /* ---------- التحديات ---------- */
 const CH=[
@@ -1676,8 +1838,7 @@ const HELP=[
    ["family","مفاجأة عائلية: بطاقة موقف من الحياة العائلية، بعضها يشارك فيه اللاعبون الآخرون."],
    ["auction","مزاد: صفقة كبيرة بخصم 15% تُعرض على اللاعبين بالترتيب، ومن يشتري أولاً يربحها."],
    ["fun","ترفيه 🎡: تنفق على الكماليات لتملأ بار السعادة 😊. الإفراط يقلّل الأثر ثم تندم وتخسر، وقد تضطر لقرض استهلاكي مرهق."],
-   ["insure","تأمين 🛡️: قسط لـ٦ جولات يخفّف المصروف الطارئ والتسريح والضريبة والقضية وعلاج الإرهاق."],
-   ["learn","دورة تدريبية 📚: تدفع فيرتفع راتبك بشكل دائم (حتى ٣ دورات) مقابل تعب (😊 −6) ودورة فائتة."],
+   ["lm_hotel","معالم اللوحة 🏨🏦🏬🏥🎓☕ (وفي المسار السريع 🏙️✈️): إن كانت بلا مالك تشتريها بدفعة ٣٠٪ فيدخل دخلها الشهري في <b>دخلك التلقائي</b>. ومن يقف على معلم لغيره يدفع <b>إيجاراً</b> لمالكه (بسقف شهر ونصف من مصاريفه). لكل معلم ميزة: الفندق والمستشفى والمقهى سعادة للزائر، المول سوق، الجامعة دورة بخصم، والبنك يربح ٥٪ من قروض الآخرين."],
    ["jamia","جمعية الأسرة 🏘️: قسط كل جولة وصرفة كبيرة بالدور. ادخار جماعي، والتعثر عن القسط يعاقب بشدة."],
    ["tax","ضريبة تأخذ جزءاً من نقدك (10–25٪ حسب الصعوبة)."]];
   return `<dl>${rows.map(([k,t])=>`<dt><span class="chip" style="background:var(${TILE[k][2]})">${TILE[k][0]} ${TILE[k][1]}</span></dt><dd>${t}</dd>`).join("")}</dl>`}],
@@ -1698,7 +1859,11 @@ const HELP=[
   <p class="sub">كل لاعب يحاول الخروج من سباق الفئران في لوحته الخاصة، وتتنافسون على من يحقق حلماً أولاً. اضغط على بطاقة أي لاعب في الأعلى لترى أرقامه ولوحته.</p>`],
  ["الحماس والتفاعل",()=>`<dl>
   <dt>⭐ نقاط الأحلام</dt><dd>أسعار الأحلام الثلاثة تناسب مصاريف كل لاعب (١٠ و١٨ و٢٥ ضعفاً من مصاريفه السنوية الأساسية، فأكبرها يمثل الاستقلال المالي الكامل) وتعطي نقاطاً: الأصغر ⭐10، المتوسط ⭐25، الأكبر ⭐45، ومعها علاوة أسبقية (+5 للأول، +3، +1). <b>الفوز لصاحب أعلى نقاط</b>، فمن ينتظر ويشتري حلماً أكبر يتفوق على من استعجل بالأصغر. بعد الشراء تخرج من الأدوار وتنتظر الباقين. وإن انتهت المباراة وبقي لاعب بلا حلم يشتري تلقائياً أكبر حلم يقدر عليه (بلا علاوة).</dd>
-  <dt>😊 بار السعادة</dt><dd>لكل متسابق شريط سعادة (٠–١٠٠) يبدأ عند ٦٠ وينقص كل جولة. املأه بخانة 🎡 الترفيه، لكن <b>ضبط النفس مطلوب</b>: التكرار يقلّل الأثر، ثم «ندم الإسراف» يخسّرك مالاً وسعادة، والقرض الاستهلاكي يكلّفك ٣٠٪ فائدة. وإن أهملته: تحت ٥٠ تُمنع من شراء الحلم، وتحت ٣٠ يقلّ دخلك ويُسحب جزء من نقدك ولا تخرج من سباق الفئران، وعند الصفر <b>تنهار</b> وتدفع علاجاً وتفوتك دورتان. فوق ٨٠ ترتفع أرباح الطلبات ١٠٪.</dd>
+  <dt>😊 بار السعادة وقرارات الحياة</dt><dd>لا ينقص شريط السعادة تلقائياً: <b>يرتفع وينخفض بقراراتك</b>. بعد كل دور تظهر <b>بطاقة قرار</b> (دعوة زواج، عمل إضافي، رحلة…) وأثر كل خيار مكتوب: كم تدفع (ونسبته من نقدك) وكم تكسب أو تخسر من السعادة. المتعة تكلّف مالاً مؤلماً، والتقتير يكلّفك سعادة. وفوق ذلك: تحت ٥٠ لا تشتري الحلم، وتحت ٣٠ ينقص دخلك ويُسحب جزء من نقدك ولا تخرج من السباق، وعند الصفر تنهار وتدفع علاجاً وتفوتك دورتان. فوق ٨٠ ترتفع أرباح الطلبات ١٠٪.</dd>
+  <dt>📅 ميزانية السنة</dt><dd>كل ٦ جولات = سنة. في أول كل سنة يظهر لك <b>كشف حساب</b> السنة الماضية (نقدك ودخلك التلقائي وسعادتك)، ثم <b>التزامات سنوية</b> تُخصم من رأس مالك (رسوم الأبناء، السيارة، الضرائب)، ثم قراراتك: <b>تأمين</b> السنة، و<b>دورة</b> تعليمية، و<b>ميزانية الترفيه</b>.</dd>
+  <dt>🏦 سقف الاقتراض</dt><dd>لا قرض بلا حد: سقفك ٥ رواتب + ٤ أضعاف دخلك التلقائي. فوق السقف لا يقرضك البنك قروضاً اختيارية، والمصاريف الإجبارية يموّلها «مُقرض الطوارئ» بفائدة أعلى (تردّ ١٫٥ ضعفاً).</dd>
+  <dt>🥇 الذهب والصكوك</dt><dd>أصلان جديدان في الصفقات: <b>الذهب</b> بلا دخل لكن قيمته ترتفع في الركود والأزمات المالية فيحمي مالك، و<b>الصكوك</b> دخل ثابت منخفض المخاطر يتبع التضخم ويزيد حين ترتفع الفائدة.</dd>
+
   <dt>🏡 هدف العائلة</dt><dd>صندوق مشترك تساهم فيه من خانة 🎁 التبرّع. إن اكتمل ينال الجميع مكافأة وسعادة.</dd>
   <dt>🎯 التحديات</dt><dd>تحدي يومي وآخر أسبوعي يظهران في الشاشة الرئيسية، تُنجزهما في أي مباراة وتُحفظ على جوالك. بعد المباراة اضغط «📊 تقرير المباراة» لترى رسوم تقدمك ودروسك.</dd>
   <dt>🔥 مستوى الصعوبة</dt><dd>أربعة مستويات: سهلة وسريعة، عادية، صعبة، أسطورية (تضخم وضرائب وأحلام أغلى كلما ارتفع المستوى). <b>الوضع «عادية»</b>: التضخم يرفع مصاريفك ٢٫٥٪ كل ١٠ جولات (حتى ١٠٪)، والصفقات أغلى بنحو ٨٪ ودخلها أقل ٣٪، والمصاريف الطارئة أكبر بـ٢٠٪، وسعر عرض السوق أقل سخاءً، والضريبة والقضية أثقل، وأسعار الأحلام تتناسب مع مصاريفك (١٠ و١٨ و٢٥ ضعفاً من مصاريفك السنوية الأساسية، ×٠٫٦ في السهلة و×١٫١ في الصعبة و×١٫٢ في الأسطورية)، وفي سباق الفئران خانة ضريبة وخانتا مصروف إضافيتان بدل صفقتين. <b>«سريعة وسهلة»</b> تبقي الأسعار الأخف للعب أقصر.</dd>
@@ -1814,8 +1979,9 @@ function openProfPicker(i){
   $("#pBack").onclick=()=>drawSetup();
   $("#modal").classList.add("on");
 }
-function showBriefing(){
+function showBriefing(gate){
   if(!G)return;
+  if(gate)briefP=new Promise(r=>{briefRes=r});
   const rows=G.players.map(p=>{
     const need=Math.round(exitNeed(p)),cf=p.salary-expenses(p),hp=Object.prototype.hasOwnProperty;
     return `<div class="brief"><div class="bh">${hp.call(IMG,p.pk)?`<img class="portrait" src="${IMG[p.pk]}" alt="">`:""}<div><b>${esc(p.avatar)} ${esc(p.name)}</b> ${esc(CTRL_ICON[p.ctrl]||"")}<div class="sub">${esc(p.pe)} ${esc(p.prof)}${isBot(p)?" · "+BOTN[p.ctrl]:""}</div></div></div>
@@ -1829,8 +1995,8 @@ function launch(sl,remote,mode){
   RUN++;pending.roll=null;pending.ask=null;
   G=mkGame(sl,mode);G.cid=Math.random().toString(36).slice(2);G.fund=mkFund(1);viewId=null;manualView=false;lastCur=-1;shownPrompt=0;resultShown=false;QDECK=[];FDECK=[];lastFlash=null;
   if(remote){Net.role="host"}else{Net.role="solo"}
-  clearSave();render();showBriefing();
-  if(remote&&Net.open){send({t:"welcome",pid:Net.remotePid})}
+  clearSave();render();showBriefing(true);
+  if(remote&&Net.open){send({t:"welcome",pid:Net.remotePid});sync()}
   loop();
 }
 
