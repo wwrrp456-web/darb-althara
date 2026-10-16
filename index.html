@@ -208,23 +208,40 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 .welcome{text-align:center;padding:26px 14px}
 .welcome .big{font-size:3rem}
 .welcome button{display:block;width:100%;margin-top:10px}
-@media(min-width:900px){
- .wrap{max-width:1180px}
- .pane[data-p=play].on{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(250px,1fr);gap:0 16px;align-items:start}
- .pane[data-p=play]>*{grid-column:1}
- .pane[data-p=play]>.chips{grid-column:2;grid-row:1/span 6;flex-direction:column;overflow:visible;margin:0}
- .chip-p{max-width:none;min-width:0;padding:10px 12px!important;flex:none}
- .board{max-width:min(100%,calc(100vh - 330px));margin-inline:auto}
- .chip-p .mb{display:block!important}
- .sheet{max-width:560px}
+#colR{display:none}
+@media(min-width:768px){
+ html{font-size:112.5%}
  button{min-height:52px}
- .bar-actions .in{max-width:1180px}
- .board.dense .tile{font-size:.5rem}
- .board.dense .tile .ic{font-size:1.1rem}
- .center .big{font-size:1.5rem}
- .die{width:clamp(4rem,9vw,6.5rem)}
+ .sheet{max-width:580px}
+ .gtabs button{font-size:.9rem;padding:12px 0}
+ body.tabl .gtabs button[data-t=souk],body.tabl .gtabs button[data-t=log]{display:none}
+ #colR{display:block}
+ #colR .chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible;margin:0 0 12px;padding:0;gap:8px}
+ #colR .chip-p{max-width:none;min-width:0;padding:8px 10px!important;flex:none}
+ #colR .chip-p .mb{display:block!important}
+ #colR .pane{display:block!important;animation:none}
+ #colR .pane>.card{margin-bottom:12px}
+ #colR #log{max-height:240px;overflow:auto}
+ .board.dense.names .tile{font-size:.5rem}
+ .board.dense.names .tile .ic{font-size:1.1rem}
+ .legend{display:none}
+ .center .big{font-size:1.4rem}
+ .die{width:clamp(3.6rem,8vw,6rem)}
+ .tk{width:18px;height:18px;font-size:.7rem}
 }
-@media(min-width:768px) and (orientation:portrait){.wrap{max-width:820px}button{min-height:50px}.sheet{max-width:560px}}
+@media(min-width:768px) and (orientation:landscape){
+ .wrap{max-width:1500px}
+ .bar-actions .in{max-width:1500px}
+ .cols{display:grid;grid-template-columns:max(360px,min(calc(100dvh - 330px),58vw)) minmax(0,1fr);gap:18px;align-items:start}
+ .board{max-width:none}
+ #colR{max-height:calc(100dvh - 190px);overflow:auto;padding-bottom:12px}
+ #colR .chips{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(min-width:768px) and (orientation:portrait){
+ .wrap{max-width:900px}
+ .bar-actions .in{max-width:900px}
+ .board{max-width:min(100%,calc(100dvh - 540px));margin-inline:auto}
+}
 </style>
 </head>
 <body>
@@ -249,6 +266,7 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
     <nav class="gtabs" id="tabs">
       <button data-t="play" class="on">🎲 اللوحة</button><button data-t="me">👤 بطاقتي</button><button data-t="souk">🛒 السوق</button><button data-t="log">📜 السجل</button>
     </nav>
+    <div class="cols" id="cols">
     <section class="pane on" data-p="play">
       <div class="event" id="event" hidden></div>
       <div class="chips" id="chips"></div>
@@ -273,6 +291,8 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
     </section>
     <section class="pane" data-p="souk"><div class="card" id="goodsCard"></div></section>
     <section class="pane" data-p="log"><div class="card log"><h3>📜 سجل الأحداث</h3><div id="log"></div></div></section>
+    <aside id="colR"></aside>
+    </div>
   </div>
 </div>
 
@@ -322,7 +342,7 @@ const PROFS=[
  {k:"pharmacist",n:"صيدلي",e:"💊",salary:7000,tax:1300,home:1050,car:260,cards:200,other:430,childCost:230,cash:5000,debt:"قرض صيدلية 140,000",perk:{itemDisc:{honey:0.2,saffron:0.2}},pt:"عسل وزعفران أرخص ٢٠٪"},
  {k:"pilot",n:"طيار",e:"✈️",salary:11000,tax:2300,home:1900,car:420,cards:360,other:760,childCost:360,cash:8500,debt:"قرض سكن 260,000",perk:{itemDisc:{perfume:0.15,fabric:0.15}},pt:"عطور وأقمشة أرخص ١٥٪ (من أسفاره)"}
 ];
-const RAT=["payday","deal","lm_cafe","deal","order","lm_mall","souk","deal","fun","lm_bank","market","child","payday","deal","family","lm_hospital","quiz","deal","partner","lm_uni","deal","jamia","charity","deal","payday","deal","souk","lm_hotel","order","deal","fun","market","layoff","deal","auction","family","payday","deal","quiz","fun","deal","jamia","partner","deal","charity","fun","deal","order"];
+const RAT=["payday","deal","lm_cafe","deal","order","lm_mall","souk","deal","fun","lm_bank","market","child","payday","deal","family","lm_hospital","quiz","audit","partner","lm_uni","deal","jamia","charity","deal","payday","deal","souk","lm_hotel","order","deal","fun","market","layoff","audit","auction","family","payday","deal","quiz","fun","deal","jamia","partner","deal","charity","fun","deal","order"];
 const FAST=["payday","biz","dream","lm_tower","lawsuit","fun","biz","tax","lm_airport","dream","payday","biz","lawsuit","fun","market","tax","dream","biz","fun","market"];
 const DPTS=[10,25,45];              // نقاط الحلم: الأصغر، المتوسط، الأكبر
 const DORD=[5,3,2,1,0];              // علاوة الأسبقية في الشراء
@@ -336,7 +356,7 @@ const TILE={
  payday:["💰","يوم الراتب","--t-payday"],deal:["🤝","فرصة","--t-deal"],doodad:["🛍️","مصروف طارئ","--t-doodad"],
  market:["💼","مستثمر","--t-market"],child:["👶","مولود","--t-child"],charity:["🎁","تبرّع","--t-charity"],
  layoff:["📉","تسريح","--t-layoff"],biz:["🏢","مشروع كبير","--t-deal"],dream:["⭐","حلم","--t-dream"],
- lawsuit:["⚖️","قضية","--t-lawsuit"],tax:["🧾","ضريبة","--t-tax"],
+ lawsuit:["⚖️","قضية","--t-lawsuit"],tax:["🧾","ضريبة","--t-tax"],audit:["🕵️","تدقيق ضريبي","--t-tax"],
  fun:["🎡","ترفيه","--t-fun"],insure:["🛡️","تأمين","--t-insure"],learn:["📚","دورة","--t-learn"],jamia:["🏘️","جمعية","--t-jamia"],
  quiz:["🧠","سؤال مالي","--t-quiz"],auction:["🔔","مزاد","--t-auction"],souk:["🛒","سوق الحي","--t-souk"],order:["📦","طلب الحي","--t-order"],partner:["👥","صفقة شراكة","--t-partner"],family:["🎴","مفاجأة عائلية","--t-family"]
 };
@@ -766,6 +786,8 @@ function pay(p){
 }
 async function takeTurn(p){
   p.turns++;
+  if(p.loans>loanCap(p)*1.5&&G.round-(p.bkR||-99)>=6){await bankrupt(p);}
+  if(p.jail>0){if(!(await jailTurn(p)))return}
   if(p.skip>0){p.skip--;log(`⏸️ فاتك الدور يا ${p.name} (تسريح). متبقٍ ${p.skip}.`);sync();await w(600);return}
   const roll2=()=>[1+Math.floor(Math.random()*6),1+Math.floor(Math.random()*6)];
   let ds=roll2();
@@ -860,6 +882,7 @@ async function resolveTile(p,k){
   case"partner":return partner(p);
   case"family":return familyCard(p);
   case"lawsuit":{const lp=D().suit*(insured(p)?0.5:1),c=Math.round(p.cash*lp);await ack(p,"⚖️ قضية",`<p>تدفع ${fmt(c)} (${Math.round(lp*100)}% من نقدك).</p>`,"ادفع");p.cash-=c;cue("bad",p);log(`⚖️ ${p.name} دفع ${fmt(c)} في قضية.`);return}
+  case"audit":return auditTile(p);
   case"tax":{const tp=D().tax*(insured(p)?0.5:1),c=Math.round(p.cash*tp);await ack(p,"🧾 ضريبة",`<p>تدفع ${fmt(c)} (${Math.round(tp*100)}% من نقدك).</p>`,"ادفع");p.cash-=c;log(`🧾 ${p.name} دفع ضريبة ${fmt(c)}.`);return}
   }
 }
@@ -1072,6 +1095,42 @@ async function landTile(p,k){
   log(`${L.e} ${p.name} دفع إيجار ${fmt(rent)} لـ${o.name} في «${L.n}».`);cue("bad",p);flash(`${L.e} ${p.name} دفع ${fmt(rent)} إيجاراً لـ${o.name}`);
   await ack(p,`${L.e} ${L.n} — ملك ${esc(o.name)}`,`<p>دفعتَ إيجاراً <b class="bad">${fmt(rent)}</b> لـ${esc(o.avatar)} ${esc(o.name)}.</p>${rent<lmRent(k)?`<p class="sub">(الإيجار الأصلي ${fmt(lmRent(k))}، لكن سقفه شهر ونصف من مصاريفك أو ما تملك.)</p>`:""}`,"ادفع");
   await landPerk(p,k,false);
+}
+const AUDITP={fast:0.35,normal:0.45,hard:0.55,legend:0.65};
+const jailFine=p=>Math.round(expenses(p)*2/100)*100;
+function goJail(p,why){p.jail=2;p.st.jail=(p.st.jail||0)+1;log(`🚔 ${p.name} دخل السجن (${why}).`);flash(`🚔 ${p.name} في السجن!`);cue("bad",p)}
+async function auditTile(p){
+  const tax=Math.round(p.salary*4*(insured(p)?0.5:1)/100)*100,pc=AUDITP[G.mode]||0.45;
+  const i=await ask(p,{kind:"audit",title:"🕵️ تدقيق ضريبي",
+    body:`<p>تدقيق على حساباتك. ضريبتك المستحقة <b>${fmt(tax)}</b>.</p><p class="sub">تدفعها وتنتهي القصة، أو تتهرّب منها: باحتمال <b>${Math.round(pc*100)}٪</b> تُكشف فتُسجن دورين وتدفع غرامة <b class="bad">${fmt(tax*2)}</b>، وإلا توفّر المبلغ.</p>`,
+    opts:["أدفع ضريبتي","أتهرّب 🎲"],alt:[false,true],data:{tax,pc,cash:p.cash}});
+  if(i===0){p.cash-=tax;autoLoan(p);log(`🕵️ ${p.name} دفع ضريبته ${fmt(tax)} بأمانة.`);cue("pay",p);return}
+  if(Math.random()<pc){
+    p.cash-=tax*2;autoLoan(p);p.st.evaded=(p.st.evaded||0);
+    await ack(p,"🚔 انكشف التهرّب!",`<p>دفعتَ غرامة <b class="bad">${fmt(tax*2)}</b> وستقضي <b>دورين</b> في السجن (أو تدفع غرامة الخروج).</p>`,"حسناً");
+    goJail(p,"تهرّب ضريبي");
+  }else{p.st.evaded=(p.st.evaded||0)+1;log(`🕵️ ${p.name} تهرّب من الضريبة ولم يُكشف (وفّر ${fmt(tax)}).`);cue("good",p);flash(`🕵️ ${p.name} تهرّب من التدقيق!`)}
+}
+async function bankrupt(p){
+  p.bkR=G.round;
+  const cand=p.assets.filter(a=>a.cost&&!/شراكة/.test(a.n)).sort((a,b)=>b.cost-a.cost)[0];
+  let msg=`<p>ديونك (${fmt(p.loans)}) تجاوزت ١٫٥ ضعف سقف اقتراضك. أعلنتَ إفلاسك وستقضي <b>دورين</b> في السجن.</p>`;
+  if(cand){
+    const price=Math.round(cand.cost*0.7/100)*100,rep=Math.min(p.loans,Math.floor(price/1000)*1000);
+    p.assets.splice(p.assets.indexOf(cand),1);if(cand.lm){G.lm[cand.lm]=null;G.lmLv[cand.lm]=0}
+    p.loans-=rep;p.cash+=price-rep;
+    msg+=`<p>صودر «${esc(cand.n)}» وبيع بـ ${fmt(price)}: سُدّد ${fmt(rep)} من القروض.</p>`;
+  }
+  await ack(p,"🚔 إفلاس وسجن",msg,"حسناً");
+  goJail(p,"إفلاس الديون");
+}
+async function jailTurn(p){
+  const fine=jailFine(p),can=p.cash>=fine;
+  const i=await ask(p,{kind:"jail",title:"🚔 أنت في السجن",
+    body:`<p>تبقّى <b>${p.jail}</b> ${p.jail===1?"دور":"أدوار"}. ادفع الغرامة <b>${fmt(fine)}</b> (ضعف مصاريفك الشهرية) لتخرج وتتحرك الآن، أو ابقَ ويفوتك الدور.</p><p class="sub">راتبك ودخلك التلقائي يستمران. نقدك ${fmt(p.cash)}.</p>`,
+    opts:can?[`ادفع ${fmt(fine)} واخرج`,"ابقَ في السجن"]:["ابقَ في السجن"],alt:can?[false,true]:[true],data:{fine,cash:p.cash,left:p.jail,can}});
+  if(can&&i===0){p.cash-=fine;p.jail=0;log(`🚔 ${p.name} دفع غرامة ${fmt(fine)} وخرج من السجن.`);cue("pay",p);return true}
+  p.jail--;log(`🚔 ${p.name} بقي في السجن${p.jail>0?` (متبقٍ ${p.jail})`:" وسيخرج في دوره القادم"}.`);sync();await w(500);return false;
 }
 async function insureTile(p){
   const c=Math.round(expenses(p)*0.35/50)*50;
@@ -1514,6 +1573,8 @@ function botChoose(p,pr,secret){
     const need=at(p,[0,70,66,62,58])-d.hap;
     const pick=ok.filter(x=>x.g>=Math.min(need,38)).sort((a,b)=>a.c-b.c)[0]||best;
     return pick?pick.i:skip}
+  case"audit":return(at(p,[0,0.2,0.5,0.35,0.3])>Math.random()&&d.cash>d.tax*2)?1:0;
+  case"jail":return(d.can&&(d.cash-d.fine>=expenses(p)*at(p,[0,2,1.5,1.5,1])||d.left>=2&&d.cash>d.fine*4))?0:(d.can?1:0);
   case"insure":return(pro?(d.cash-d.c>=0&&(L>=4||Math.random()<0.7)):(Math.random()<0.4&&d.cash>d.c*2))?0:1;
   case"learn":{if(!d.ready)return 0;return(d.cash-d.c>=d.res&&(L>=3||Math.random()<at(p,[0.2,0.5])))?0:1}
   case"jamstart":return(d.cash>=d.res&&(L>=2||Math.random()<0.4))?0:1;
@@ -1621,7 +1682,7 @@ function render(){
     const r=exitNeed(p)?Math.min(1,passive(p)/exitNeed(p)):0;
     const medal=G.players.length>1?(["🥇","🥈","🥉"][rank.indexOf(p.id)]||""):"";
     return `<button class="chip-p ${p.id===G.cur?"cur":""} ${p.id===me.id?"view":""}" data-pid="${p.id}" style="--pc:${colr(p)}">
-      <div class="nm"><span class="av">${esc(p.avatar)}</span>${esc(p.name)} <span>${esc(CTRL_ICON[p.ctrl]||"")}</span></div>
+      <div class="nm"><span class="av">${esc(p.avatar)}</span>${esc(p.name)} <span>${esc(CTRL_ICON[p.ctrl]||"")}</span>${p.jail>0?` <span title="في السجن">🚔${p.jail}</span>`:""}</div>
       <div class="mn"><span>${medal} ${p.fast?"🚀 سريع":"🐀 سباق"} ${hapState(p.hap||0)[0]}</span><span>${fmt(+p.cash||0)}</span></div>
       <div class="mb"><i style="width:${(p.fast?1:r)*100}%"></i></div></button>`}).join("");
   $("#chips").querySelectorAll(".chip-p").forEach(b=>b.onclick=()=>{manualView=true;viewId=+b.dataset.pid;render()});
@@ -1681,7 +1742,7 @@ function render(){
     const ow=(typeof track[i]==="string"&&track[i].startsWith("lm_")&&G.lm)?G.lm[track[i].slice(3)]:null,ob=ow!=null&&G.players[ow]?`<span class="own" style="--pc:${colr(G.players[ow])}">${esc(G.players[ow].avatar)}</span>`:"";
     html+=`<div class="tile ${i===me.pos?"me":""}" title="${name}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${ic}</span>${name}${ob}${tks?`<span class="tks">${tks}</span>`:""}</div>`;
   }
-  b.innerHTML=html;
+  b.innerHTML=html;b.classList.toggle("names",b.clientWidth>=560);
   const used=[...new Set(track)];
   $("#legend").innerHTML=used.map(k=>`<span><i style="background:var(${TILE[k][2]})"></i>${TILE[k][1]}</span>`).join("");
   const lg=$("#log");lg.textContent="";
@@ -1905,6 +1966,7 @@ const HELP=[
    ["market","عرض مستثمر: في بداية كل سنة يأتيك عرضان إلى ثلاثة على أصولك (ويظهر عرض مفاجئ عند خانة 💼). إن احتفظت يبقى العرض قائماً لدورك القادم فقط. بِع إن كان الربح يستحق فقدان دخل الأصل."],
    ["doodad","مصروف طارئ لا يعطي دخلاً. تدفعه مباشرة."],
    ["child","مولود جديد: تزيد مصاريفك الشهرية."],
+   ["audit","تدقيق ضريبي: تدفع ضريبتك (٤ أضعاف راتبك الشهري) بأمان، أو تتهرّب باحتمال انكشاف (٣٥٪ إلى ٦٥٪ بحسب المستوى) فتُسجن دورين وتدفع ضعف الضريبة. السجن: ادفع غرامة (ضعف مصاريفك الشهرية) لتخرج فوراً، أو ابقَ ويفوتك الدور. وإن تضخمت ديونك فوق ١٫٥ ضعف سقف الاقتراض فهو إفلاس وسجن ومصادرة أغلى أصولك."],
    ["charity","تبرّع بـ10% من دخلك لترمي رميتين وتأخذ الأفضل ٣ أدوار."],
    ["layoff","تسريح: تدفع مصاريف شهر وتفوتك دورتان."],
    ["dream","(المسار السريع) اشترِ حلمك إن كان نقدك يكفي فتفوز."],
@@ -2333,7 +2395,17 @@ else{
 }
 $("#hero").src=IMG.hero;
 // للاختبار الآلي فقط
-window.__darb={upgradeLm,lmRent,get G(){return G},get Net(){return Net},setFamilyDeck(a){FDECK=a}};
+const wideMQ=window.matchMedia("(min-width:768px)");
+function layoutMode(){
+  const wide=wideMQ.matches,colR=$("#colR"),chips=$("#chips"),sk=document.querySelector('.pane[data-p=souk]'),lg=document.querySelector('.pane[data-p=log]'),play=document.querySelector('.pane[data-p=play]');
+  if(!colR||!chips)return;
+  if(wide&&chips.parentNode!==colR)colR.append(chips,sk,lg);
+  else if(!wide&&chips.parentNode===colR){play.insertBefore(chips,$("#status"));colR.before(sk);colR.before(lg)}
+  document.body.classList.toggle("tabl",wide);
+  if(wide&&(TAB==="souk"||TAB==="log"))setTab("play");
+}
+wideMQ.addEventListener("change",layoutMode);layoutMode();
+window.__darb={upgradeLm,lmRent,resolveTile,bankrupt,get G(){return G},get Net(){return Net},setFamilyDeck(a){FDECK=a}};
 })();
 </script>
 </body>
