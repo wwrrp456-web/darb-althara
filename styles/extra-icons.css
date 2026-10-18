@@ -16,3 +16,5 @@
 .ui-icon[data-icon="two-dice"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:75% 100%}
 .ui-icon[data-icon="more"],.ui-icon:has(use[href$="#gi-menu"]),.ui-icon:has(use[href$="#menu"]){background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:100% 100%}
  .identity-avatar-value{display:inline;white-space:nowrap}
+
+.card-illustration.card-art-extra{background-image:url('../art/identity/cards-extra-sheet.png');background-size:200% 200%}

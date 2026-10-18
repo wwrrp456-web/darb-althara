@@ -56,12 +56,12 @@
   }
   // Different emotional states retain a readable label instead of relying on an OS emoji.
   const families={
-    offer:[0,'فرصة استثمارية','راجع الدفعة والدخل، ثم اختر ما يناسب خطتك.'],dealsize:[0,'الفرص','ابدأ بخيار يناسب ميزانيتك.'],market:[0,'عرض مستثمر','وازن بين ربح اليوم والدخل المستقبلي.'],
+    offer:[0,'فرصة استثمارية','راجع الدفعة والدخل، ثم اختر ما يناسب خطتك.'],dealsize:[0,'الفرص','ابدأ بخيار يناسب ميزانيتك.'],market:[0,'عرض مستثمر','وازن بين ربح اليوم والدخل المستقبلي.',true],
     family:[1,'بطاقات العائلة','قرارات صغيرة تصنع فرقاً في حياتك.'],life:[1,'قرارات الحياة','وازن بين المال والوقت والسعادة.'],yleisure:[1,'وقت لنفسك','اختر ما يلائم ميزانيتك وراحتك.'],fun:[1,'ترفيه وراحة','كل خيار يوضّح تكلفته وأثره على سعادتك.'],
     quiz:[2,'تحدّي المعرفة','اقرأ السؤال واختر إجابة واحدة.'],
     souk:[3,'سوق الحي','راجع الأسعار والمخزون قبل تنفيذ الصفقة.'],order:[3,'طلبات السوق','راجع الشروط والمكافأة قبل قبول الطلب.'],auction:[3,'المزاد','حدّد عرضك بما يناسب النقد المتاح.'],goodspick:[3,'شراء بضاعة','اختر السلعة التي تريد تداولها.'],qty:[3,'كمية البضاعة','حدّد الكمية المناسبة لميزانيتك.'],sellpick:[3,'بيع البضاعة','اختر من مخزونك ما تريد بيعه.'],tradeoffer:[3,'عرض تبادل','راجع البضاعة والثمن قبل الموافقة.'],tradebuyer:[3,'اختيار المشتري','اختر اللاعب الذي تريد عرض الصفقة عليه.'],tradeprice:[3,'تسعير الصفقة','حدّد السعر الذي تريد عرضه.'],
     dream:[4,'طموحك القادم','قارن التكلفة والنقاط ومتطلبات الشراء.'],
-    loan:[5,'التمويل','راجع المبلغ والقسط قبل الالتزام.'],funloan:[5,'تمويل الترفيه','راجع تكلفة الاقتراض وأثرها على ميزانيتك.'],audit:[5,'مراجعة مالية','راجع التفاصيل قبل متابعة دورك.'],jail:[5,'إجراء مالي','اختر الطريقة الأنسب لمتابعة رحلتك.'],jamstart:[5,'الجمعية','التزام دوري يحتاج إلى تخطيط مسبق.'],jampick:[5,'الجمعية','اختر موعداً يناسب خطتك المالية.'],
+    loan:[5,'التمويل','راجع المبلغ والقسط قبل الالتزام.'],funloan:[5,'تمويل الترفيه','راجع تكلفة الاقتراض وأثرها على ميزانيتك.'],audit:[1,'مراجعة مالية','راجع التفاصيل قبل متابعة دورك.',true],jail:[2,'إجراء مالي','اختر الطريقة الأنسب لمتابعة رحلتك.',true],bankrupt:[3,'بداية جديدة','راجع ملخص الالتزامات ثم خطّط لخطوتك التالية.',true],jamstart:[5,'الجمعية','التزام دوري يحتاج إلى تخطيط مسبق.'],jampick:[5,'الجمعية','اختر موعداً يناسب خطتك المالية.'],
     insure:[6,'حماية للمستقبل','راجع المدة والتغطية وتكلفة الاشتراك.'],charity:[6,'أثر طيّب','اختر المساهمة التي تناسب إمكاناتك.'],
     partner:[7,'شراكة وفرص','راجع حصتك والتزاماتك قبل الاتفاق.'],partnerpick:[7,'بناء شراكة','اختر شريكاً لفرصتك القادمة.'],duelpick:[7,'تحدٍّ بين اللاعبين','اختر اللاعب الذي تريد تحدّيه.'],
     learn:[8,'طوّر مهارتك','وازن بين تكلفة التعلّم وزيادة دخلك.']
@@ -70,9 +70,9 @@
     let spec=families[pr.category||pr.kind];
     if(!spec){const t=pr.title||'';spec=/حلم|مبروك|فوز/.test(t)?[4,'خطوة في رحلتك','تابع ما تغيّر قبل إكمال دورك.']:/عائل|مولود/.test(t)?[1,'من الحياة','تفاصيل جديدة تؤثر على خطتك.']:/إجاب|سؤال/.test(t)?[2,'نتيجة التحدّي','تعلّم اليوم يفيدك في القرار القادم.']:[5,'ملخص القرار','راجع النتيجة ثم تابع رحلتك.'];}
     sheet.classList.add('decision-card');sheet.dataset.cardKind=pr.kind;
-    const [art,label,caption]=spec,heading=sheet.querySelector('h2'),actions=sheet.querySelector(':scope > .row');
+    const [art,label,caption,additional]=spec,heading=sheet.querySelector('h2'),actions=sheet.querySelector(':scope > .row');
     const header=document.createElement('header');header.className='decision-heading';
-    const image=document.createElement('span');image.className='card-illustration';image.setAttribute('aria-hidden','true');image.style.setProperty('--cx',(art%3)*50+'%');image.style.setProperty('--cy',Math.floor(art/3)*50+'%');
+    const image=document.createElement('span');image.className='card-illustration';image.setAttribute('aria-hidden','true');if(additional)image.classList.add('card-art-extra');image.style.setProperty('--cx',(art%(additional?2:3))*(additional?100:50)+'%');image.style.setProperty('--cy',Math.floor(art/(additional?2:3))*(additional?100:50)+'%');
     const titles=document.createElement('div'),kicker=document.createElement('span');kicker.className='card-kicker';kicker.textContent=label;
     titles.append(kicker,heading);header.append(image,titles);
     const content=document.createElement('div');content.className='decision-content';
