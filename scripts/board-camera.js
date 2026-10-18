@@ -18,6 +18,37 @@
   const pointers = new Map();
   let gesture = null;
   const inspector = document.getElementById('board-inspector');
+  let inspectedReference=null, previewYaw=-35, previewScale=2.5;
+  const preview=inspector.querySelector('.board-info-symbol');
+  const rotate=document.createElement('button');rotate.type='button';rotate.className='inspect-model-rotate';rotate.textContent='تدوير المجسّم';
+  inspector.querySelector('.board-info-top').append(rotate);
+  function turnPreview(yaw){previewYaw=yaw;const solid=preview.querySelector('.inspect-model-world');if(solid)solid.style.transform=`rotateX(55deg) rotateZ(${yaw}deg) scale(${previewScale})`;}
+  rotate.addEventListener('click',()=>turnPreview(previewYaw+45));
+  let previewDrag=null;
+  preview.addEventListener('pointerdown',e=>{previewDrag={x:e.clientX,yaw:previewYaw};preview.setPointerCapture(e.pointerId);});
+  preview.addEventListener('pointermove',e=>{if(previewDrag)turnPreview(previewDrag.yaw+(e.clientX-previewDrag.x)*1.2)});
+  preview.addEventListener('pointerup',()=>previewDrag=null);
+  preview.addEventListener('pointercancel',()=>previewDrag=null);
+  preview.addEventListener('lostpointercapture',()=>previewDrag=null);
+  const focus=document.createElement('button');focus.type='button';focus.className='inspect-model-focus';focus.textContent='قرّب هذا المجسّم على الطاولة';
+  inspector.append(focus);
+  function elementFor(reference) {
+    if (Number.isInteger(reference)) return board.querySelector(`[data-tile="${reference}"]`);
+    if (String(reference).startsWith('player:')) return board.querySelector(`.character-pawn[data-player="${String(reference).slice(7)}"]`);
+    return board.querySelector(`[data-deck="${reference}"]`);
+  }
+  focus.addEventListener('click', () => {
+    const tile = elementFor(inspectedReference);
+    inspector.close();
+    if (!tile) return;
+    stopFollow();
+    zoomAt(2.4);
+    const viewport = stage.getBoundingClientRect(), target = tile.getBoundingClientRect();
+    camera.x += viewport.left + viewport.width/2 - target.left - target.width/2;
+    camera.y += viewport.top + viewport.height*.58 - target.top - target.height/2;
+    draw();
+    tile.focus({preventScroll:true});
+  });
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
   function limit() {
@@ -98,11 +129,19 @@
     if (!options || options.busy || document.querySelector('#modal.on')) return;
     const info = options.inspect?.(reference);
     if (!info) return;
+    inspectedReference=reference;
+    board.querySelectorAll('.is-inspected').forEach(tile=>tile.classList.remove('is-inspected'));
+    const selected=elementFor(reference);selected?.classList.add('is-inspected');
+    const body=selected?.querySelector('.miniature-body,.pawn-figure');
+    if(body&&!reduced.matches)body.animate([{translate:'0 0 0'},{translate:'0 0 8px'},{translate:'0 0 0'}],{duration:240});
     inspector.querySelector('#board-info-title').textContent = info.title;
     inspector.querySelector('.board-info-subtitle').textContent = info.subtitle;
     inspector.querySelector('.board-info-description').textContent = info.description;
     inspector.querySelector('.board-info-symbol').style.background = info.color;
     inspector.querySelector('use').setAttribute('href', `icons/game-icons.svg#${info.icon}`);
+    preview.querySelector('.inspect-model-world')?.remove();
+    const model=document.createElement('span');model.className='inspect-model-world';model.innerHTML=window.DarbModels.geometry(info.model||'deal');preview.append(model);previewScale=String(info.model).startsWith('player_')?1.8:2.5;turnPreview(-35);
+    preview.setAttribute('aria-label','مجسم '+info.title+'، اسحب لتدويره');
     const list = inspector.querySelector('dl');
     list.replaceChildren();
     for (const [label, value] of info.details || []) {
@@ -114,6 +153,8 @@
     inspector.showModal();
   }
   const referenceFor = target => {
+    const pawn=target.closest('.character-pawn');
+    if(pawn)return 'player:'+pawn.dataset.player;
     const tile = target.closest('[data-tile]');
     if (tile) return Number(tile.dataset.tile);
     return target.closest('[data-deck]')?.dataset.deck ?? null;
@@ -213,6 +254,7 @@
     }
   }));
   inspector.querySelectorAll('[data-close-inspector]').forEach(button => button.addEventListener('click', () => inspector.close()));
+  inspector.addEventListener('close',()=>{previewDrag=null;board.querySelectorAll('.is-inspected').forEach(tile=>tile.classList.remove('is-inspected'));});
   inspector.addEventListener('click', event => {
     const rect = inspector.getBoundingClientRect();
     if (event.target === inspector && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) inspector.close();

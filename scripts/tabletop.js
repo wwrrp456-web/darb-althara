@@ -9,6 +9,8 @@
     if (!state || !state.board.isConnected || !state.board.clientWidth) return;
     const {board, layer, players, currentId, duration, tiles} = state;
     board.classList.toggle('names', board.clientWidth >= 560);
+    board.style.setProperty('--mini-fit', String(Math.max(.45,Math.min(1.25,board.clientWidth / (tiles.size===20?6:13) / 34))));
+    board.style.setProperty('--figure-scale', String(Math.max(.65,Math.min(1.1,board.clientWidth / 600))));
     board.style.setProperty('--pawn-size', `${Math.max(48, Math.min(90, board.clientWidth * .16))}px`);
     const countByTile = new Map();
     for (const p of players) {
@@ -31,11 +33,15 @@
         layer.append(pawn);
       }
       const role = professionKeys.has(p.pk) ? p.pk : 'trader';
+      let figure=pawn.querySelector('.pawn-figure');
+      if(!figure){figure=document.createElement('span');figure.className='pawn-figure';figure.setAttribute('aria-hidden','true');pawn.querySelector('.pawn-stand').append(figure);}
+      if(pawn.dataset.role!==role)figure.innerHTML=window.DarbModels.person(role);
       const image = pawn.querySelector('.pawn-art');
       const src = `art/identity/clear.svg#pawn_${role}`;
       if (image.getAttribute('src') !== src) image.setAttribute('src', src);
       image.alt = `قطعة ${p.name} · ${p.prof}`;
       pawn.title = `${p.name} · ${p.prof} · الخانة ${p.pos + 1}`;
+      pawn.setAttribute('role','button');pawn.tabIndex=0;pawn.setAttribute('aria-label','بيانات '+p.name+'، '+p.prof);
       pawn.classList.toggle('current', p.id === currentId);
       pawn.style.setProperty('--pawn-color', /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#16614c');
       pawn.querySelector('.pawn-number').textContent = String(p.id + 1);
@@ -55,11 +61,11 @@
       pawn.dataset.position = String(p.pos);
       pawn.dataset.role = role;
       if (animate && moved && !reducedMotion.matches) {
-        image.getAnimations().forEach(a => a.cancel());
-        image.animate([
-          {transform:'translateY(0) rotate(-2deg)'},
-          {transform:'translateY(-7px) rotate(2deg)',offset:.5},
-          {transform:'translateY(0) rotate(0)'}
+        figure.getAnimations().forEach(a => a.cancel());
+        figure.animate([
+          {translate:'0 0 0'},
+          {translate:'0 0 7px',offset:.5},
+          {translate:'0 0 0'}
         ], {duration, easing:'ease-in-out'});
       }
     }
@@ -97,7 +103,13 @@
     const sameBoard = state && state.identity === identity;
     if (!sameBoard) layer.replaceChildren();
     // Replace only surface content. Pawn nodes stay connected to preserve their motion.
+    const retained = new Map();
+    if (sameBoard) for (const item of cells.querySelectorAll('[data-tile],[data-deck]')) {
+      const object = item.querySelector(':scope > .board-miniature');
+      if (object) retained.set(item.hasAttribute('data-tile') ? `tile:${item.dataset.tile}:${item.dataset.model}` : `deck:${item.dataset.deck}`, object);
+    }
     cells.innerHTML = html;
+    window.DarbModels.mount(cells, retained);
     // Finalize illustrated labels before measuring cells for pawn coordinates.
     window.DarbIdentity?.hydrate(cells);
     const tiles = new Map([...cells.querySelectorAll('[data-tile]')].map(tile => [Number(tile.dataset.tile), tile]));

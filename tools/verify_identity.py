@@ -54,7 +54,7 @@ async def verify(base_url):
         await page.wait_for_function('!document.querySelector("#roll").disabled')
         assert await page.evaluate('__darb.G.players.length') == 2
         assert await page.locator('#board .tile').count() == 48
-        assert await page.locator('#board .tile .ui-icon').count() == 48
+        assert await page.locator('#board .tile .board-miniature').count() == 48
         assert await page.locator('#goodsCard .gcell img').count() == 6
         assert await page.locator('#board .character-pawn').count() == 2
         await page.locator('#roll').click()
@@ -75,11 +75,11 @@ async def verify(base_url):
         await page.wait_for_function('navigator.serviceWorker.controller !== null')
         cached = await page.evaluate('''async () => {
             const keys = await caches.keys();
-            const cache = await caches.open('darb-illustrated-cards-v7');
+            const cache = await caches.open('darb-solid-miniatures-v8');
             return {keys, urls: (await cache.keys()).map(r => r.url)};
         }''')
-        assert 'darb-illustrated-cards-v7' in cached['keys']
-        for asset in ['styles/illustrated.css', 'scripts/identity.js', 'art/identity/icons-sheet.png', 'art/identity/cards-sheet.png', 'art/identity/reactions-sheet.png', 'styles/identity.css', 'fonts/Tajawal-Regular.ttf', 'fonts/Tajawal-Bold.ttf',
+        assert 'darb-solid-miniatures-v8' in cached['keys']
+        for asset in ['styles/models.css', 'scripts/models.js', 'styles/illustrated.css', 'scripts/identity.js', 'art/identity/icons-sheet.png', 'art/identity/cards-sheet.png', 'art/identity/reactions-sheet.png', 'styles/identity.css', 'fonts/Tajawal-Regular.ttf', 'fonts/Tajawal-Bold.ttf',
                       'art/identity/world-sheet.png', 'art/identity/characters-sheet.png',
                       'art/identity/goods-sheet.png', 'icons/game-icons.svg',
                       'styles/tabletop.css', 'scripts/tabletop.js',
@@ -102,7 +102,7 @@ async def verify(base_url):
         assert not errors, errors
         assert not missing, missing
         print(json.dumps({'responsive_sizes': 5, 'profession_portraits': 14, 'goods': 6,
-                          'board_tiles_and_vector_icons': 48, 'ui_icon_library': 32,
+                          'board_tiles_and_3d_models': 48, 'ui_icon_library': 32,
                           'dice_roll': 'passed', 'save_reload': 'passed',
                           'offline_with_new_identity': 'passed', 'light_and_dark': 'passed',
                           'brand_downloads': 'passed', 'javascript_errors': errors,

@@ -1,5 +1,5 @@
 /* درب الثراء — عامل الخدمة: يعمل بلا إنترنت بعد أول فتح */
-const VER = "darb-illustrated-cards-v7";
+const VER = "darb-solid-miniatures-v8";
 const SHELL = [
   "./",
   "./index.html",
@@ -7,6 +7,8 @@ const SHELL = [
   "./styles/identity.css",
   "./styles/tabletop.css",
   "./styles/illustrated.css",
+  "./styles/models.css",
+  "./scripts/models.js",
   "./scripts/identity.js",
   "./art/identity/icons-sheet.png",
   "./art/identity/cards-sheet.png",
