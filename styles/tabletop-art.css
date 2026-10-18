@@ -1,0 +1,14 @@
+/* Flat transparent artwork stands against the tilt, as the approved character pawns do. */
+.landmark-stand{display:none;position:absolute;left:50%;top:50%;width:clamp(44px,7vw,62px);aspect-ratio:1;transform-origin:50% 100%;transform:translate(-50%,-100%) rotateZ(calc(-1 * var(--table-yaw))) rotateX(calc(-1 * var(--table-tilt)));z-index:2;pointer-events:auto;cursor:pointer}
+.landmarks-ready .landmark-stand{display:block}.landmarks-ready .landmark-has-art>.ic{visibility:hidden}
+.landmark-sprite{position:absolute;inset:0;background:url('../art/identity/landmarks-sheet.png') var(--sx) var(--sy)/400% 200% no-repeat;pointer-events:none}
+.landmark-level-art{position:absolute;width:40%;height:40%;top:-5%;left:53%;background:url('../art/identity/landmark-levels-sheet.png') var(--lx) 0/300% 100% no-repeat;pointer-events:none}
+.landmark-owned:after{content:'';position:absolute;left:12%;right:12%;bottom:3px;height:4px;border-radius:3px;background:var(--owner-color);pointer-events:none}
+.landmark-occupied .landmark-stand{width:clamp(38px,6vw,54px)}
+.pawn-layer{z-index:30}.character-pawn{z-index:31}
+.decks-ready .has-deck-art{background:transparent!important;border:0;box-shadow:none;aspect-ratio:1;width:clamp(49px,6vw,70px);transform:translateZ(5px);transform-style:preserve-3d}
+.decks-ready .has-deck-art:after,.decks-ready .has-deck-art>.ui-icon{display:none}
+.deck-sprite{display:none;position:absolute;inset:0;background:url('../art/identity/decks-sheet.png') var(--dx) 0/300% 100% no-repeat;transform-origin:50% 100%;transform:rotateZ(calc(-1 * var(--table-yaw))) rotateX(calc(-1 * var(--table-tilt)));pointer-events:none}
+.decks-ready .deck-sprite{display:block}.decks-ready .has-deck-art>b{position:absolute;top:100%;white-space:nowrap;background:#fffcf6dd;border-radius:4px;padding:2px 4px;transform:translateZ(2px);font-size:.68rem}
+.tabletop-stage{contain:layout paint;overflow:clip}
+@media(max-width:767px){.landmark-stand{width:49px}.landmark-occupied .landmark-stand{width:43px}.decks-ready .has-deck-art{width:46px}.decks-ready .has-deck-art>b{font-size:.58rem}}
