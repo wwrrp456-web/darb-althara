@@ -54,6 +54,7 @@ async def verify():
         for width, height in [(360,800),(390,844),(768,1024),(1180,820)]:
             await page.set_viewport_size({'width':width,'height':height})
             await page.wait_for_timeout(220)
+            await page.locator('[data-camera=reset]').click()
             assert await page.evaluate('document.documentElement.scrollWidth <= innerWidth'), width
             for pawn in await page.locator('.character-pawn').all():
                 tile = int(await pawn.get_attribute('data-position'))

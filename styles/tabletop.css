@@ -57,3 +57,55 @@ img.pawn-art{display:block;width:100%;height:100%;object-fit:contain;background-
 .tabletop-stage .board{position:absolute;top:0;left:0}
 .tabletop-stage[data-view=top]{aspect-ratio:1}
 @media(max-width:767px){.tabletop-stage{aspect-ratio:1.02;padding:0;margin-top:10px;margin-bottom:6px}.tabletop-stage[data-view=top]{aspect-ratio:1}}
+
+/* Isometric camera viewport. The moving world retains the board's 3D context. */
+.tabletop-camera-controls{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 6px 0;flex-wrap:wrap}
+.tabletop-camera-controls>button,.tabletop-zoom-controls button{min-height:36px;padding:5px 10px;border:1px solid var(--line);border-radius:10px;font-size:.68rem;background:var(--card);color:var(--brand);box-shadow:0 2px 0 var(--line)}
+.tabletop-camera-controls>button[aria-pressed=true]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.tabletop-zoom-controls{direction:ltr;display:flex;align-items:center;gap:5px;margin-inline-start:auto}
+.tabletop-zoom-controls button{font-size:1.05rem;font-weight:700;width:34px;padding:0}
+[data-camera-zoom]{min-width:44px;text-align:center;color:var(--muted);font-size:.68rem;font-variant-numeric:tabular-nums}
+.tabletop-stage{--table-tilt:39deg;--table-yaw:-45deg;--table-scale:.64;aspect-ratio:1.03;min-height:330px;margin:10px 0 8px;overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;perspective:1200px;perspective-origin:50% 50%;background:radial-gradient(ellipse at center,#f8f1d9 0%,#e1e7d3 60%,#b8d1c1 100%);border:1px solid var(--line);border-radius:20px}
+.tabletop-stage.is-dragging{cursor:grabbing}
+.tabletop-stage:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.tabletop-camera-world{position:absolute;inset:0;transform-origin:50% 50%;transform-style:preserve-3d;will-change:transform}
+.tabletop-stage .board{left:50%;top:50%;transform:translate(-50%,-50%) rotateX(var(--table-tilt)) rotateZ(var(--table-yaw)) scale(var(--table-scale))}
+.tabletop-stage[data-view=top]{--table-tilt:0deg;--table-yaw:0deg;--table-scale:.88;aspect-ratio:1.03}
+.tabletop-district{position:absolute;left:50%;top:50%;width:167%;aspect-ratio:1;transform:translate(-50%,-50%) rotateX(var(--table-tilt)) rotateZ(var(--table-yaw)) scale(var(--table-scale)) translateZ(-24px);transform-origin:50% 50%;background:#d2ddcc url('../art/identity/tabletop-city.png') center/cover;pointer-events:none;border-radius:12px}
+.tabletop-right-edge{position:absolute;left:100%;top:-5px;bottom:-5px;width:18px;transform:rotateY(90deg);transform-origin:0 50%;background:repeating-linear-gradient(90deg,#a67b47 0 3px,#b78b53 3px 6px);border:2px solid #75522d;border-radius:0 10px 10px 0;pointer-events:none}
+.pawn-stand{transform:translate(-50%,-100%) rotateZ(calc(-1 * var(--table-yaw))) rotateX(calc(-1 * var(--table-tilt)))}
+.tabletop-stage .tile[role=button],.tabletop-stage .tabletop-deck[role=button]{cursor:pointer;outline-offset:2px}
+.tabletop-stage .tile[role=button]:focus-visible,.tabletop-deck[role=button]:focus-visible{outline:3px solid #16614c;box-shadow:0 0 0 2px #fff9db}
+.tabletop-stage .board.dense.camera-readable .tile-name{display:block;font-size:.5rem;line-height:1.1}
+.tabletop-stage .board.dense.camera-readable .tile .ui-icon{width:.95rem;height:.95rem}
+.tabletop-hint{margin:7px 5px 4px;line-height:1.65;font-size:.64rem}
+.board-inspector{width:min(450px,calc(100vw - 28px));max-height:85dvh;overflow:auto;padding:23px;border:2px solid var(--ink);border-radius:24px;background:var(--card);color:var(--ink);box-shadow:0 16px 70px #152e2440;font-family:Tajawal,Tahoma,sans-serif;line-height:1.7}
+.board-inspector::backdrop{background:#10261dcc;backdrop-filter:blur(4px)}
+.board-info-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.board-info-symbol{width:62px;height:62px;display:grid;place-items:center;border:2px solid #8c754b;border-radius:18px;box-shadow:0 3px 0 #8c754b}
+.board-info-symbol .ui-icon{width:42px;height:42px}
+.board-info-close{align-self:flex-start;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:50%;font-size:1.45rem;width:36px;min-height:36px;height:36px;padding:0;line-height:1}
+.board-info-subtitle{color:var(--gold);font-size:.77rem;margin:18px 0 4px}
+.board-inspector h2{font-size:1.6rem;color:var(--brand);margin:0 0 10px}
+.board-info-description{font-size:1rem;margin:0 0 15px}
+.board-inspector dl{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:12px 0;background:var(--soft);padding:6px 12px;border:1px solid var(--line);border-radius:13px;font-size:.87rem}
+.board-inspector dl:empty{display:none}
+.board-inspector dt,.board-inspector dd{padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+.board-inspector dd{text-align:end;font-weight:700}.board-inspector dt:last-of-type,.board-inspector dd:last-child{border:0}
+.board-info-note{font-size:.74rem;color:var(--muted)}
+.board-inspector>button{display:block;width:100%;margin-top:16px;background:var(--brand);color:var(--brand-ink);border:1px solid var(--ink);box-shadow:0 3px 0 #423329}
+@media(max-width:767px){.tabletop-stage{--table-tilt:39deg;--table-scale:.64;aspect-ratio:.88;min-height:350px;perspective:1000px}.tabletop-stage[data-view=top]{aspect-ratio:.88;--table-scale:.88}.tabletop-camera-controls{padding:8px 2px 0;gap:5px}.tabletop-camera-controls>button{font-size:.61rem;padding:4px 7px}.tabletop-zoom-controls{gap:3px}.tabletop-zoom-controls button{width:30px;min-height:34px}.tabletop-hint{font-size:.58rem}.board-inspector{padding:19px}.board-inspector h2{font-size:1.35rem}.board-info-description{font-size:.94rem}}
+@media(prefers-color-scheme:dark){.tabletop-stage{background:radial-gradient(ellipse at center,#45654c,#243c2e)}.board-inspector{border-color:var(--line)}}
+/* Keep the viewport clear of the fixed roll controls, including shorter phones. */
+.tabletop-stage{--table-scale:var(--isometric-fit,.64);height:clamp(280px,calc(100dvh - 450px),540px);min-height:280px;aspect-ratio:auto}
+.tabletop-stage[data-view=top]{--table-scale:var(--top-fit,.88);aspect-ratio:auto}
+@media(max-width:767px){.tabletop-stage{--table-scale:var(--isometric-fit,.64);height:clamp(260px,calc(100dvh - 510px),450px);min-height:260px;aspect-ratio:auto}.tabletop-stage[data-view=top]{aspect-ratio:auto;--table-scale:var(--top-fit,.88)}}
+.tabletop-stage .board{aspect-ratio:1;grid-auto-rows:minmax(0,1fr)}
+.tabletop-stage .board .tile,.tabletop-stage .center{min-height:0}
+.tabletop-stage .tile-name{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabletop-stage .board.dense.camera-readable .tile-name{font-size:.42rem}
+.tabletop-stage .board.dense.camera-readable .tile .ui-icon{width:.72rem;height:.72rem}
+/* Transparent camera planes must not intercept clicks on receding 3D tiles. */
+.tabletop-camera-world{pointer-events:none}
+.tabletop-stage .board{pointer-events:auto}
+.tabletop-stage{overflow:hidden;overflow:clip}

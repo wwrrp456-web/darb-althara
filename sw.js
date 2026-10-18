@@ -1,5 +1,5 @@
 /* درب الثراء — عامل الخدمة: يعمل بلا إنترنت بعد أول فتح */
-const VER = "darb-tabletop-characters-v5";
+const VER = "darb-isometric-camera-v6";
 const SHELL = [
   "./",
   "./index.html",
@@ -7,6 +7,7 @@ const SHELL = [
   "./styles/identity.css",
   "./styles/tabletop.css",
   "./scripts/tabletop.js",
+  "./scripts/board-camera.js",
   "./fonts/Tajawal-Regular.ttf",
   "./fonts/Tajawal-Bold.ttf",
   "./icons/brand-mark.svg",
@@ -21,7 +22,8 @@ const SHELL = [
   "./art/identity/characters-sheet.png",
   "./art/identity/goods-sheet.png",
   "./art/identity/pawns-sheet.png",
-  "./art/identity/tabletop-park.png"
+  "./art/identity/tabletop-park.png",
+  "./art/identity/tabletop-city.png"
 ];
 
 self.addEventListener("install", e => {

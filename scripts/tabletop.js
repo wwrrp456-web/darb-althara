@@ -74,6 +74,7 @@
       button.setAttribute('aria-pressed', String(button.dataset.tableView === stage.dataset.view));
     });
     try { localStorage.setItem('darb-table-view', stage.dataset.view); } catch (_) {}
+    window.DarbCamera?.viewChanged();
   }
 
   function paint(board, html, options) {
@@ -86,7 +87,10 @@
       const edge = document.createElement('div');
       edge.className = 'tabletop-front-edge';
       edge.setAttribute('aria-hidden', 'true');
-      board.replaceChildren(cells, edge, layer);
+      const rightEdge = document.createElement('div');
+      rightEdge.className = 'tabletop-right-edge';
+      rightEdge.setAttribute('aria-hidden', 'true');
+      board.replaceChildren(cells, edge, rightEdge, layer);
     }
     const layer = board.querySelector(':scope > .pawn-layer');
     const identity = `${options.gameId}:${options.track}`;
@@ -97,6 +101,7 @@
     const tiles = new Map([...cells.querySelectorAll('[data-tile]')].map(tile => [Number(tile.dataset.tile), tile]));
     state = {...options, board, layer, tiles, identity};
     positionPawns(Boolean(sameBoard));
+    window.DarbCamera?.update(options);
   }
 
   const resize = new ResizeObserver(() => positionPawns(false));

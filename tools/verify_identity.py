@@ -75,15 +75,16 @@ async def verify(base_url):
         await page.wait_for_function('navigator.serviceWorker.controller !== null')
         cached = await page.evaluate('''async () => {
             const keys = await caches.keys();
-            const cache = await caches.open('darb-tabletop-characters-v5');
+            const cache = await caches.open('darb-isometric-camera-v6');
             return {keys, urls: (await cache.keys()).map(r => r.url)};
         }''')
-        assert 'darb-tabletop-characters-v5' in cached['keys']
+        assert 'darb-isometric-camera-v6' in cached['keys']
         for asset in ['styles/identity.css', 'fonts/Tajawal-Regular.ttf', 'fonts/Tajawal-Bold.ttf',
                       'art/identity/world-sheet.png', 'art/identity/characters-sheet.png',
                       'art/identity/goods-sheet.png', 'icons/game-icons.svg',
                       'styles/tabletop.css', 'scripts/tabletop.js',
-                      'art/identity/pawns-sheet.png', 'art/identity/tabletop-park.png']:
+                      'art/identity/pawns-sheet.png', 'art/identity/tabletop-park.png',
+                      'scripts/board-camera.js', 'art/identity/tabletop-city.png']:
             assert any(url.endswith(asset) for url in cached['urls']), asset
         await context.set_offline(True)
         await page.reload(wait_until='networkidle')

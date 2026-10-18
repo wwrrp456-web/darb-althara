@@ -286,8 +286,9 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
       <button class="mini" id="mini" type="button"></button>
       <div class="card tabletop-card">
         <div class="tabletop-toolbar"><span>طاولة اللعب</span><div class="tabletop-views" role="group" aria-label="زاوية اللوحة"><button type="button" data-table-view="perspective" aria-pressed="true">مجسّمة</button><button type="button" data-table-view="top" aria-pressed="false">من الأعلى</button></div></div>
-        <div class="tabletop-stage" data-view="perspective"><div class="board" id="board" role="group" aria-label="لوحة اللعب وقطع الشخصيات"></div></div>
-        <p class="tabletop-hint">قطعتك هي شخصيتك · لون القاعدة ورقمها يميّزان كل لاعب</p>
+        <div class="tabletop-camera-controls" role="group" aria-label="تحريك اللوحة والتكبير"><button type="button" data-camera="follow" aria-pressed="true">تتبّع القطعة</button><button type="button" data-camera="reset">اللوحة كاملة</button><div class="tabletop-zoom-controls"><button type="button" data-camera="out" aria-label="تصغير اللوحة">−</button><span data-camera-zoom aria-label="مستوى التكبير">100٪</span><button type="button" data-camera="in" aria-label="تكبير اللوحة">+</button></div></div>
+        <div class="tabletop-stage" data-view="perspective" tabindex="0" role="region" aria-label="مشهد اللوحة التفاعلي، اسحب للتحريك وقرّب للتكبير" aria-describedby="tabletop-camera-hint"><div class="board" id="board" role="group" aria-label="لوحة اللعب وقطع الشخصيات"></div></div>
+        <p class="tabletop-hint" id="tabletop-camera-hint">اسحب لتحريك اللوحة · قرّب بإصبعين أو بالأزرار · اضغط الخانة لقراءة تفاصيلها</p>
         <details class="tabletop-key"><summary>دليل الخانات</summary><div class="legend" id="legend"></div></details>
       </div>
     </section>
@@ -322,6 +323,8 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 
+<dialog id="board-inspector" class="board-inspector" aria-labelledby="board-info-title"><div class="board-info-top"><div class="board-info-symbol"><svg class="ui-icon" aria-hidden="true"><use href="icons/game-icons.svg#shop"/></svg></div><button type="button" class="board-info-close" data-close-inspector aria-label="إغلاق معلومات الخانة">×</button></div><p class="board-info-subtitle"></p><h2 id="board-info-title"></h2><p class="board-info-description"></p><dl></dl><p class="board-info-note">للاطّلاع فقط؛ تظهر قرارات اللعب عند الوقوف على الخانة.</p><button type="button" data-close-inspector>العودة إلى اللوحة</button></dialog>
+<script src="scripts/board-camera.js"></script>
 <script src="scripts/tabletop.js"></script>
 <script>
 (()=>{
@@ -1682,6 +1685,58 @@ function perimeter(n){
   for(let r=n-2;r>=1;r--)a.push([r,0]);
   return a;
 }
+/* Read-only descriptions: inspection never buys, moves or answers a game card. */
+function describeBoardItem(track, reference, player){
+  if(!G)return null;
+  const isTile=Number.isInteger(reference),index=isTile?reference:null;
+  const key=isTile?track[index]:reference;
+  if(!TILE[key])return null;
+  const descriptions={
+    payday:"تقبض دخلك عند الوصول إلى يوم الراتب، وكذلك عند المرور به أثناء الحركة. يتأثر المبلغ بدخلك ومصاريفك وسعادتك.",
+    deal:"فرصة لشراء أصل أو مشروع. تظهر تفاصيل العرض والدفعة والدخل عندما تصل إلى الخانة، وتختار الشراء أو التجاوز.",
+    doodad:"مصاريف طارئة من الحياة اليومية. يختلف المبلغ بحسب البطاقة وصعوبة اللعبة والتأمين وميزة المهنة.",
+    market:"مستثمرون يعرضون شراء بعض أصولك. راجع الربح والدخل الذي ستفقده قبل اتخاذ قرار البيع.",
+    child:"مولود جديد يزيد مصاريف الأسرة الشهرية، ويرفع الدخل التلقائي المطلوب لتغطية المصاريف.",
+    charity:"فرصة للتبرّع أو دعم هدف العائلة. تظهر الخيارات والتكلفة عند الوصول إلى الخانة.",
+    layoff:"تسريح مؤقت يسبّب مصاريف وأدواراً فائتة. التأمين يخفّف الأثر، بينما يستمر دخلك التلقائي.",
+    biz:"عرض مشروع كبير في المسار السريع. ادرس الدفعة والدخل قبل اتخاذ قرار الاستثمار.",
+    dream:"فرصة لتحقيق أحد أحلامك في المسار السريع. تحتاج إلى النقد الكافي وسعادة لا تقل عن 50.",
+    lawsuit:"قضية تتطلّب دفع نسبة من النقد. التأمين يخفّف المبلغ المستحق.",
+    tax:"ضريبة تُحسب كنسبة من النقد وفق صعوبة اللعبة، ويخفّفها التأمين.",
+    audit:"تدقيق ضريبي يفتح قراراً مالياً عند الوصول. التهرّب ينطوي على خطر غرامة وسجن.",
+    fun:"أنشطة ترفيهية لتحسين السعادة، مع خيارات بتكاليف مختلفة. الإفراط يقلّل الفائدة ويزيد مخاطر الإسراف.",
+    insure:"التأمين يخفّف عدداً من المصاريف والمخاطر. تفاصيل المدة والتكلفة تظهر عند الوصول.",
+    learn:"دورة يمكن أن ترفع راتبك. راجع التكلفة والفائدة وحدّ الدورات عند الوصول إلى الخانة.",
+    jamia:"جمعية بين اللاعبين: التزام بأقساط مقابل قبض مبلغ في دورك. تظهر شروط المشاركة عند الوصول.",
+    quiz:"سؤال مالي بمكافأة للإجابة الصحيحة. مقدار المكافأة يتأثر بمصاريفك وميزة مهنتك.",
+    auction:"مزاد على صفقة بخصم، تُعرض فيه فرصة الشراء على اللاعبين حسب نظام اللعبة.",
+    souk:"سوق لبيع وشراء بضائع الحي. الأسعار تتغيّر مع الجولات والمواسم والأحداث الاقتصادية.",
+    order:"طلب من أحد زبائن الحي. سلّم البضاعة المطلوبة لتحصل على قيمة الطلب وفق شروطه.",
+    partner:"فرصة لدعوة لاعب إلى شراكة تتقاسمان فيها دفعة شراء الأصل ودخله.",
+    family:"بطاقة موقف عائلي قد تتضمن مفاجأة أو قراراً أو تفاعلاً بين اللاعبين. تظهر البطاقة عند الوصول."
+  };
+  const color=getComputedStyle(document.documentElement).getPropertyValue(TILE[key][2]).trim();
+  const info={title:!isTile?({deal:"رزمة الفرص",family:"بطاقات العائلة",quiz:"الأسئلة المالية"}[key]||TILE[key][1]):TILE[key][1],
+    subtitle:isTile?`الخانة ${index+1} · ${player.fast?"المسار السريع":"سباق الفئران"}`:"رزمة بطاقات على الطاولة",
+    description:descriptions[key]||"تظهر خيارات هذه الخانة عند الوصول إليها أثناء اللعب.",icon:TILE_ICONS[key]||"star",color,details:[]};
+  if(key.startsWith("lm_")){
+    const k=key.slice(3),land=LAND[k],owner=G.lm[k],lv=lmLv(k);
+    const asset=owner!=null?G.players[owner]?.assets.find(a=>a.lm===k):null;
+    const available=hd({n:land.n,t:"معلم",down:Math.round(land.cost*.3/1000)*1000,inc:land.inc,cost:land.cost,lm:k});
+    info.description=`معلم قابل للشراء يضيف دخلاً تلقائياً، ويدفع زوّاره إيجاراً عند الوقوف عليه. ${land.d}.`;
+    info.details=[["القيمة الأساسية",fmt(land.cost)],["المالك",owner==null?"متاح للشراء":G.players[owner]?.name||"—"],
+      ["الدخل الشهري",fmt(asset?asset.inc:available.inc)],["الإيجار قبل سقف قدرة الزائر",fmt(lmRent(k))],["مستوى التطوير",String(lv)]];
+    if(owner==null){
+      info.details.splice(1,0,["الدفعة الأولى",fmt(available.down)]);
+    }
+  }else if(key==="dream"&&isTile){
+    const tier=track.slice(0,index).filter(k=>k==="dream").length;
+    const dream=DREAMS[tier];
+    if(dream)info.details=[["الحلم",dream.n],["التكلفة لهذه الشخصية",fmt(dreamCost(dream,player))],["نقاط الحلم",String(DPTS[tier])],["السعادة المطلوبة","50 أو أكثر"]];
+  }else if(key==="child")info.details=[["زيادة المصاريف الشهرية",fmt(player.childCost)]];
+  return info;
+}
+
 function render(){
   const has=!!G;
   $("#welcome").hidden=has;$("#game").hidden=!has;document.body.classList.toggle("ingame",has);if(!has){const cb=$("#chBox");if(cb)cb.innerHTML=chHtml()}
@@ -1753,16 +1808,16 @@ function render(){
   for(let r=0;r<n;r++)for(let c=0;c<n;c++){
     const i=cells2.findIndex(x=>x[0]===r&&x[1]===c);
     if(i<0){
-      const ctr=`<div class="tabletop-crest"><img src="icons/brand-mark.svg" alt=""><span>${me.fast?"المسار السريع":"حيّ الفرص"}</span></div><div class="tabletop-hud"><div class="big">دور ${esc(cp.name)}</div><div class="dice ${G.rolling?"roll":""}" id="dice">${diceHtml(G.dice2||[G.dice||1,G.dice||1])}</div><div class="mut">الجولة ${G.round} · ${thr(cp.turns+1)}</div></div><div class="tabletop-decks" aria-hidden="true"><div class="tabletop-deck opportunity">${uiIcon("case")}<b>فرصة</b></div><div class="tabletop-deck family">${uiIcon("heart")}<b>العائلة</b></div><div class="tabletop-deck question">${uiIcon("bulb")}<b>سؤال</b></div></div>`;
+      const ctr=`<div class="tabletop-crest"><img src="icons/brand-mark.svg" alt=""><span>${me.fast?"المسار السريع":"حيّ الفرص"}</span></div><div class="tabletop-hud"><div class="big">دور ${esc(cp.name)}</div><div class="dice ${G.rolling?"roll":""}" id="dice">${diceHtml(G.dice2||[G.dice||1,G.dice||1])}</div><div class="mut">الجولة ${G.round} · ${thr(cp.turns+1)}</div></div><div class="tabletop-decks" aria-label="معلومات رزم البطاقات"><div class="tabletop-deck opportunity" data-deck="deal" role="button" tabindex="0" aria-label="معلومات بطاقات الفرص">${uiIcon("case")}<b>فرصة</b></div><div class="tabletop-deck family" data-deck="family" role="button" tabindex="0" aria-label="معلومات بطاقات العائلة">${uiIcon("heart")}<b>العائلة</b></div><div class="tabletop-deck question" data-deck="quiz" role="button" tabindex="0" aria-label="معلومات بطاقات الأسئلة">${uiIcon("bulb")}<b>سؤال</b></div></div>`;
       if(r===1&&c===1)html+=`<div class="center" style="grid-column:2/${n};grid-row:2/${n}">${ctr}</div>`;
       continue;
     }
     const [ic,name,col]=TILE[track[i]];
 
     const ow=(typeof track[i]==="string"&&track[i].startsWith("lm_")&&G.lm)?G.lm[track[i].slice(3)]:null,ob=ow!=null&&G.players[ow]?`<span class="own" style="--pc:${colr(G.players[ow])}">${esc(G.players[ow].avatar)}</span>`:"";
-    html+=`<div data-tile="${i}" class="tile ${i===me.pos?"me":""} ${track[i].startsWith("lm_")?"landmark":""}" title="${name}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${uiIcon(TILE_ICONS[track[i]]||"star")}</span><span class="tile-name">${name}</span>${ob}</div>`;
+    html+=`<div data-tile="${i}" role="button" tabindex="0" aria-label="${esc(name)}، معلومات الخانة ${i+1}" class="tile ${i===me.pos?"me":""} ${track[i].startsWith("lm_")?"landmark":""}" title="${name}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${uiIcon(TILE_ICONS[track[i]]||"star")}</span><span class="tile-name">${name}</span>${ob}</div>`;
   }
-  window.DarbTabletop.paint(b,html,{gameId:G.cid||"saved",track:me.fast?"fast":"rat",players:here.map(p=>({id:p.id,pos:p.pos,pk:p.pk,name:p.name,prof:p.prof,color:colr(p)})),currentId:G.cur,duration:Math.max(35,140/SPEED)});
+  window.DarbTabletop.paint(b,html,{gameId:G.cid||"saved",track:me.fast?"fast":"rat",players:here.map(p=>({id:p.id,pos:p.pos,pk:p.pk,name:p.name,prof:p.prof,color:colr(p)})),currentId:G.cur,busy:Boolean(G.prompt),phase:G.phase,inspect:reference=>describeBoardItem(track,reference,me),duration:Math.max(35,140/SPEED)});
   const used=[...new Set(track)];
   $("#legend").innerHTML=used.map(k=>`<span><i style="background:var(${TILE[k][2]})"></i>${TILE[k][1]}</span>`).join("");
   const lg=$("#log");lg.textContent="";
