@@ -1,11 +1,16 @@
 /* درب الثراء — عامل الخدمة: يعمل بلا إنترنت بعد أول فتح */
-const VER = "darb-isometric-camera-v6";
+const VER = "darb-illustrated-cards-v7";
 const SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./styles/identity.css",
   "./styles/tabletop.css",
+  "./styles/illustrated.css",
+  "./scripts/identity.js",
+  "./art/identity/icons-sheet.png",
+  "./art/identity/cards-sheet.png",
+  "./art/identity/reactions-sheet.png",
   "./scripts/tabletop.js",
   "./scripts/board-camera.js",
   "./fonts/Tajawal-Regular.ttf",

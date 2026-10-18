@@ -75,11 +75,11 @@ async def verify(base_url):
         await page.wait_for_function('navigator.serviceWorker.controller !== null')
         cached = await page.evaluate('''async () => {
             const keys = await caches.keys();
-            const cache = await caches.open('darb-isometric-camera-v6');
+            const cache = await caches.open('darb-illustrated-cards-v7');
             return {keys, urls: (await cache.keys()).map(r => r.url)};
         }''')
-        assert 'darb-isometric-camera-v6' in cached['keys']
-        for asset in ['styles/identity.css', 'fonts/Tajawal-Regular.ttf', 'fonts/Tajawal-Bold.ttf',
+        assert 'darb-illustrated-cards-v7' in cached['keys']
+        for asset in ['styles/illustrated.css', 'scripts/identity.js', 'art/identity/icons-sheet.png', 'art/identity/cards-sheet.png', 'art/identity/reactions-sheet.png', 'styles/identity.css', 'fonts/Tajawal-Regular.ttf', 'fonts/Tajawal-Bold.ttf',
                       'art/identity/world-sheet.png', 'art/identity/characters-sheet.png',
                       'art/identity/goods-sheet.png', 'icons/game-icons.svg',
                       'styles/tabletop.css', 'scripts/tabletop.js',

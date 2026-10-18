@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#16614c">
+<meta name="theme-color" content="#527b78">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="icons/brand-mark.svg">
 <link rel="icon" type="image/png" href="icons/favicon-64.png">
@@ -247,6 +247,7 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 <link rel="preload" href="fonts/Tajawal-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="styles/identity.css">
 <link rel="stylesheet" href="styles/tabletop.css">
+<link rel="stylesheet" href="styles/illustrated.css">
 </head>
 <body>
 <div class="wrap">
@@ -324,6 +325,7 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 <div class="toast" id="toast"></div>
 
 <dialog id="board-inspector" class="board-inspector" aria-labelledby="board-info-title"><div class="board-info-top"><div class="board-info-symbol"><svg class="ui-icon" aria-hidden="true"><use href="icons/game-icons.svg#shop"/></svg></div><button type="button" class="board-info-close" data-close-inspector aria-label="إغلاق معلومات الخانة">×</button></div><p class="board-info-subtitle"></p><h2 id="board-info-title"></h2><p class="board-info-description"></p><dl></dl><p class="board-info-note">للاطّلاع فقط؛ تظهر قرارات اللعب عند الوقوف على الخانة.</p><button type="button" data-close-inspector>العودة إلى اللوحة</button></dialog>
+<script src="scripts/identity.js"></script>
 <script src="scripts/board-camera.js"></script>
 <script src="scripts/tabletop.js"></script>
 <script>
@@ -447,52 +449,52 @@ const EVENTS=[
  {id:"eidg",icon:"🎉",name:"موسم العيد",text:"أسعار الأقمشة والعسل ×1.3",goods:{fabric:1.3,honey:1.3}}
 ];
 const QUIZ=[
- ["ما «الأصل» في عالم المال؟",["شيء يدرّ عليّ دخلاً","شيء يُخرج مني مالاً كل شهر","أي شيء غالي الثمن"],0],
- ["أي مما يلي مثال على الدخل التلقائي؟",["إيجار شقة تملكها","راتب الوظيفة","أجر ساعات إضافية"],0],
- ["قسط السيارة الشهري يُعدّ:",["التزاماً (خصماً)","أصلاً","دخلاً تلقائياً"],0],
- ["ما معنى «الدفعة الأولى»؟",["ما تدفعه نقداً عند بدء الشراء","ما تقبضه من البنك","آخر قسط في القرض"],0],
- ["ما نسبة زكاة النقود إذا بلغت النصاب وحال عليها الحول؟",["2.5%","10%","20%"],0],
- ["«لا تضع كل البيض في سلة واحدة» تعني:",["نوّع استثماراتك","وفّر البيض","استثمر في سلة واحدة فقط"],0],
- ["ما «التضخم»؟",["ارتفاع الأسعار مع الوقت","نزول الأسعار","زيادة الراتب"],0],
- ["ما «الميزانية»؟",["خطة توزّع دخلك على المصاريف والادخار","مبلغ مقترض","نوع من الأسهم"],0],
- ["ما «الفائدة المركبة»؟",["فائدة تُحسب على الأصل وعلى الفائدة السابقة","فائدة ثابتة لا تتغير","غرامة تأخير"],0],
- ["ما «صندوق الطوارئ»؟",["مال مدّخر يكفي مصاريف أشهر عند الأزمات","مال للسفر","قرض سريع"],0],
- ["الربح يساوي:",["الإيراد − التكلفة","الإيراد + التكلفة","التكلفة − الإيراد"],0],
- ["ما أفضل طريقة لتقييم صفقة بسرعة؟",["مدة استرداد الدفعة الأولى","لون الإعلان","رأي أول من تقابل"],0],
- ["بطاقة الائتمان إن لم تُسدَّد كاملة تصبح:",["قرضاً بفائدة عالية","هدية","دخلاً"],0],
- ["ما «السهم»؟",["حصة ملكية في شركة","قرض للبنك","نوع من العقارات"],0],
- ["العقار المؤجر يدرّ عليك:",["إيجاراً شهرياً","راتباً من الدولة","فائدة بنكية فقط"],0],
- ["ما «التأمين»؟",["حماية من خسارة كبيرة مقابل قسط","مكافأة سنوية","نوع من الأسهم"],0],
- ["الدَّين الجيد هو الذي:",["يموّل أصلاً دخله أكبر من قسطه","نشتري به الكماليات","لا نسدده أبداً"],0],
- ["أيّ مما يلي ليس أصلاً بالمعنى المالي؟",["هاتف باهظ للاستهلاك فقط","عمارة مؤجرة","مشروع رابح"],0],
- ["«الراتب الصافي» هو:",["بعد خصم الضرائب والاستقطاعات","قبل أي خصم","راتب شهرين"],0],
- ["ما فائدة تعدد مصادر الدخل؟",["تقلّ المخاطرة إن توقف مصدر واحد","تزيد الضرائب","لا فائدة"],0],
- ["إذا ارتفعت الفائدة فإن الاقتراض يصبح:",["أغلى","أرخص","بلا قسط"],0],
- ["أفضل عادة ادخار:",["نسبة ثابتة من دخلك كل شهر","ما يتبقى آخر الشهر","الادخار عند الحاجة فقط"],0],
- ["ما الهدف من الخروج من «سباق الفئران»؟",["أن يغطي دخلك التلقائي مصاريفك","جمع أكبر قدر من الأثاث","الحصول على ترقية"],0],
- ["ما «العائد على الاستثمار»؟",["ما تكسبه مقارنة بما دفعت","اسم بنك","ضريبة"],0],
- ["ما «الإفلاس»؟",["العجز عن سداد الديون","الربح الكبير","بيع الأسهم"],0],
- ["إن ظهر مصروف طارئ، فأفضل مصدر لتغطيته:",["صندوق الطوارئ","قرض بفائدة عالية","بيع أصل مدرّ للدخل"],0],
- ["«الأصول» تزيد ثروتك لأنها:",["تضيف دخلاً أو قيمة","تزيد مصاريفك","تُنسى في الدرج"],0],
- ["الإنفاق على الكماليات باستمرار يؤدي غالباً إلى:",["بقاء المرء في سباق الفئران","الحرية المالية السريعة","زيادة الدخل التلقائي"],0],
- ["ما أهم خطوة قبل شراء أي أصل؟",["معرفة دخله الشهري وتكلفته","اختيار لونه","سؤال الجيران فقط"],0]
+ ["في التخطيط المالي، أي وصف يناسب الأصل المدرّ للدخل؟",["شيء يدرّ عليّ دخلاً","شيء يُخرج مني مالاً كل شهر","أي شيء غالي الثمن"],0],
+ ["أي مورد يمكن أن يمنحك دخلاً دون ساعات عمل إضافية؟",["إيجار شقة تملكها","راتب الوظيفة","أجر ساعات إضافية"],0],
+ ["كيف تصنّف قسط السيارة الذي تدفعه كل شهر؟",["التزاماً (خصماً)","أصلاً","دخلاً تلقائياً"],0],
+ ["عند شراء استثمار، ماذا تعني الدفعة الأولى؟",["ما تدفعه نقداً عند بدء الشراء","ما تقبضه من البنك","آخر قسط في القرض"],0],
+ ["كم تبلغ زكاة النقود عند بلوغ النصاب ومرور الحول؟",["2.5%","10%","20%"],0],
+ ["ما الفكرة المالية وراء «لا تضع كل البيض في سلة واحدة»؟",["نوّع استثماراتك","وفّر البيض","استثمر في سلة واحدة فقط"],0],
+ ["أي وصف يعبّر عن التضخم؟",["ارتفاع الأسعار مع الوقت","نزول الأسعار","زيادة الراتب"],0],
+ ["ما المقصود بميزانيتك الشخصية؟",["خطة توزّع دخلك على المصاريف والادخار","مبلغ مقترض","نوع من الأسهم"],0],
+ ["كيف تُحسب الفائدة المركبة؟",["فائدة تُحسب على الأصل وعلى الفائدة السابقة","فائدة ثابتة لا تتغير","غرامة تأخير"],0],
+ ["لماذا تحتفظ بصندوق للطوارئ؟",["لتغطية مصاريف عدة أشهر عند الأزمات","لتخصيصه للسفر فقط","للاقتراض السريع"],0],
+ ["كيف تحسب ربح الصفقة؟",["الإيراد − التكلفة","الإيراد + التكلفة","التكلفة − الإيراد"],0],
+ ["أي مؤشر يساعدك في تقييم صفقة مدرّة للدخل مبدئياً؟",["مدة استرداد الدفعة الأولى","لون الإعلان","رأي أول من تقابل"],0],
+ ["ما الذي قد ينتج عن عدم سداد رصيد بطاقة الائتمان كاملاً؟",["دين بفائدة مرتفعة","هدية","دخلاً"],0],
+ ["عندما تشتري سهماً، ماذا تملك؟",["حصة ملكية في شركة","قرض للبنك","نوع من العقارات"],0],
+ ["ما الدخل المعتاد من شقة تؤجّرها؟",["إيجاراً شهرياً","راتباً من الدولة","فائدة بنكية فقط"],0],
+ ["ما الفكرة الأساسية للتأمين؟",["حماية من خسارة كبيرة مقابل قسط","مكافأة سنوية","نوع من الأسهم"],0],
+ ["في منطق اللعبة، أي استخدام للدين يدعم بناء الدخل؟",["تمويل أصل يزيد دخله على قسطه","نشتري به الكماليات","لا نسدده أبداً"],0],
+ ["أي خيار لا يدرّ دخلاً في هذا المثال؟",["هاتف باهظ للاستهلاك فقط","عمارة مؤجرة","مشروع رابح"],0],
+ ["متى نسمّي الراتب «صافياً»؟",["بعد خصم الضرائب والاستقطاعات","قبل أي خصم","راتب شهرين"],0],
+ ["كيف يساعدك تنويع مصادر الدخل؟",["تقلّ المخاطرة إن توقف مصدر واحد","تزيد الضرائب","لا فائدة"],0],
+ ["عند ارتفاع الفائدة، كيف تتغيّر تكلفة الاقتراض عادةً؟",["أغلى","أرخص","بلا قسط"],0],
+ ["أي عادة تساعد على الاستمرار في الادخار؟",["نسبة ثابتة من دخلك كل شهر","ما يتبقى آخر الشهر","الادخار عند الحاجة فقط"],0],
+ ["متى تقترب من الحرية المالية في اللعبة؟",["أن يغطي دخلك التلقائي مصاريفك","جمع أكبر قدر من الأثاث","الحصول على ترقية"],0],
+ ["بماذا يقارن العائد على الاستثمار؟",["ما تكسبه مقارنة بما دفعت","اسم بنك","ضريبة"],0],
+ ["ماذا يعني الإفلاس في سياق الديون؟",["العجز عن سداد الديون","الربح الكبير","بيع الأسهم"],0],
+ ["أي مورد أعددته مسبقاً لتغطية مصروف مفاجئ؟",["صندوق الطوارئ","قرض بفائدة عالية","بيع أصل مدرّ للدخل"],0],
+ ["كيف يمكن أن تسهم الأصول في نمو ثروتك؟",["تضيف دخلاً أو قيمة","تزيد مصاريفك","تُنسى في الدرج"],0],
+ ["ماذا قد يسبّب الإنفاق المستمر على الكماليات دون تخطيط؟",["بقاء المرء في سباق الفئران","الحرية المالية السريعة","زيادة الدخل التلقائي"],0],
+ ["أي معلومة تحتاجها قبل شراء استثمار مدرّ للدخل؟",["معرفة دخله الشهري وتكلفته","اختيار لونه","سؤال الجيران فقط"],0]
 ];
 const FAMILY=[
- {i:"👵",t:"زيارة الجدّة",s:"جاءت جدتك بهدية وحلويات للعائلة.",k:"gain",x:2},
- {i:"🏆",t:"فوز في مسابقة",s:"ابنك فاز بالمركز الأول في مسابقة المدرسة!",k:"gain",x:3},
- {i:"🧁",t:"بيع الحلويات",s:"باعت العائلة حلويات منزلية في الحي وكسبتم.",k:"gain",x:2},
- {i:"🎈",t:"مفاجأة سارة",s:"وجدت مبلغاً نسيته في جيب سترة قديمة.",k:"gain",x:1},
- {i:"📚",t:"مصاريف المدرسة",s:"حان موعد الرسوم والدفاتر والزي المدرسي.",k:"pay",x:2},
- {i:"🐈",t:"القطة والأريكة",s:"خرّبت القطة الأريكة الجديدة!",k:"pay",x:1},
- {i:"🏥",t:"زيارة الطبيب",s:"نزلة برد في العائلة وفاتورة العيادة.",k:"pay",x:2},
- {i:"🎂",t:"عيد ميلاد",s:"عيد ميلاد أحد أفراد العائلة. كيف تحتفلون؟",k:"choice",o:[["حفلة كبيرة",3,2],["هدية بسيطة",1,1]]},
- {i:"👗",t:"كسوة العيد",s:"اقترب العيد والجميع يحتاجون ملابس جديدة.",k:"choice",o:[["اشترِ الكسوة",2,2]]},
- {i:"🤲",t:"معروف لجار",s:"جارك يحتاج مساعدة عاجلة.",k:"choice",o:[["ساعده",1,2]]},
- {i:"🏞️",t:"رحلة عائلية",s:"فرصة لرحلة ممتعة في نهاية الأسبوع.",k:"choice",o:[["اذهبوا في الرحلة",2,3]]},
- {i:"📸",t:"صورة العائلة",s:"صورة جماعية جميلة تُعلَّق في الصالة.",k:"love",x:1,l:2},
- {i:"🍽️",t:"عزومة العائلة",s:"أنت تستضيف الجميع على عشاء كبير.",k:"host",multi:true},
- {i:"🧧",t:"العيدية",s:"جاء دورك لتأخذ العيدية من الجميع!",k:"eid",multi:true},
- {i:"🎲",t:"تحدي النرد العائلي",s:"اختر لاعباً وتنافسا بالنرد على مبلغ رمزي.",k:"duel",multi:true}
+ {i:"👵",t:"زيارة الجدّة",s:"تزوركم الجدّة حاملةً هدية وحلويات؛ للّمة اليوم فرحة إضافية.",k:"gain",x:2},
+ {i:"🏆",t:"فوز في مسابقة",s:"عاد ابنك من المدرسة بخبر جميل: المركز الأول في المسابقة ومكافأة تستحق الاحتفال.",k:"gain",x:3},
+ {i:"🧁",t:"بيع الحلويات",s:"تحوّلت وصفة العائلة المحبوبة إلى مشروع صغير؛ بيع الحلويات في الحي حقق ربحاً.",k:"gain",x:2},
+ {i:"🎈",t:"مفاجأة سارة",s:"أثناء ترتيب ملابسك، وجدت مبلغاً نسيته في جيب سترتك. إضافة لطيفة لميزانيتك!",k:"gain",x:1},
+ {i:"📚",t:"مصاريف المدرسة",s:"عام دراسي جديد يحتاج إلى رسوم ودفاتر وزي؛ حان وقت تجهيز الميزانية.",k:"pay",x:2},
+ {i:"🐈",t:"القطة والأريكة",s:"قررت القطة تجربة مخالبها على الأريكة. تحتاج العائلة الآن إلى إصلاحها.",k:"pay",x:1},
+ {i:"🏥",t:"زيارة الطبيب",s:"أحد أفراد العائلة يحتاج إلى زيارة العيادة بسبب نزلة برد؛ هناك فاتورة للعلاج.",k:"pay",x:2},
+ {i:"🎂",t:"عيد ميلاد",s:"اقترب عيد ميلاد شخص عزيز. اختر احتفالاً يناسب ميزانيتك ويصنع ذكرى جميلة.",k:"choice",o:[["حفلة كبيرة",3,2],["هدية بسيطة",1,1]]},
+ {i:"👗",t:"كسوة العيد",s:"العيد على الأبواب، والعائلة تستعد بملابس جديدة. كيف ستشاركهم الفرحة؟",k:"choice",o:[["اشترِ الكسوة",2,2]]},
+ {i:"🤲",t:"معروف لجار",s:"طرق جارك الباب طالباً مساعدة عاجلة. يمكنك أن تكون سنداً له اليوم.",k:"choice",o:[["ساعده",1,2]]},
+ {i:"🏞️",t:"رحلة عائلية",s:"عطلة الأسبوع فرصة للخروج معاً وتغيير الأجواء. هل تخصص لها من ميزانيتك؟",k:"choice",o:[["اذهبوا في الرحلة",2,3]]},
+ {i:"📸",t:"صورة العائلة",s:"اجتمعت العائلة لالتقاط صورة تزيّن الصالة؛ ذكرى جميلة ودفء يجمعكم.",k:"love",x:1,l:2},
+ {i:"🍽️",t:"عزومة العائلة",s:"دورك اليوم أن تجمع الجميع حول المائدة. استضافة اللاعبين تعني مشاركة جزء من نقدك معهم.",k:"host",multi:true},
+ {i:"🧧",t:"العيدية",s:"أجواء العيد تجمع اللاعبين؛ هذه المرة يأتي دورك لتلقّي العيدية من الآخرين.",k:"eid",multi:true},
+ {i:"🎲",t:"تحدي النرد العائلي",s:"تحدٍّ ودّي على طاولة العائلة: اختر منافساً، ثم دَع النرد يحسم الجولة.",k:"duel",multi:true}
 ];
 const GOODS=[
  {k:"dates",n:"التمور",e:"🌴",base:120},
@@ -656,7 +658,7 @@ function cleanHTML(html){
         const t=n.tagName.toLowerCase();
         if(OK.includes(t)){
           const e=document.createElement(t);
-          if(/^(good|bad|sub|tip|warn)( (good|bad|sub|tip|warn))*$/.test(n.className||""))e.className=n.className;
+          if(/^(good|bad|sub|tip|warn|lrow)( (good|bad|sub|tip|warn|lrow))*$/.test(n.className||""))e.className=n.className;
           dst.appendChild(e);walk(n,e);
         }else walk(n,dst);
       }
@@ -706,7 +708,7 @@ function actRoll(pid){
   if(!r||r.pid!==pid||G.phase!=="await_roll")return;
   pending.roll=null;r.res();
 }
-function ack(p,title,body,label){return ask(p,{kind:"ack",title,body,opts:[label||"حسناً"],alt:[false]})}
+function ack(p,title,body,label,category){return ask(p,{kind:"ack",category,title,body,opts:[label||"حسناً"],alt:[false]})}
 
 const loanCap=p=>Math.round((5*p.salary+4*passive(p))/1000)*1000;   // سقف الاقتراض: ٥ رواتب + ٤ أضعاف الدخل التلقائي
 function bankFee(p,need){const b=G.lm&&G.lm.bank;if(b!=null&&b!==p.id){const o=G.players[b];const f=Math.round(need*0.05/10)*10;o.cash+=f;o.st.rentIn=(o.st.rentIn||0)+f}}
@@ -847,7 +849,7 @@ async function resolveTile(p,k){
   case"payday":pay(p);return;
   case"doodad":{
     const [n,c0]=rnd(DOODADS);const c=Math.round(c0*D().doodad*((G.event&&G.event.doodadMult)||1)*(p.perk.doodadMult||1)*(insured(p)?0.3:1)/10)*10;
-    await ack(p,"🛍️ مصروف طارئ",`<p>${n}: <b class="bad">${fmt(c)}</b></p><p class="sub">مصاريف الاستهلاك لا تُنتج دخلاً. هي جزء من الحياة، لكن لا تدعها تلتهم نقدك.</p>`,"ادفع");
+    await ack(p,"🛍️ مصروف طارئ",`<p>${n}: <b class="bad">${fmt(c)}</b></p><p class="sub">هذا المصروف لا يضيف دخلاً شهرياً. راجع النقد المتاح قبل الدفع، واحتفظ باحتياطي للطوارئ.</p>`,"ادفع");
     if(await ensureCash(p,c,true)){p.cash-=c;p.st.doodads++;cue("bad",p);log(`🛍️ ${p.name} دفع ${fmt(c)} على «${n}».`)}
     return}
   case"child":
@@ -868,7 +870,7 @@ async function resolveTile(p,k){
     return}
   case"market":return market(p);
   case"deal":{
-    const i=await ask(p,{kind:"dealsize",title:"🤝 فرصة استثمارية",body:`<p>اختر حجم الصفقة:</p><div class="tip">الصغيرة أرخص وأخف مخاطرة. الكبيرة تحتاج نقداً أكبر لكن دخلها أعلى.</div>`,opts:["صفقة صغيرة","صفقة كبيرة"],alt:[false,false]});
+    const i=await ask(p,{kind:"dealsize",title:"🤝 فرصة استثمارية",body:`<p>أي فرصة تريد استكشافها؟</p><div class="tip">الصفقات الصغيرة تحتاج رأس مال أقل. الصفقات الكبيرة تتطلب نقداً أكثر؛ راجع الدفعة والدخل قبل اتخاذ قرارك.</div>`,opts:["صفقة صغيرة","صفقة كبيرة"],alt:[false,false]});
     return offer(p,i===0?hd(rnd(SMALL)):hd(rnd(BIG)))}
   case"biz":return offer(p,hd(rnd(BIZ)));
   case"dream":{
@@ -876,7 +878,7 @@ async function resolveTile(p,k){
     const dc=dreamCost(d,p),afford=p.cash>=dc&&p.hap>=50;
     const costs=DREAMS.map(x=>dreamCost(x,p));
     const list=DREAMS.map((x,k)=>`<div class="lrow"><span>${k===tier?"👉 ":""}${esc(x.n)}</span><b>${fmt(costs[k])} · ⭐ ${DPTS[k]}</b></div>`).join("");
-    const i=await ask(p,{kind:"dream",title:`⭐ ${d.n}`,body:`<p>هذا هو الحلم <b>${DTIER[tier]}</b> (⭐ ${DPTS[tier]} نقطة)، سعره <b>${fmt(dc)}</b> = ${d.m} ضعف مصاريفك الأساسية السنوية. نقدك ${fmt(p.cash)}.</p>${list}<p class="sub">من يشتري حلماً أكبر يتفوّق على من اشترى حلماً أصغر مهما كان أسبق (علاوة الأسبقية صغيرة: +5 للأول، +3، +1). لكن بعد الشراء تخرج من الأدوار وتنتظر الباقين.</p><p class="${p.hap>=50?"sub":"bad"}">😊 تحتاج سعادة 50 على الأقل — سعادتك ${p.hap}.</p>`,opts:afford?["حقّق الحلم","لاحقاً (أنتظر حلماً أكبر)"]:[p.cash<dc?"لا يكفي النقد":"سعادتك منخفضة"],alt:afford?[false,true]:[true],data:{afford,tier,cash:p.cash,costs,cost:dc}});
+    const i=await ask(p,{kind:"dream",title:`⭐ ${d.n}`,body:`<p>هذا هو الحلم <b>${DTIER[tier]}</b> (⭐ ${DPTS[tier]} نقطة)، سعره <b>${fmt(dc)}</b> = ${d.m} ضعف مصاريفك الأساسية السنوية. نقدك ${fmt(p.cash)}.</p>${list}<p class="sub">من يشتري حلماً أكبر يتفوّق على من اشترى حلماً أصغر مهما كان أسبق (علاوة الأسبقية: +5 للأول، ثم +3، ثم +2، ثم +1). لكن بعد الشراء تخرج من الأدوار وتنتظر الباقين.</p><p class="${p.hap>=50?"sub":"bad"}">😊 تحتاج سعادة 50 على الأقل — سعادتك ${p.hap}.</p>`,opts:afford?["حقّق الحلم","لاحقاً (أنتظر حلماً أكبر)"]:[p.cash<dc?"لا يكفي النقد":"سعادتك منخفضة"],alt:afford?[false,true]:[true],data:{afford,tier,cash:p.cash,costs,cost:dc}});
     if(afford&&i===0){
       p.cash-=dc;win(p,d,tier);
       if(!over()&&!isBot(p)){await ack(p,`🏅 حققت حلمك: ${d.n}`,`<p>مبروك! حصلت على <b>⭐ ${p.dp} نقطة</b> (حلم ${DTIER[tier]}).</p><p class="sub">تنتظر الآن انتهاء الباقين من أدوارهم، وقد يتفوّق عليك من يشتري حلماً أكبر. تابع منافسيك على الشاشة.</p>`,"أتابع المنافسين")}
@@ -914,8 +916,8 @@ async function offer(p,c){
   if(dd)c={...c,down:Math.round(c.down*(1-dd)/100)*100};
   const inc=c.inc?`الدخل الشهري الصافي: <b class="good">+${fmt(c.inc)}</b>`:"لا دخل شهرياً — الربح من إعادة البيع.";
   const i=await ask(p,{kind:"offer",title:c.n,
-    body:`<p>النوع: ${c.t}${c.cost?` — القيمة: ${fmt(c.cost)}`:""}<br>الدفعة الأولى: <b>${fmt(c.down)}</b><br>${inc}</p>${c.note?`<p>${c.note}</p>`:""}<p class="sub">نقدك: ${fmt(p.cash)}</p>`,
-    opts:["اشترِ","تجاوز"],alt:[false,true],data:{down:c.down,inc:c.inc,cost:c.cost||c.down,t:c.t}});
+    body:`<p class="sub">${c.t} · استثمار جديد لمحفظتك</p><div class="lrow"><span>الدفعة الأولى</span><b>${fmt(c.down)}</b></div>${c.cost?`<div class="lrow"><span>قيمة الأصل</span><b>${fmt(c.cost)}</b></div>`:""}<div class="tip">${inc}</div>${c.note?`<p>${c.note}</p>`:""}<p class="sub">النقد المتاح قبل الشراء: <b>${fmt(p.cash)}</b></p>`,
+    opts:["أضف الاستثمار لمحفظتك","اترك الفرصة"],alt:[false,true],data:{down:c.down,inc:c.inc,cost:c.cost||c.down,t:c.t}});
   if(i!==0)return;
   if(!(await ensureCash(p,c.down,false,c)))return;
   p.cash-=c.down;p.assets.push({n:c.n,t:c.t,inc:c.inc,cost:c.cost||c.down,...(c.lm?{lm:c.lm}:{})});
@@ -1019,7 +1021,7 @@ async function lifeCard(p){
   let k,guard=0;do{k=LDECK.pop();if(k==null){LDECK=shuffle([...LIFE.keys()]);k=LDECK.pop()}}while(LIFE[k].kid&&!p.children&&++guard<8);
   const c=LIFE[k],opts=lifeOpts(p,c),st=hapState(p.hap);
   const i=await ask(p,{kind:"life",title:`${c.e} ${c.t}`,
-    body:`<p>سعادتك ${st[0]} <b>${p.hap}</b>/100 · نقدك ${fmt(p.cash)}.<br>اختر قرارك، وأثر كل خيار مكتوب أمامك.</p>`,
+    body:`<p>سعادتك ${st[0]} <b>${p.hap}</b>/100 · نقدك ${fmt(p.cash)}.<br>وازن بين ميزانيتك وراحتك؛ تكلفة كل خيار وأثره موضّحان أدناه.</p>`,
     opts:opts.map(o=>`${o.l} — ${eff(o,p.cash)}`),alt:opts.map((_,j)=>j>0&&opts[j].m>=0&&opts[j].h<=0),
     data:{os:opts.map(o=>({m:o.m,h:o.h,amt:o.amt,sal:o.sal||0,skip:o.skip||0})),cash:p.cash,hap:p.hap,res:expenses(p)*2,base:lifeBase(p)}});
   const o=opts[i];if(!o)return;
@@ -1158,7 +1160,7 @@ async function jailTurn(p){
 async function insureTile(p){
   const c=Math.round(expenses(p)*0.35/50)*50;
   if(insured(p)){await ack(p,"🛡️ تأمينك ساري",`<p>أنت مغطّى حتى نهاية الجولة <b>${p.ins}</b>: المصروف الطارئ ×0.3، والتسريح بنصف الثمن ودورة واحدة، والضريبة والقضية بالنصف.</p>`,"حسناً");return}
-  const i=await ask(p,{kind:"insure",title:"🛡️ تأمين شامل",body:`<p>قسط التأمين <b>${fmt(c)}</b> يغطيك <b>٦ جولات</b>:<br>• المصروف الطارئ ×0.3<br>• التسريح بنصف الثمن ودورة واحدة فقط<br>• الضريبة والقضية بالنصف<br>• علاج الإرهاق بـ٣٠٪</p><p class="sub">نقدك ${fmt(p.cash)}. التأمين يشتري لك راحة البال.</p>`,opts:[`اشترِ التأمين (${fmt(c)})`,"لا شكراً"],alt:[false,true],data:{c,cash:p.cash}});
+  const i=await ask(p,{kind:"insure",title:"🛡️ تأمين شامل",body:`<p>قسط واحد بقيمة <b>${fmt(c)}</b> يمنحك تغطية لمدة <b>٦ جولات</b>.</p><ul><li>تدفع 30% من المصروف الطارئ.</li><li>التسريح: نصف التكلفة ودور واحد فقط.</li><li>الضرائب والقضايا: نصف التكلفة.</li><li>تدفع 30% من تكلفة علاج الإرهاق.</li></ul><p class="sub">النقد المتاح: ${fmt(p.cash)}. اختر التغطية إن كانت تناسب خطتك.</p>`,opts:[`اشترِ التأمين (${fmt(c)})`,"لا شكراً"],alt:[false,true],data:{c,cash:p.cash}});
   if(i!==0)return;
   if(!(await ensureCash(p,c,false)))return;
   p.cash-=c;p.ins=G.round+6;p.st.ins++;gainHap(p,3);cue("buy",p);log(`🛡️ ${p.name} اشترى تأميناً حتى الجولة ${p.ins}.`);
@@ -1223,17 +1225,18 @@ async function donateFund(p,a){
 }
 async function familyCard(p){
   const n=G.players.length;
+  const show=(title,body,label)=>ack(p,title,body,label,"family");
   let k;do{if(!FDECK.length)FDECK=shuffle([...FAMILY.keys()]);k=FDECK.pop()}while(FAMILY[k].multi&&n<2);
   const c=FAMILY[k],u=Math.max(300,Math.round(expenses(p)*0.12/50)*50),T=`${c.i} ${c.t}`;
   const head=`<p><b>${c.s}</b></p>`;
   log(`🎴 ${p.name}: ${c.t}.`);
   switch(c.k){
-  case"gain":{const a=c.x*u;await ack(p,T,head+`<p>تحصل على <b class="good">+${fmt(a)}</b></p>`,"رائع");p.cash+=a;cue("good",p);log(`🎴 ${p.name} ربح ${fmt(a)}.`);return}
-  case"pay":{const a=c.x*u;await ack(p,T,head+`<p>تدفع <b class="bad">${fmt(a)}</b></p>`,"ادفع");if(await ensureCash(p,a,true)){p.cash-=a;cue("bad",p);log(`🎴 ${p.name} دفع ${fmt(a)}.`)}return}
-  case"love":{const a=c.x*u;await ack(p,T,head+`<p>تحصل على <b class="good">+${fmt(a)}</b> و<b>❤️ ${c.l}</b> من دفء العائلة.</p>`,"جميل");p.cash+=a;love(p,c.l);cue("good",p);return}
+  case"gain":{const a=c.x*u;await show(T,head+`<p>تحصل على <b class="good">+${fmt(a)}</b></p>`,"رائع");p.cash+=a;cue("good",p);log(`🎴 ${p.name} ربح ${fmt(a)}.`);return}
+  case"pay":{const a=c.x*u;await show(T,head+`<p>تدفع <b class="bad">${fmt(a)}</b></p>`,"ادفع");if(await ensureCash(p,a,true)){p.cash-=a;cue("bad",p);log(`🎴 ${p.name} دفع ${fmt(a)}.`)}return}
+  case"love":{const a=c.x*u;await show(T,head+`<p>تحصل على <b class="good">+${fmt(a)}</b> و<b>❤️ ${c.l}</b> من دفء العائلة.</p>`,"جميل");p.cash+=a;love(p,c.l);cue("good",p);return}
   case"choice":{
     const o=c.o.map(([l,x,lv])=>({l,a:x*u,lv}));
-    const i=await ask(p,{kind:"family",title:T,body:head+`<p class="sub">الاختيارات الدافئة ❤️ تمنحك لقب «قلب العائلة».</p>`,
+    const i=await ask(p,{kind:"family",title:T,body:head+`<p class="sub">مساهمتك تزيد دفء العائلة ❤️ وتقرّبك من لقب «قلب العائلة». راجع تكلفة كل خيار قبل القرار.</p>`,
       opts:[...o.map(q=>`${q.l} (−${fmt(q.a)} · ❤️+${q.lv})`),"تجاوز"],alt:[...o.map(()=>false),true],data:{costs:[...o.map(q=>q.a),0]}});
     if(i<o.length){
       const q=o[i];
@@ -1254,7 +1257,7 @@ async function familyCard(p){
   case"eid":{
     let sum=0;
     G.players.forEach(q=>{if(q===p)return;const a=Math.min(250,Math.max(0,Math.round(q.cash*0.02/10)*10));q.cash-=a;sum+=a});
-    await ack(p,T,head+`<p>جمعت <b class="good">+${fmt(sum)}</b> من الجميع 😄</p>`,"شكراً");
+    await show(T,head+`<p>جمعت <b class="good">+${fmt(sum)}</b> من الجميع 😄</p>`,"شكراً");
     p.cash+=sum;cue("pay",p);log(`🧧 ${p.name} أخذ عيدية ${fmt(sum)} من اللاعبين.`);flash(`🧧 ${p.name} أخذ العيدية من الجميع!`);
     return}
   case"duel":{
@@ -1272,7 +1275,7 @@ async function familyCard(p){
       msg=`${p.name} رمى ${a} و${q.name} رمى ${b}. فاز ${w.name} بـ${fmt(stake)}!`;
     }
     log(`🎲 ${msg}`);flash(`🎲 ${msg}`);cue(a===b?"pay":"good");
-    await ack(p,T,`<p><b>${esc(msg)}</b></p>`,"حسناً");
+    await show(T,`<p><b>${esc(msg)}</b></p>`,"حسناً");
     return}
   }
 }
@@ -1849,7 +1852,7 @@ function renderPrompt(){
   const btns=pr.opts.map((l,i)=>[l,()=>answer(pr.id,i),pr.alt&&pr.alt[i]]);
   const ml=G.players.filter(x=>x.ctrl==="local").length>1,pp=G.players[pr.pid];
   openModal("prompt",(ml?`<span class="pwho" style="--pc:${colr(pp)}">${esc(pp.avatar)} ${esc(pp.name)}</span> `:"")+esc(pr.title),cleanHTML(pr.body),btns,true);
-  if(["quiz","fun","charity","family","life","yleisure","learn","insure"].includes(pr.kind))$("#sheet .row").style.flexDirection="column";
+  window.DarbIdentity.decorateCard($("#sheet"),pr);
 }
 function answer(id,i){
   if(Net.role==="guest")send({t:"choose",id,idx:i});
@@ -1859,6 +1862,7 @@ function answer(id,i){
 /* ---------- النوافذ ---------- */
 function openModal(kind,title,body,btns,keep){
   modalKind=kind;
+  $("#sheet").className="sheet";
   $("#sheet").innerHTML=`<h2>${title}</h2>${body}<div class="row"></div>`;
   const row=$("#sheet .row");
   (btns||[]).forEach(([label,fn,alt])=>{
@@ -2129,7 +2133,8 @@ function help(tab,after){
   tab=tab||0;
   const draw=()=>{
     modalKind="help";
-    $("#sheet").innerHTML=`<h2>❓ كيف ألعب؟</h2><div class="tabs">${HELP.map((h,i)=>`<button class="${i===tab?"on":""}" data-t="${i}">${h[0]}</button>`).join("")}</div><div>${HELP[tab][1]()}</div><div class="row"><button id="hClose">${after?"فهمت، لنبدأ ✅":"إغلاق"}</button></div>`;
+    $("#sheet").className="sheet";
+  $("#sheet").innerHTML=`<h2>❓ كيف ألعب؟</h2><div class="tabs">${HELP.map((h,i)=>`<button class="${i===tab?"on":""}" data-t="${i}">${h[0]}</button>`).join("")}</div><div>${HELP[tab][1]()}</div><div class="row"><button id="hClose">${after?"فهمت، لنبدأ ✅":"إغلاق"}</button></div>`;
     $("#sheet").querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{tab=+b.dataset.t;draw()});
     $("#hClose").onclick=()=>{closeModal();try{localStorage.setItem(SEEN,"1")}catch(e){}after&&after()};
   };
@@ -2153,8 +2158,9 @@ function drawSetup(){
       ${i>0?`<option value="remote" ${s.ctrl==="remote"?"selected":""}>🌐 صديق عن بُعد</option>`:""}
     </select>
     <button class="profbtn" data-k="profbtn">${s.prof>=0&&PROFS[s.prof]?`<img class="pi" src="${IMG[PROFS[s.prof].k]}" alt="${esc(PROFS[s.prof].n)}"> ${PROFS[s.prof].n}`:"🎲 مهنة عشوائية"} ▾</button>
-    <div class="nmrow"><select data-k="avatar" class="avsel" aria-label="الصورة">${AVATARS.map(a=>`<option ${a===s.avatar?"selected":""}>${a}</option>`).join("")}</select><input type="text" data-k="name" maxlength="14" value="${esc(s.name)}" placeholder="الاسم"></div>
+    <div class="nmrow"><select data-k="avatar" class="avsel" aria-label="الصورة">${AVATARS.map((a,i)=>`<option value="${a}" ${a===s.avatar?"selected":""}>${window.DarbIdentity.avatarNames[i]}</option>`).join("")}</select><input type="text" data-k="name" maxlength="14" value="${esc(s.name)}" placeholder="الاسم"></div>
   </div>`).join("");
+  $("#sheet").className="sheet";
   $("#sheet").innerHTML=`<h2>🎮 لعبة جديدة</h2><p class="sub">اختر اللاعبين (حتى ٨). الفوز لمن يجمع أعلى نقاط من أحلامه.</p>${rows}
     ${slots.filter(x=>x.ctrl==="local").length>1?`<label class="l">📱 نمط الجهاز المشترك</label><select id="sTable"><option value="table" ${setupTable==="table"?"selected":""}>🪑 وضع الطاولة: الجهاز ثابت ولا تمرير</option><option value="pass" ${setupTable==="pass"?"selected":""}>🤲 تمرير الجهاز: شاشة «سلّم الجهاز» قبل كل دور</option></select>`:""}
     <label class="l">مستوى الصعوبة</label><select id="sMode">${Object.keys(LVL).map(k=>`<option value="${k}" ${setupMode===k?"selected":""}>${LVLTXT[k]}</option>`).join("")}</select>
@@ -2191,6 +2197,7 @@ function openProfPicker(i){
   modalKind="prof";
   const cards=[`<button class="pcard ${slots[i].prof<0?"on":""}" data-p="-1"><span class="pdice">🎲</span><b>عشوائية</b><small>مفاجأة!</small></button>`]
    .concat(PROFS.map((q,j)=>`<button class="pcard ${slots[i].prof===j?"on":""}" data-p="${j}"><img src="${IMG[q.k]}" alt="${esc(q.n)}"><b>${q.n}</b><small>راتب ${fmt(q.salary)} · نقد ${fmt(q.cash)}</small><small class="pk">⭐ ${q.pt}</small></button>`));
+  $("#sheet").className="sheet";
   $("#sheet").innerHTML=`<h2>اختر المهنة</h2><p class="sub">لكل مهنة راتب ومصاريف وميزة خاصة.</p><div class="pgrid">${cards.join("")}</div><div class="row"><button class="alt" id="pBack">رجوع</button></div>`;
   $("#sheet").querySelectorAll(".pcard").forEach(b=>b.onclick=()=>{slots[i].prof=+b.dataset.p;drawSetup()});
   $("#pBack").onclick=()=>drawSetup();
@@ -2339,7 +2346,8 @@ async function openInvite(slotIdx){
   discDone=false;closeNet(false);
   modalKind="invite";
   const draw=(code,msg)=>{
-    $("#sheet").innerHTML=`<h2>🌐 دعوة صديق</h2>
+    $("#sheet").className="sheet";
+  $("#sheet").innerHTML=`<h2>🌐 دعوة صديق</h2>
       <ol class="steps">
         <li>اضغط «إنشاء رمز الدعوة» وأرسل الرمز لصديقك (واتساب مثلاً).</li>
         <li>يفتح اللعبة ← ☰ ← «انضمام لصديق»، يلصق رمزك ويرسل لك «رمز الرد».</li>
@@ -2394,9 +2402,10 @@ function openJoin(){
   discDone=false;closeNet(false);
   modalKind="join";
   const profOpts=`<option value="-1">مهنة عشوائية</option>`+PROFS.map((p,i)=>`<option value="${i}">${p.e} ${p.n}</option>`).join("");
+  $("#sheet").className="sheet";
   $("#sheet").innerHTML=`<h2>🌐 انضمام إلى لعبة صديق</h2>
     <label class="l">اسمك</label><input type="text" id="jName" maxlength="14" value="ضيف">
-    <label class="l">صورتك</label><select id="jAv" class="avsel" style="width:100%!important">${AVATARS.map(a=>`<option>${a}</option>`).join("")}</select>
+    <label class="l">صورتك</label><select id="jAv" class="avsel" style="width:100%!important">${AVATARS.map((a,i)=>`<option value="${a}">${window.DarbIdentity.avatarNames[i]}</option>`).join("")}</select>
     <label class="l">مهنتك</label><select id="jProf">${profOpts}</select>
     <label class="l">رمز الدعوة من صديقك</label><textarea id="jCode" placeholder="الصق الرمز هنا"></textarea>
     <div class="row"><button id="jMake">إنشاء رمز الرد</button></div>

@@ -13,7 +13,7 @@ async def main():
    await page.set_viewport_size({'width':size,'height':size})
    svg=mark
    if name.startswith('maskable'):
-    svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" fill="#124c40"/><g transform="translate(12.8 12.8) scale(.8)">'+mark.split('>',1)[1].rsplit('</svg>',1)[0]+'</g></svg>'
+    svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" fill="#d9e6e9"/><g transform="translate(12.8 12.8) scale(.8)">'+mark.split('>',1)[1].rsplit('</svg>',1)[0]+'</g></svg>'
    await page.set_content('<style>html,body{margin:0;background:transparent}svg{width:100vw;height:100vh;display:block}</style>'+svg)
    await page.screenshot(path=str(r/'icons'/name),omit_background=True)
   for size,name in [({'width':1200,'height':630},'social-card.png'),({'width':1080,'height':1080},'social-square.png')]:

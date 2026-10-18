@@ -22,27 +22,27 @@ async def main(root,dest,base_url):
   await page.wait_for_function('!document.querySelector("#roll").disabled')
   await page.evaluate('navigator.serviceWorker.ready.then(()=>true)')
   await page.wait_for_function('navigator.serviceWorker.controller !== null')
-  assert 'darb-tabletop-characters-v5' in await page.evaluate('caches.keys()')
+  assert 'darb-isometric-camera-v6' in await page.evaluate('caches.keys()')
   saved=await page.evaluate('JSON.parse(localStorage.getItem("darb-althara-v6")).players.map(p=>({name:p.name,pk:p.pk,cash:p.cash}))')
   for f in root.rglob('*'):
    if f.is_file() and '.git' not in f.relative_to(root).parts:
     to=dest/f.relative_to(root);to.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(f,to)
   await page.evaluate('navigator.serviceWorker.getRegistration().then(r=>r.update())')
-  await page.wait_for_function('''async () => (await caches.keys()).includes('darb-isometric-camera-v6') && !(await caches.keys()).includes('darb-tabletop-characters-v5')''',timeout=30000)
+  await page.wait_for_function('''async () => (await caches.keys()).includes('darb-illustrated-cards-v7') && !(await caches.keys()).includes('darb-isometric-camera-v6')''',timeout=30000)
   await page.reload(wait_until='networkidle')
   assert await page.locator('.character-pawn').count()==2
   after=await page.evaluate('__darb.G.players.map(p=>({name:p.name,pk:p.pk,cash:p.cash}))')
   assert saved==after,(saved,after)
-  await page.wait_for_function('''async () => (await (await caches.match('./index.html')).text()).includes('scripts/board-camera.js')''')
+  await page.wait_for_function('''async () => (await (await caches.match('./index.html')).text()).includes('scripts/identity.js')''')
   await c.set_offline(True);await page.reload(wait_until='domcontentloaded')
   await page.wait_for_function('window.__darb && __darb.G')
   assert await page.locator('.character-pawn').count()==2
-  print(json.dumps({'upgrade_v5_to_v6':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed'}))
+  print(json.dumps({'upgrade_v6_to_v7':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed'}))
   await b.close()
 if __name__ == '__main__':
  import argparse
  parser=argparse.ArgumentParser(description='Verify old PWA upgrade preserves an actual saved game.')
- parser.add_argument('--previous-ref',default='c7eccf8')
+ parser.add_argument('--previous-ref',default='c26fb3b')
  args=parser.parse_args()
  root=Path(__file__).resolve().parents[1]
  class QuietHandler(SimpleHTTPRequestHandler):

@@ -9,8 +9,8 @@
   "id": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#fff7e5",
-  "theme_color": "#16614c",
+  "background_color": "#faf7f1",
+  "theme_color": "#527b78",
   "categories": [
     "games",
     "education",

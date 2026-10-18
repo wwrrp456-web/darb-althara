@@ -95,6 +95,11 @@ async def verify():
         assert result['steps'] == [47] + [i % 48 for i in range(48, 48+dice)], result
         assert result['sameNode'] and result['animations'] > 0 and result['travel'] > 0, result
         assert result['pawnPosition'] == result['gamePosition']
+        # Wait for the physical CSS transition, not a fixed wall-clock under browser load.
+        await page.wait_for_function("""() => {
+            const node=document.querySelector('.character-pawn[data-player="0"]');
+            return !node.getAnimations().some(a=>a.playState==='running');
+        }""")
         assert await page.locator('.character-pawn[data-player="0"]').evaluate('''(node) => {
             const tile=document.querySelector(`[data-tile="${node.dataset.position}"]`);
             const m=new DOMMatrix(getComputedStyle(node).transform);

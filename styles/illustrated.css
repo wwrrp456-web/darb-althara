@@ -1,0 +1,67 @@
+/* Soft illustrated edition. Kept last so both OS color schemes use the approved palette. */
+:root{color-scheme:light;--bg:#faf7f1;--card:#fffcf6;--ink:#463f39;--muted:#716b62;--line:#ded7ca;--brand:#527b78;--brand-2:#638c88;--brand-ink:#fffdf8;--gold:#8b682d;--good:#426f63;--bad:#a1473f;--soft:#f1ede5;--shadow:0 3px 12px #4c493b0b;--t-payday:#dfebd9;--t-deal:#dcebef;--t-doodad:#f5dfd4;--t-market:#f6e9c5;--t-land:#f2e7cf;--t-fun:#f2dfe7;--t-insure:#dcebf0;--t-learn:#e7e0f1;--t-jamia:#f1e1d0;--t-order:#efe5d4;--t-souk:#dfece5;--t-quiz:#e2e6f3;--t-auction:#f5e3cc;--t-partner:#e7ebd9;--t-family:#f5e1d9;--t-child:#f0e1e9;--t-charity:#e8e1f0;--t-layoff:#e6e5df;--t-dream:#f7e7bb;--t-lawsuit:#f2ddd7;--t-tax:#e8e5dc}
+body{background:var(--bg);color:var(--ink)}
+.welcome,.card,.sheet,.pcard,.gcell,.stat,.gtabs button,.chip-p{border-color:var(--line);box-shadow:var(--shadow)}
+.welcome{border-width:1px}.welcome h2{color:var(--brand)}.welcome-art{background:#fffaf0}.welcome-bottom{background:#f3efe7}.welcome .chrow,.welcome-actions #wJoin{background:var(--card);box-shadow:0 2px 5px #665c4210}.pcard.on{background:#edf3ef;border-color:#7b9c90;box-shadow:0 2px 7px #527b7815}
+button{border-color:var(--line)}.welcome-actions #wNew,#roll{border:1px solid #60837f;background:linear-gradient(#739a94,#587e79);box-shadow:0 3px 0 #466d68,0 5px 12px #527b7814}.welcome-actions #wNew:hover,#roll:hover{background:linear-gradient(#83a8a1,#658c85)}.welcome-actions #wNew small{color:#fff9ed}.gtabs button.on{border-color:#6d918c;box-shadow:0 2px 4px #527b781a}.hbtn{border-width:1px}.chip-p.cur{box-shadow:0 2px 7px #554b3920}.modal{background:#4a514b66;backdrop-filter:blur(4px)}.sheet{border:1px solid var(--line);box-shadow:0 12px 35px #3f493b24}.sheet h2{color:#4e726e}.board-inspector{box-shadow:0 12px 30px #424d4326;border:1px solid var(--line)}.board-inspector::backdrop{background:#4a514b66}.board-inspector>button{border:1px solid #60837f;box-shadow:0 2px 4px #527b7820}.board-info-symbol{background:#fffaf0!important;border:1px solid var(--line);box-shadow:0 2px 5px #55503d12}
+/* Drawn icons replace browser-dependent emoji and flat vector placeholders. */
+.illustrated-icon{display:inline-block;width:1.55em;height:1.55em;min-width:1.55em;vertical-align:middle;background:url('../art/identity/icons-sheet.png') var(--ix) var(--iy)/600% 600% no-repeat;border-radius:24%;filter:saturate(.82);line-height:1;overflow:hidden}
+.identity-status{background:none;font:700 1em/1.55 Tajawal,sans-serif;text-align:center;min-width:1.3em;width:1.3em;color:#a45c50;filter:none}.identity-status[data-status='✅']{color:#426f63}
+.identity-avatar{background-image:url('../art/identity/characters-sheet.png');background-size:400% 400%;border-radius:50%;filter:saturate(.85)}
+.ui-icon{stroke:none;filter:saturate(.82);background-image:url('../art/identity/icons-sheet.png');background-size:600% 600%;background-repeat:no-repeat;border-radius:24%;width:1.55em;height:1.55em}.ui-icon use{visibility:hidden}
+.chip-p .av .illustrated-icon{width:1.2em;height:1.2em}.tile .ui-icon{width:1.65rem;height:1.65rem}.board.dense .tile .ui-icon{width:1.15rem;height:1.15rem}.board-info-symbol .ui-icon{width:49px;height:49px}.tabletop-deck .ui-icon{width:34px;height:34px}.icon-grid .ui-icon{width:52px;height:52px}.log .illustrated-icon{width:1.4em;height:1.4em;min-width:1.4em}
+/* Subtle physical depth: short contact shadows, pale wood and a softer district. */
+.tabletop-card{background:var(--card)}.tabletop-stage{background:radial-gradient(ellipse,#fbf7ed,#e5eaf0);border-color:#d7dcd8}.tabletop-district{background-image:linear-gradient(#fff6eb42,#fff6eb42),url('../art/identity/tabletop-city.png');background-color:#e8e8de;background-blend-mode:screen,normal}.tabletop-stage .board{background:#f1e6d0;border-color:#c6b392;box-shadow:inset 0 0 0 2px #fff9ed}.tabletop-stage .board:before{border-color:#ac987a;background:linear-gradient(#d9c8aa,#b9a68a);box-shadow:0 13px 22px #514b3826}.tabletop-front-edge,.tabletop-right-edge{background:#c4b193;border-color:#ab9679}.tabletop-stage .board .tile{border-color:#b2ad9c;box-shadow:0 2px 0 #c4bca6,inset 0 1px 0 #ffffffb0}.tabletop-stage .board .tile.me{outline-color:#618b83;box-shadow:0 2px 0 #97aaa0}.tabletop-stage .tile.landmark{box-shadow:0 3px 0 #c8b996}.tabletop-stage .center{background-image:linear-gradient(#fff8ed55,#fff8ed55),url('../art/identity/tabletop-park.png');background-color:#faf1df;border-color:#c6c8ae;background-blend-mode:screen,normal}.tabletop-stage .die{border-color:#b2a58e;box-shadow:0 4px 0 #c6bba4,0 7px 10px #48372218}.tabletop-stage .die:after{border-color:#b2a58e;background:#e0d6c1}.tabletop-stage .die i.on{background:#62584b}.tabletop-hud .mut{background:#fffaf0ee;color:#716754}.pawn-shadow{background:#514b3928;filter:blur(2px)}.pawn-base{border-color:#7c7566;box-shadow:0 2px 0 #827b6e,inset 0 1px 0 #ffffffa0}.current .pawn-base{box-shadow:0 2px 0 #827b6e,0 0 0 2px #fffbef,0 0 0 4px var(--pawn-color)}
+.tabletop-deck{border:1px solid #b6a88f;background:#f5e1cc;color:#685342;box-shadow:0 2px 0 #fffaf1,0 3px 0 #c6b9a2,1px 5px 0 #fffaf1,1px 6px 0 #c6b9a2,0 8px 9px #554c3920}.tabletop-deck.family{background:#efe0eb}.tabletop-deck.question{background:#dfe9f4}.tabletop-deck b{font-weight:700}.tabletop-zoom-controls button,.tabletop-camera-controls>button{box-shadow:0 2px 5px #554c3910}
+/* One card system for every prompt, with real selectable Arabic copy. */
+.decision-card{width:min(540px,calc(100vw - 28px));padding:0!important;border-radius:24px;overflow:auto;max-height:90dvh;isolation:isolate}.decision-heading{display:flex;align-items:center;gap:18px;padding:20px 22px 16px;margin:0;border:0;background:linear-gradient(125deg,#f3ece2,#f8f4ee)}.decision-heading>div{flex:1;min-width:0}.decision-heading h2{font-size:1.28rem;line-height:1.65;margin:5px 0 0;color:var(--ink)}.card-kicker{font-size:.75rem;color:#756547;font-weight:700;letter-spacing:0}.card-illustration{display:block;width:112px;height:112px;flex:0 0 112px;background:url('../art/identity/cards-sheet.png') var(--cx) var(--cy)/300% 300% no-repeat;border-radius:20px;border:1px solid #e9dfce;filter:saturate(.82)}.card-guidance{padding:12px 22px;margin:0;color:var(--muted);font-size:.8rem;border-bottom:1px solid #e9e2d6;line-height:1.75}.decision-content{padding:8px 22px 12px;line-height:1.85;font-size:.95rem}.decision-content>p{margin:12px 0}.decision-content .sub{color:var(--muted);font-size:.83rem}.decision-content .tip{padding:12px 14px;background:#edf2ee;border:1px solid #dce4df;border-radius:12px;margin:12px 0}.decision-content .lrow{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e9e2d6;padding:10px 0;align-items:center;flex-wrap:wrap}.decision-content .lrow b{font-size:1.1rem}.decision-content b{font-weight:700}.decision-actions{display:flex!important;flex-direction:column;gap:9px;margin:0!important;padding:0 22px 22px}.decision-actions button{width:100%;white-space:normal;text-wrap:pretty;min-height:48px;border-radius:13px;text-align:start;line-height:1.7;padding:11px 16px;background:#5c827e;color:#fffdf8;border:1px solid #567976;box-shadow:0 2px 3px #527b7810}.decision-actions button.alt{color:#5e665e;background:#f5f1e9;border-color:#ded7ca;box-shadow:none}.decision-actions button:hover{filter:brightness(1.04);box-shadow:0 2px 7px #527b7820}.decision-card[data-card-kind=quiz] .decision-actions button{background:#edf0f7;border-color:#d4dce9;color:#4c5b72}.decision-card[data-card-kind=quiz] .decision-content>p:first-child{font-size:1.12rem;color:#46536b}.decision-card .pwho{display:inline-flex;align-items:center;font-size:.72rem;margin-bottom:4px}.decision-card .pwho .illustrated-icon{width:24px;height:24px}.decision-heading .illustrated-icon:not(.identity-avatar){display:none}
+@media(max-width:480px){.decision-heading{gap:12px;padding:16px}.card-illustration{width:88px;height:88px;flex-basis:88px;border-radius:16px}.decision-heading h2{font-size:1.08rem}.decision-content{padding:5px 17px 10px}.card-guidance{padding:10px 17px;font-size:.76rem}.decision-actions{padding:0 17px 17px}.decision-content .lrow b{font-size:1rem}.decision-card{border-radius:20px}.tile .ui-icon{width:1.3rem;height:1.3rem}.board.dense .tile .ui-icon{width:1.05rem;height:1.05rem}}
+@media(prefers-reduced-motion:reduce){.decision-card *{scroll-behavior:auto}}
+.ui-icon:has(use[href$="#dice"]){background-position:0% 0%}
+.ui-icon:has(use[href$="#person"]){background-position:20% 0%}
+.ui-icon:has(use[href$="#people"]){background-position:40% 0%}
+.ui-icon:has(use[href$="#shop"]){background-position:60% 0%}
+.ui-icon:has(use[href$="#ledger"]){background-position:80% 0%}
+.ui-icon:has(use[href$="#globe"]){background-position:100% 0%}
+.ui-icon:has(use[href$="#arrow"]){background-position:0% 20%}
+.ui-icon:has(use[href$="#coin"]){background-position:20% 20%}
+.ui-icon:has(use[href$="#case"]){background-position:40% 20%}
+.ui-icon:has(use[href$="#leaf"]){background-position:60% 20%}
+.ui-icon:has(use[href$="#receipt"]){background-position:80% 20%}
+.ui-icon:has(use[href$="#heart"]){background-position:100% 20%}
+.ui-icon:has(use[href$="#star"]){background-position:0% 40%}
+.ui-icon:has(use[href$="#home"]){background-position:20% 40%}
+.ui-icon:has(use[href$="#shield"]){background-position:40% 40%}
+.ui-icon:has(use[href$="#book"]){background-position:60% 40%}
+.ui-icon:has(use[href$="#gift"]){background-position:80% 40%}
+.ui-icon:has(use[href$="#chart"]){background-position:100% 40%}
+.ui-icon:has(use[href$="#bank"]){background-position:0% 60%}
+.ui-icon:has(use[href$="#package"]){background-position:20% 60%}
+.ui-icon:has(use[href$="#bulb"]){background-position:40% 60%}
+.ui-icon:has(use[href$="#bell"]){background-position:60% 60%}
+.ui-icon:has(use[href$="#coffee"]){background-position:80% 60%}
+.ui-icon:has(use[href$="#building"]){background-position:100% 60%}
+.ui-icon:has(use[href$="#plane"]){background-position:0% 80%}
+.ui-icon:has(use[href$="#health"]){background-position:20% 80%}
+.ui-icon:has(use[href$="#scale"]){background-position:40% 80%}
+.ui-icon:has(use[href$="#smile"]){background-position:60% 80%}
+.ui-icon:has(use[href$="#flag"]){background-position:80% 80%}
+.ui-icon:has(use[href$="#download"]){background-position:100% 80%}
+.ui-icon:has(use[href$="#menu"]){background-position:0% 100%}
+.ui-icon:has(use[href$="#robot"]){background-position:20% 100%}
+.ui-icon:has(use[href$="#family"]){background-position:40% 100%}
+.ui-icon:has(use[href$="#graduate"]){background-position:60% 100%}
+.ui-icon:has(use[href$="#calendar"]){background-position:80% 100%}
+.ui-icon:has(use[href$="#gavel"]){background-position:100% 100%}
+.toast{background:#f6eee0;color:#544b3f;border:1px solid #dfd4c0;box-shadow:0 3px 10px #554c3915}.logo-sample.dark{background:#d9e6e9}
+
+.identity-extra{background-image:url('../art/identity/reactions-sheet.png');background-size:400% 400%}
+@media(max-width:480px){.mini{flex-wrap:wrap;justify-content:flex-start;column-gap:12px;row-gap:5px}.mini>span{white-space:nowrap}.mini .hm{margin-inline-start:auto}}
+
+.decision-card .decision-heading{margin:0;padding:20px 22px 16px}.choice-title{display:block;font-weight:700}.choice-effect{display:block;font-size:.8rem;font-weight:400;margin-top:5px;line-height:1.9}.decision-actions:has(button:nth-child(3)) button{background:#edf2f1;color:#425f5c;border-color:#d4e0db}.decision-actions:has(button:nth-child(3)) button.alt{background:#f5f1e9;color:#5e665e;border-color:#ded7ca}.welcome .hero{filter:saturate(.84)}
+@media(max-width:480px){.decision-card .decision-heading{padding:16px}}
+.identity-direction{color:#637c91;font-size:1.12em;font-weight:700}.identity-direction[data-direction='↓']{color:#a36e60}.identity-direction[data-direction='↔'],.identity-direction[data-direction='—']{color:#817766}
+/* Quiet surfaces with readable text, including small labels on primary actions. */
+.welcome-actions #wNew,#roll{background:linear-gradient(#dce9e3,#cbded6);color:#3f625e;border-color:#acc5bc;box-shadow:0 3px 0 #b5cac0,0 5px 10px #527b7810}.welcome-actions #wNew:hover,#roll:hover{background:linear-gradient(#e4eee8,#d5e5dd)}.welcome-actions #wNew small{color:#536d62}.decision-actions button{background:#527b78;border-color:#4e7471}.decision-actions button.alt{background:#f5f1e9;color:#5e665e;border-color:#ded7ca}
+.identity-status[data-status='🟢']{color:#62856c}.identity-status[data-status='🟡']{color:#ae8a42}.identity-status[data-status='🟠']{color:#bc885f}
+.illustrated-icon[data-rank]{position:relative;overflow:visible}.illustrated-icon[data-rank]:after{content:attr(data-rank);position:absolute;bottom:-2px;left:-2px;font:700 10px/14px Tajawal,sans-serif;min-width:14px;height:14px;text-align:center;background:#fffcf6;color:#64533f;border:1px solid #d7c8aa;border-radius:50%}

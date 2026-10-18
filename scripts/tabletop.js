@@ -98,6 +98,8 @@
     if (!sameBoard) layer.replaceChildren();
     // Replace only surface content. Pawn nodes stay connected to preserve their motion.
     cells.innerHTML = html;
+    // Finalize illustrated labels before measuring cells for pawn coordinates.
+    window.DarbIdentity?.hydrate(cells);
     const tiles = new Map([...cells.querySelectorAll('[data-tile]')].map(tile => [Number(tile.dataset.tile), tile]));
     state = {...options, board, layer, tiles, identity};
     positionPawns(Boolean(sameBoard));
