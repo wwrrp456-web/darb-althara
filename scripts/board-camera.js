@@ -102,7 +102,7 @@
     inspector.querySelector('.board-info-subtitle').textContent = info.subtitle;
     inspector.querySelector('.board-info-description').textContent = info.description;
     inspector.querySelector('.board-info-symbol').style.background = info.color;
-    inspector.querySelector('use').setAttribute('href', `icons/game-icons.svg#${info.icon}`);
+    inspector.querySelector('use').setAttribute('href', `#gi-${info.icon}`);
     const list = inspector.querySelector('dl');
     list.replaceChildren();
     for (const [label, value] of info.details || []) {

@@ -1,18 +1,18 @@
 /* درب الثراء — عامل الخدمة: يعمل بلا إنترنت بعد أول فتح */
-const VER = "darb-light-illustrated-v9";
+const VER = "darb-light-illustrated-v10";
 const SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./styles/identity.css",
-  "./styles/tabletop.css",
-  "./styles/illustrated.css",
+  "./styles/identity.css?v=10",
+  "./styles/tabletop.css?v=10",
+  "./styles/illustrated.css?v=10",
   "./scripts/identity.js",
   "./art/identity/icons-sheet.png",
   "./art/identity/cards-sheet.png",
   "./art/identity/reactions-sheet.png",
-  "./scripts/tabletop.js?v=9",
-  "./scripts/board-camera.js?v=9",
+  "./scripts/tabletop.js?v=10",
+  "./scripts/board-camera.js?v=10",
   "./fonts/Tajawal-Regular.ttf",
   "./fonts/Tajawal-Bold.ttf",
   "./icons/brand-mark.svg",
