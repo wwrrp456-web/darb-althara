@@ -19,6 +19,7 @@
       const art=document.createElement('span');art.className='landmark-sprite';
       art.style.setProperty('--sx',(i%4)*100/3+'%');art.style.setProperty('--sy',Math.floor(i/4)*100+'%');
       stand.append(art);
+      const hit=document.createElement("span");hit.className="miniature-hit";stand.append(hit);
       const level=Math.max(0,Math.min(3,Number(tile.dataset.level)||0));
       if(level){const badge=document.createElement('span');badge.className='landmark-level-art';badge.dataset.level=String(level);badge.style.setProperty('--lx',(level-1)*50+'%');stand.append(badge);}
       if(tile.dataset.ownerColor){tile.classList.add('landmark-owned');tile.style.setProperty('--owner-color',tile.dataset.ownerColor);}
@@ -36,8 +37,18 @@
     for(const deck of cells.querySelectorAll('[data-deck]')){
       const i={family:0,quiz:1,deal:2}[deck.dataset.deck];if(i===undefined)continue;
       deck.classList.add('has-deck-art');
-      const art=document.createElement('span');art.className='deck-sprite';art.setAttribute('aria-hidden','true');art.style.setProperty('--dx',i*50+'%');deck.append(art);
+      const art=document.createElement('span');art.className='deck-sprite';art.setAttribute('aria-hidden','true');art.style.setProperty('--dx',i*50+'%');deck.append(art);const hit=document.createElement('span');hit.className='miniature-hit';hit.setAttribute('aria-hidden','true');deck.append(hit);
     }
   }
-  window.DarbTabletopArt={mount};
+  function decorateSymbol(symbol,info){
+    symbol.querySelector('.inspector-art,.inspector-character')?.remove();symbol.classList.remove('has-inspector-art');
+    if(info.portrait){const image=document.createElement('img');image.className='inspector-character';image.alt=info.subtitle;image.onload=()=>{if(image.isConnected)symbol.classList.add('has-inspector-art')};image.src=info.portrait;symbol.append(image);return;}
+    const art=info.art;if(!art)return;
+    const i=art.sheet==='landmark'?keys.indexOf(art.key):({family:0,quiz:1,deal:2}[art.key]);
+    if(i===undefined||i<0||!board.classList.contains(art.sheet==='landmark'?'landmarks-ready':'decks-ready'))return;
+    const image=document.createElement('span');image.className='inspector-art '+(art.sheet==='landmark'?'landmark-preview':'deck-preview');image.setAttribute('aria-hidden','true');
+    image.style.setProperty('--sx',(art.sheet==='landmark'?i%4*100/3:i*50)+'%');image.style.setProperty('--sy',(art.sheet==='landmark'?Math.floor(i/4)*100:0)+'%');
+    symbol.append(image);symbol.classList.add('has-inspector-art');
+  }
+  window.DarbTabletopArt={mount,decorateSymbol};
 })();

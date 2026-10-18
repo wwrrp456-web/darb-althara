@@ -27,7 +27,7 @@
         pawn = document.createElement('div');
         pawn.className = 'character-pawn';
         pawn.dataset.player = String(p.id);
-        pawn.innerHTML = '<span class="pawn-shadow"></span><span class="pawn-base"></span><span class="pawn-stand"><img class="pawn-art" alt=""><span class="pawn-number"></span></span>';
+        pawn.innerHTML = '<span class="pawn-shadow"></span><span class="pawn-base"></span><span class="pawn-stand"><img class="pawn-art" alt=""><span class="pawn-number"></span><span class="miniature-hit" aria-hidden="true"></span></span>';
         layer.append(pawn);
       }
       const role = professionKeys.has(p.pk) ? p.pk : 'trader';
@@ -36,6 +36,7 @@
       if (image.getAttribute('src') !== src) image.setAttribute('src', src);
       image.alt = `قطعة ${p.name} · ${p.prof}`;
       pawn.title = `${p.name} · ${p.prof} · الخانة ${p.pos + 1}`;
+      pawn.tabIndex=0;pawn.setAttribute("role","button");pawn.setAttribute("aria-label","بيانات "+p.name+"، "+p.prof);
       pawn.classList.toggle('current', p.id === currentId);
       pawn.style.setProperty('--pawn-color', /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#16614c');
       pawn.querySelector('.pawn-number').textContent = String(p.id + 1);

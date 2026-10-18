@@ -12,3 +12,10 @@
 .decks-ready .deck-sprite{display:block}.decks-ready .has-deck-art>b{position:absolute;top:100%;white-space:nowrap;background:#fffcf6dd;border-radius:4px;padding:2px 4px;transform:translateZ(2px);font-size:.68rem}
 .tabletop-stage{contain:layout paint;overflow:clip}
 @media(max-width:767px){.landmark-stand{width:49px}.landmark-occupied .landmark-stand{width:43px}.decks-ready .has-deck-art{width:46px}.decks-ready .has-deck-art>b{font-size:.58rem}}
+/* Invisible hit padding: counter-rotated with the art, scaled inversely with camera zoom. */
+.miniature-hit{position:absolute;left:50%;bottom:0;width:max(100%,var(--mini-hit-size,80px));height:max(100%,var(--mini-hit-size,80px));transform:translateX(-50%);pointer-events:auto;cursor:pointer;background:transparent}
+.has-deck-art>.miniature-hit{transform:translateX(-50%) rotateZ(calc(-1 * var(--table-yaw))) rotateX(calc(-1 * var(--table-tilt)));transform-origin:50% 100%}
+.pawn-stand{pointer-events:auto}.pawn-stand>.miniature-hit{bottom:5%}
+.character-pawn:focus-visible .pawn-base{outline:3px solid #527b78;outline-offset:2px}
+.board-info-symbol.has-inspector-art{position:relative;width:88px;height:88px;border:0;box-shadow:none;background:transparent!important}.has-inspector-art>.ui-icon{display:none}
+.inspector-art,.inspector-character{position:absolute;inset:0;width:100%;height:100%;background-repeat:no-repeat;pointer-events:none}.landmark-preview{background-image:url('../art/identity/landmarks-sheet.png');background-size:400% 200%;background-position:var(--sx) var(--sy)}.deck-preview{background-image:url('../art/identity/decks-sheet.png');background-size:300% 100%;background-position:var(--sx) 0}.inspector-character{border-radius:14px}

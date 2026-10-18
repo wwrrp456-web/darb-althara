@@ -6,12 +6,15 @@ from functools import partial
 from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 from pathlib import Path
 from playwright.async_api import async_playwright
-async def main(root,dest,base_url):
+async def main(root,dest,base_url,stop_server):
  old_version=re.search(r'const VER = "([^"]+)"', (dest/"sw.js").read_text()).group(1)
  new_version=re.search(r'const VER = "([^"]+)"', (root/"sw.js").read_text()).group(1)
  async with async_playwright() as p:
   b=await p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
-  c=await b.new_context();page=await c.new_page();errors=[]
+  c=await b.new_context();page=await c.new_page();errors=[];pending=set()
+  page.on("request",lambda r:pending.add(r.url))
+  page.on("requestfinished",lambda r:pending.discard(r.url))
+  page.on("requestfailed",lambda r:pending.discard(r.url))
   page.on('pageerror',lambda e:errors.append(str(e)))
   await page.goto(base_url+'/',wait_until='networkidle')
   if await page.locator('#hClose').is_visible():await page.locator('#hClose').click()
@@ -39,13 +42,21 @@ async def main(root,dest,base_url):
   after=await page.evaluate('__darb.G.players.map(p=>({name:p.name,pk:p.pk,cash:p.cash}))')
   assert saved==after,(saved,after)
   await page.wait_for_function('''async () => (await (await caches.match('./index.html')).text()).includes('scripts/identity.js')''')
-  await c.set_offline(True);await page.reload(wait_until='domcontentloaded')
+  # Cut the origin itself: this verifies cache-only reload without a CDP offline-toggle race.
+  await asyncio.to_thread(stop_server)
+  try:await page.reload(wait_until='domcontentloaded',timeout=10000)
+  except Exception:
+   print({'offline_pending_requests':sorted(pending),'workers':[await w.evaluate('typeof VER!=="undefined"?VER:"unknown"') for w in c.service_workers]},flush=True)
+   raise
   await page.wait_for_function('window.__darb && __darb.G')
   assert await page.locator('.character-pawn').count()==2, {'errors':errors,'state':await page.evaluate('({engine:!!window.__darb,tabletop:!!window.DarbTabletop,game:!!window.__darb?.G})')}
   new_nodes=await page.locator('#board *').count()
   assert new_nodes<=old_nodes+180,(old_nodes,new_nodes)
   assert await page.locator('#board .solid, #board .board-miniature').count()==0
   assert await page.locator('.pawn-art').first.is_visible()
+  await page.wait_for_selector('#board.landmarks-ready.decks-ready')
+  assert await page.locator('.landmark-sprite').count()==6
+  assert await page.locator('.deck-sprite').count()==3
   assert not errors,errors
   print(json.dumps({'board_nodes_before_after':[old_nodes,new_nodes],'upgrade_from':old_version,'upgrade_to':new_version,'upgrade':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed'}))
   await b.close()
@@ -63,6 +74,8 @@ if __name__ == '__main__':
   with tarfile.open(fileobj=io.BytesIO(archived)) as tar:tar.extractall(dest,filter='data')
   server=ThreadingHTTPServer(('127.0.0.1',0),partial(QuietHandler,directory=str(dest)))
   threading.Thread(target=server.serve_forever,daemon=True).start()
-  try:asyncio.run(asyncio.wait_for(main(root,dest,f'http://localhost:{server.server_port}'),timeout=80))
-  finally:server.shutdown();server.server_close()
+  def stop_server():
+   server.shutdown();server.server_close()
+  try:asyncio.run(asyncio.wait_for(main(root,dest,f'http://localhost:{server.server_port}',stop_server),timeout=80))
+  finally:stop_server();server.server_close()
 

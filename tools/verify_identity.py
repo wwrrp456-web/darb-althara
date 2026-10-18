@@ -92,6 +92,9 @@ async def verify(base_url):
                       'art/identity/pawns-sheet.png', 'art/identity/tabletop-park.png',
                       'scripts/board-camera.js', 'art/identity/tabletop-city.png']:
             assert any(url.split("?",1)[0].endswith(asset) for url in cached['urls']), asset
+        shell_assets=re.findall(r'"\./([^"\n]+)"', (Path(__file__).resolve().parents[1]/'sw.js').read_text())
+        for asset in shell_assets:
+            assert any(url.endswith(asset) for url in cached['urls']),asset
         await context.set_offline(True)
         await page.reload(wait_until='networkidle')
         assert await page.evaluate('!!__darb.G')

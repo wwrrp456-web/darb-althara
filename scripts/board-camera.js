@@ -18,6 +18,7 @@
   const pointers = new Map();
   let gesture = null;
   const inspector = document.getElementById('board-inspector');
+  let inspectedReference=null;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
   function limit() {
@@ -42,6 +43,12 @@
     document.querySelector('[data-camera="follow"]').setAttribute('aria-pressed', String(camera.follow));
     document.querySelector('[data-camera="in"]').disabled = camera.zoom >= 3.19;
     document.querySelector('[data-camera="out"]').disabled = camera.zoom <= .751;
+  }
+  function updateHitTargets() {
+    const width=stage.clientWidth,height=stage.clientHeight;
+    if(!width||!height)return;
+    const fit=stage.dataset.view==='top' ? .88*Math.min(1,height/width) : .64*Math.min(1,height/(width*.8));
+    stage.style.setProperty('--mini-hit-size',`${Math.ceil(52/(fit*camera.zoom))}px`);
   }
   function stopFollow() {
     camera.follow = false;
@@ -82,6 +89,7 @@
     camera.x = camera.y = 0;
     camera.zoom = 1;
     camera.follow = true;
+    updateHitTargets();
     draw();
   }
   function zoomAt(nextZoom, clientX, clientY) {
@@ -92,28 +100,34 @@
     camera.x = x - (x - camera.x) * factor;
     camera.y = y - (y - camera.y) * factor;
     camera.zoom = next;
+    updateHitTargets();
     draw();
   }
   function inspect(reference) {
     if (!options || options.busy || document.querySelector('#modal.on')) return;
     const info = options.inspect?.(reference);
     if (!info) return;
+    inspectedReference=reference;
     inspector.querySelector('#board-info-title').textContent = info.title;
     inspector.querySelector('.board-info-subtitle').textContent = info.subtitle;
     inspector.querySelector('.board-info-description').textContent = info.description;
     inspector.querySelector('.board-info-symbol').style.background = info.color;
     inspector.querySelector('use').setAttribute('href', `#gi-${info.icon}`);
+    inspector.querySelector('.ui-icon').dataset.icon=info.icon;
+    window.DarbTabletopArt.decorateSymbol(inspector.querySelector('.board-info-symbol'),info);
     const list = inspector.querySelector('dl');
     list.replaceChildren();
     for (const [label, value] of info.details || []) {
       const dt = document.createElement('dt'), dd = document.createElement('dd');
       dt.textContent = label;
-      dd.textContent = value;
+      if(label==='المالك'&&info.owner){const avatar=document.createElement('span');avatar.className='identity-avatar-value';avatar.textContent=info.owner.avatar;dd.append(avatar,document.createTextNode(' '+info.owner.name));}
+      else dd.textContent = value;
       list.append(dt, dd);
     }
-    inspector.showModal();
+    if(!inspector.open)inspector.showModal();
   }
   const referenceFor = target => {
+    const pawn=target.closest('.character-pawn');if(pawn)return 'player:'+pawn.dataset.player;
     const tile = target.closest('[data-tile]');
     if (tile) return Number(tile.dataset.tile);
     return target.closest('[data-deck]')?.dataset.deck ?? null;
@@ -217,7 +231,8 @@
     const rect = inspector.getBoundingClientRect();
     if (event.target === inspector && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) inspector.close();
   });
-  new ResizeObserver(() => draw()).observe(stage);
+  new ResizeObserver(() => {updateHitTargets();draw();}).observe(stage);
+  updateHitTargets();
   draw();
   window.DarbCamera = {
     update(next) {
@@ -225,6 +240,7 @@
       const key = `${next.gameId}:${next.track}`;
       if (identity !== key) { identity=key; lastTarget=null; reset(); }
       if (next.busy && inspector.open) inspector.close();
+      else if(inspector.open&&inspectedReference!==null)inspect(inspectedReference);
       const pawn = next.players.find(p => p.id === next.currentId);
       const target = pawn ? `${pawn.id}:${pawn.pos}` : null;
       if (lastTarget !== null && target !== lastTarget && camera.follow) startFollow();

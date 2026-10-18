@@ -2,3 +2,5 @@ body{padding:0 24px 40px}main{max-width:1100px;margin:auto}nav{display:flex;just
 .logo-sample,.type-sample,.icon-grid>div{border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}.icon-grid .ui-icon{width:36px;height:36px}.social-preview{max-width:100%;object-fit:contain}.intro h2{color:var(--brand)}
 
 .card-art-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card-art-grid .card-illustration{width:100%;height:auto;aspect-ratio:1}.logo-sample.dark{background:#d9e6e9}
+
+.extra-icon-gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:20px 0}.extra-icon-gallery .illustrated-icon{display:block;width:64px;height:64px;margin:auto;min-width:0;border-radius:0}.extra-icon-gallery figcaption{font-size:.75rem}@media(max-width:480px){.extra-icon-gallery{grid-template-columns:repeat(3,1fr)}}
