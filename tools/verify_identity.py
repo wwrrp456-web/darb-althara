@@ -5,6 +5,9 @@ Check: python3 tools/verify_identity.py --base-url http://localhost:8000
 import argparse
 import asyncio
 import json
+import re
+from pathlib import Path
+VERSION=re.search(r'const VER = "([^"]+)"', (Path(__file__).resolve().parents[1]/"sw.js").read_text()).group(1)
 from urllib.request import urlopen
 from playwright.async_api import async_playwright
 
@@ -76,13 +79,13 @@ async def verify(base_url):
         await page.locator('#tabs [data-t="play"]').click()
         await page.evaluate('navigator.serviceWorker.ready.then(() => true)')
         await page.wait_for_function('navigator.serviceWorker.controller !== null')
-        cached = await page.evaluate('''async () => {
+        cached = await page.evaluate('''async (version) => {
             const keys = await caches.keys();
-            const cache = await caches.open('darb-light-illustrated-v9');
+            const cache = await caches.open(version);
             return {keys, urls: (await cache.keys()).map(r => r.url)};
-        }''')
-        assert 'darb-light-illustrated-v9' in cached['keys']
-        for asset in ['styles/illustrated.css', 'scripts/identity.js', 'art/identity/icons-sheet.png', 'art/identity/cards-sheet.png', 'art/identity/reactions-sheet.png', 'styles/identity.css', 'fonts/Tajawal-Regular.ttf', 'fonts/Tajawal-Bold.ttf',
+        }''', VERSION)
+        assert VERSION in cached['keys']
+        for asset in ['styles/illustrated.css', 'scripts/identity.js', 'art/identity/icons-sheet.png', 'art/identity/cards-sheet.png', 'art/identity/reactions-sheet.png', 'styles/extra-icons.css', 'art/identity/icons-extra-sheet.png', 'styles/identity.css', 'fonts/Tajawal-Regular.ttf', 'fonts/Tajawal-Bold.ttf',
                       'art/identity/world-sheet.png', 'art/identity/characters-sheet.png',
                       'art/identity/goods-sheet.png', 'icons/game-icons.svg',
                       'styles/tabletop.css', 'scripts/tabletop.js',

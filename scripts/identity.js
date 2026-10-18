@@ -2,8 +2,11 @@
 (() => {
   'use strict';
   const icons = ['dice','person','people','shop','ledger','globe','arrow','coin','case','leaf','receipt','heart','star','home','shield','book','gift','chart','bank','package','bulb','bell','coffee','building','plane','health','scale','smile','flag','download','menu','robot','family','graduate','calendar','gavel'];
+  const newIcons=['investor','audit','jail','upgrade','bankrupt','jail-exit','rat-race','fast-track','mood-great','mood-good','mood-neutral','mood-worried','mood-exhausted','two-dice','more'];
+  icons.push(...newIcons); // Existing 6x6 positions stay unchanged.
+  const semanticIcons={'💹':'investor','🕵':'audit','🚔':'jail','🏗':'upgrade','🐀':'rat-race','🚀':'fast-track','😄':'mood-great','🙂':'mood-good','😐':'mood-neutral','😟':'mood-worried','😵':'mood-exhausted','☰':'more'};
   const groups = {
-    dice:'🎲⚀⚁⚂⚃⚄⚅',person:'👤🧑👩🧔👧👦👴👵👨👰🧕🕵',people:'👥🤝',shop:'🏪🏬🛒🛍',ledger:'📋🧮📐',globe:'🌍🌐',arrow:'🔁🔄🔺🔻👉⬆⬇↔⏭➕',coin:'💰💵💸🪙💳',case:'💼🧳',leaf:'🌱🌳🌴🌸',receipt:'🧾',heart:'❤❤️🤲',star:'★⭐🏅🏆🥇🥈🥉👑✨🎯',home:'🏠🏡🛖🏘',shield:'🛡🔒',book:'📚',gift:'🎁🎉🎊🎂🎈🧧',chart:'📈📉📊',bank:'🏦',package:'📦🧱',bulb:'💡🧠❓',bell:'🔔🔊🔇',coffee:'☕🍽🍳🍯🧁',building:'🏢🏨🏙🏗🏫🕌',plane:'✈🚀🚗🚚🚌🏖🏝🏞',health:'🏥⚕🩺💊🆘',scale:'⚖',smile:'😀😄😊🙂😐😟😵😂😮😭👏💪🔥🐣🐀🐈🐯🐸🐼🦁🦄🦊',flag:'🏁',download:'📤📥📲📱💻📸🔌',menu:'☰',robot:'🤖🎮',family:'👶💍',graduate:'🎓🎒',calendar:'📅🌙',gavel:'🔨🛠',
+    dice:'🎲⚀⚁⚂⚃⚄⚅',person:'👤🧑👩🧔👧👦👴👵👨👰🧕',people:'👥🤝',shop:'🏪🏬🛒🛍',ledger:'📋🧮📐',globe:'🌍🌐',arrow:'🔁🔄🔺🔻👉⬆⬇↔⏭➕',coin:'💰💵💸🪙💳',case:'💼🧳',leaf:'🌱🌳🌴🌸',receipt:'🧾',heart:'❤❤️🤲',star:'★⭐🏅🏆🥇🥈🥉👑✨🎯',home:'🏠🏡🛖🏘',shield:'🛡🔒',book:'📚',gift:'🎁🎉🎊🎂🎈🧧',chart:'📈📉📊',bank:'🏦',package:'📦🧱',bulb:'💡🧠❓',bell:'🔔🔊🔇',coffee:'☕🍽🍳🍯🧁',building:'🏢🏨🏙🏫🕌',plane:'✈🚗🚚🚌🏖🏝🏞',health:'🏥⚕🩺💊🆘',scale:'⚖',smile:'😀😄😊🙂😐😟😵😂😮😭👏💪🔥🐣🐈🐯🐸🐼🦁🦄🦊',flag:'🏁',download:'📤📥📲📱💻📸🔌',menu:'☰',robot:'🤖🎮',family:'👶💍',graduate:'🎓🎒',calendar:'📅🌙',gavel:'🔨🛠',
   };
   const emoji = /(?:\p{Extended_Pictographic}|[☰★⚀-⚅])(?:\uFE0F|\p{Emoji_Modifier})?(?:\u200D\p{Extended_Pictographic}(?:\uFE0F|\p{Emoji_Modifier})?)*/gu;
   const iconFor = value => {
@@ -15,16 +18,19 @@
   const status = {'✅':'✓','❌':'×','⚠':'!','🚫':'×','🔴':'●','🟠':'●','🟡':'●','🟢':'●'};
   const avatarValues=['🧑','👩','🧔','👧','👦','👴','👵','🦁','🐯','🦊','🐼','🦄','🐸','🚀','👑','🎩'];
   const avatarNames=['شخصية مرحة','شخصية مبدعة','شخصية طموحة','شخصية فضولية','شخصية متفائلة','شخصية خبيرة','شخصية حكيمة','شخصية اجتماعية','شخصية مبادرة','شخصية ذكية','شخصية هادئة','شخصية حالمة','شخصية نشيطة','المستكشف','القائد','صاحب القبعة'];
-  function illustration(value) {
+  function illustration(value,asAvatar=false) {
     const el=document.createElement('span'), name=iconFor(value);
     el.className='illustrated-icon';el.setAttribute('role','img');el.setAttribute('aria-label',value);
     if(['🥇','🥈','🥉'].includes(value))el.dataset.rank=String(['🥇','🥈','🥉'].indexOf(value)+1);
     const direction={'⬆':'↑','🔺':'↑','⬇':'↓','🔻':'↓','↔':'↔','▪':'—'}[value.replace(/\uFE0F/g,'')];
     if(direction){el.classList.add('identity-status','identity-direction');el.textContent=direction;el.dataset.direction=direction;return el;}
+    const av=avatarValues.indexOf(value);
+    if(asAvatar&&av>=0){el.classList.add('identity-avatar');el.style.setProperty('--ix',av%4*100/3+'%');el.style.setProperty('--iy',Math.floor(av/4)*100/3+'%');return el;}
+    const semantic=semanticIcons[value.replace(/\uFE0F/g,'')];
+    if(semantic){const i=newIcons.indexOf(semantic);el.classList.add('identity-additional');el.dataset.icon=semantic;el.style.setProperty('--ix',i%5*25+'%');el.style.setProperty('--iy',Math.floor(i/5)*50+'%');return el;}
     const extra=extraGroups.findIndex(group=>group.includes(value.replace(/\uFE0F/g,'')));
     if(extra>=0){el.classList.add('identity-extra');el.style.setProperty('--ix',extra%4*100/3+'%');el.style.setProperty('--iy',Math.floor(extra/4)*100/3+'%');return el;}
     const index=icons.indexOf(name);
-    const av=avatarValues.indexOf(value);
     if(av>=0){el.classList.add('identity-avatar');el.style.setProperty('--ix',av%4*100/3+'%');el.style.setProperty('--iy',Math.floor(av/4)*100/3+'%');return el;}
     if(index<0){el.classList.add('identity-status');el.textContent=status[value.replace(/\uFE0F/g,'')]||'!';el.dataset.status=value;}
     else {el.dataset.icon=name;el.style.setProperty('--ix',(index%6)*20+'%');el.style.setProperty('--iy',Math.floor(index/6)*20+'%');}
@@ -43,7 +49,7 @@
       if(!emoji.test(text))continue;
       emoji.lastIndex=0;const frag=document.createDocumentFragment();let end=0;
       for(const match of text.matchAll(emoji)){
-        frag.append(text.slice(end,match.index));frag.append(illustration(match[0]));end=match.index+match[0].length;
+        frag.append(text.slice(end,match.index));frag.append(illustration(match[0],!!node.parentElement.closest('.av,.identity-avatar-value,.pwho')||node.parentElement.matches('.mini>span:first-child')));end=match.index+match[0].length;
       }
       frag.append(text.slice(end));node.replaceWith(frag);
     }

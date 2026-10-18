@@ -1,0 +1,18 @@
+/* Generated 5x3 atlas: original 6x6 icon indices never change. */
+.identity-additional{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%}
+.ui-icon[data-icon="investor"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:0% 0%}
+.ui-icon[data-icon="audit"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:25% 0%}
+.ui-icon[data-icon="jail"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:50% 0%}
+.ui-icon[data-icon="upgrade"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:75% 0%}
+.ui-icon[data-icon="bankrupt"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:100% 0%}
+.ui-icon[data-icon="jail-exit"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:0% 50%}
+.ui-icon[data-icon="rat-race"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:25% 50%}
+.ui-icon[data-icon="fast-track"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:50% 50%}
+.ui-icon[data-icon="mood-great"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:75% 50%}
+.ui-icon[data-icon="mood-good"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:100% 50%}
+.ui-icon[data-icon="mood-neutral"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:0% 100%}
+.ui-icon[data-icon="mood-worried"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:25% 100%}
+.ui-icon[data-icon="mood-exhausted"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:50% 100%}
+.ui-icon[data-icon="two-dice"]{background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:75% 100%}
+.ui-icon[data-icon="more"],.ui-icon:has(use[href$="#gi-menu"]),.ui-icon:has(use[href$="#menu"]){background-image:url('../art/identity/icons-extra-sheet.png');background-size:500% 300%;background-position:100% 100%}
+ .identity-avatar-value{display:inline;white-space:nowrap}

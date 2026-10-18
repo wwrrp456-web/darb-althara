@@ -1,12 +1,14 @@
 """PWA upgrade regression check using a disposable HTTP fixture and real Chromium.
 Requires Python Playwright, /usr/bin/chromium, and the previous commit in Git history.
 """
-import asyncio,shutil,json,subprocess,tarfile,io,tempfile,threading
+import asyncio,shutil,json,subprocess,tarfile,io,tempfile,threading,re
 from functools import partial
 from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 from pathlib import Path
 from playwright.async_api import async_playwright
 async def main(root,dest,base_url):
+ old_version=re.search(r'const VER = "([^"]+)"', (dest/"sw.js").read_text()).group(1)
+ new_version=re.search(r'const VER = "([^"]+)"', (root/"sw.js").read_text()).group(1)
  async with async_playwright() as p:
   b=await p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
   c=await b.new_context();page=await c.new_page();errors=[]
@@ -23,14 +25,15 @@ async def main(root,dest,base_url):
   await page.wait_for_function('!document.querySelector("#roll").disabled')
   await page.evaluate('navigator.serviceWorker.ready.then(()=>true)')
   await page.wait_for_function('navigator.serviceWorker.controller !== null')
-  assert 'darb-solid-miniatures-v8' in await page.evaluate('caches.keys()')
+  assert old_version in await page.evaluate('caches.keys()')
   old_nodes=await page.locator('#board *').count()
   saved=await page.evaluate('JSON.parse(localStorage.getItem("darb-althara-v6")).players.map(p=>({name:p.name,pk:p.pk,cash:p.cash}))')
   for f in root.rglob('*'):
    if f.is_file() and '.git' not in f.relative_to(root).parts:
     to=dest/f.relative_to(root);to.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(f,to)
   await page.evaluate('navigator.serviceWorker.getRegistration().then(r=>r.update())')
-  await page.wait_for_function('''async () => (await caches.keys()).includes('darb-light-illustrated-v9') && !(await caches.keys()).includes('darb-solid-miniatures-v8')''',timeout=30000)
+  await page.wait_for_function('''async v => (await caches.keys()).includes(v.next) && !(await caches.keys()).includes(v.old)''',arg={'next':new_version,'old':old_version},timeout=30000)
+  await page.wait_for_function('''async () => {const r=await navigator.serviceWorker.getRegistration();return r?.active?.state==='activated'&&navigator.serviceWorker.controller===r.active}''')
   await page.reload(wait_until='networkidle')
   assert await page.locator('.character-pawn').count()==2, {'errors':errors,'state':await page.evaluate('({engine:!!window.__darb,tabletop:!!window.DarbTabletop,game:!!window.__darb?.G})')}
   after=await page.evaluate('__darb.G.players.map(p=>({name:p.name,pk:p.pk,cash:p.cash}))')
@@ -40,16 +43,16 @@ async def main(root,dest,base_url):
   await page.wait_for_function('window.__darb && __darb.G')
   assert await page.locator('.character-pawn').count()==2, {'errors':errors,'state':await page.evaluate('({engine:!!window.__darb,tabletop:!!window.DarbTabletop,game:!!window.__darb?.G})')}
   new_nodes=await page.locator('#board *').count()
-  assert new_nodes<old_nodes/2,(old_nodes,new_nodes)
+  assert new_nodes<=old_nodes+180,(old_nodes,new_nodes)
   assert await page.locator('#board .solid, #board .board-miniature').count()==0
   assert await page.locator('.pawn-art').first.is_visible()
   assert not errors,errors
-  print(json.dumps({'board_nodes_before_after':[old_nodes,new_nodes],'upgrade_v8_to_v9':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed'}))
+  print(json.dumps({'board_nodes_before_after':[old_nodes,new_nodes],'upgrade_from':old_version,'upgrade_to':new_version,'upgrade':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed'}))
   await b.close()
 if __name__ == '__main__':
  import argparse
  parser=argparse.ArgumentParser(description='Verify old PWA upgrade preserves an actual saved game.')
- parser.add_argument('--previous-ref',default='5e8628c')
+ parser.add_argument('--previous-ref',default='be053fc')
  args=parser.parse_args()
  root=Path(__file__).resolve().parents[1]
  class QuietHandler(SimpleHTTPRequestHandler):
