@@ -246,6 +246,7 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 </style>
 <link rel="preload" href="fonts/Tajawal-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="styles/identity.css">
+<link rel="stylesheet" href="styles/tabletop.css">
 </head>
 <body>
 <div class="wrap">
@@ -283,9 +284,11 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
       <div class="chips" id="chips"></div>
       <div class="status" id="status"></div>
       <button class="mini" id="mini" type="button"></button>
-      <div class="card">
-        <div class="board" id="board"></div>
-        <div class="legend" id="legend"></div>
+      <div class="card tabletop-card">
+        <div class="tabletop-toolbar"><span>طاولة اللعب</span><div class="tabletop-views" role="group" aria-label="زاوية اللوحة"><button type="button" data-table-view="perspective" aria-pressed="true">مجسّمة</button><button type="button" data-table-view="top" aria-pressed="false">من الأعلى</button></div></div>
+        <div class="tabletop-stage" data-view="perspective"><div class="board" id="board" role="group" aria-label="لوحة اللعب وقطع الشخصيات"></div></div>
+        <p class="tabletop-hint">قطعتك هي شخصيتك · لون القاعدة ورقمها يميّزان كل لاعب</p>
+        <details class="tabletop-key"><summary>دليل الخانات</summary><div class="legend" id="legend"></div></details>
       </div>
     </section>
     <section class="pane" data-p="me">
@@ -319,6 +322,7 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 
+<script src="scripts/tabletop.js"></script>
 <script>
 (()=>{
 "use strict";
@@ -1749,16 +1753,16 @@ function render(){
   for(let r=0;r<n;r++)for(let c=0;c<n;c++){
     const i=cells2.findIndex(x=>x[0]===r&&x[1]===c);
     if(i<0){
-      const ctr=`<img class="board-mascot" src="${IMG[cp.pk]||IMG.trader}" alt="${esc(cp.prof)}"><div class="dice ${G.rolling?"roll":""}" id="dice">${diceHtml(G.dice2||[G.dice||1,G.dice||1])}</div><div class="big" style="color:${colr(cp)}">${esc(cp.avatar)} دور ${esc(cp.name)}</div><div class="mut">الجولة ${G.round} · ${thr(cp.turns+1)}</div>`;
+      const ctr=`<div class="tabletop-crest"><img src="icons/brand-mark.svg" alt=""><span>${me.fast?"المسار السريع":"حيّ الفرص"}</span></div><div class="tabletop-hud"><div class="big">دور ${esc(cp.name)}</div><div class="dice ${G.rolling?"roll":""}" id="dice">${diceHtml(G.dice2||[G.dice||1,G.dice||1])}</div><div class="mut">الجولة ${G.round} · ${thr(cp.turns+1)}</div></div><div class="tabletop-decks" aria-hidden="true"><div class="tabletop-deck opportunity">${uiIcon("case")}<b>فرصة</b></div><div class="tabletop-deck family">${uiIcon("heart")}<b>العائلة</b></div><div class="tabletop-deck question">${uiIcon("bulb")}<b>سؤال</b></div></div>`;
       if(r===1&&c===1)html+=`<div class="center" style="grid-column:2/${n};grid-row:2/${n}">${ctr}</div>`;
       continue;
     }
     const [ic,name,col]=TILE[track[i]];
-    const tks=here.filter(p=>p.pos===i).map(p=>`<span class="tk ${p.id===G.cur?"cur":""}" style="--pc:${colr(p)}">${esc(p.avatar)}</span>`).join("");
+
     const ow=(typeof track[i]==="string"&&track[i].startsWith("lm_")&&G.lm)?G.lm[track[i].slice(3)]:null,ob=ow!=null&&G.players[ow]?`<span class="own" style="--pc:${colr(G.players[ow])}">${esc(G.players[ow].avatar)}</span>`:"";
-    html+=`<div class="tile ${i===me.pos?"me":""}" title="${name}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${uiIcon(TILE_ICONS[track[i]]||"star")}</span>${name}${ob}${tks?`<span class="tks">${tks}</span>`:""}</div>`;
+    html+=`<div data-tile="${i}" class="tile ${i===me.pos?"me":""} ${track[i].startsWith("lm_")?"landmark":""}" title="${name}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${uiIcon(TILE_ICONS[track[i]]||"star")}</span><span class="tile-name">${name}</span>${ob}</div>`;
   }
-  b.innerHTML=html;b.classList.toggle("names",b.clientWidth>=560);
+  window.DarbTabletop.paint(b,html,{gameId:G.cid||"saved",track:me.fast?"fast":"rat",players:here.map(p=>({id:p.id,pos:p.pos,pk:p.pk,name:p.name,prof:p.prof,color:colr(p)})),currentId:G.cur,duration:Math.max(35,140/SPEED)});
   const used=[...new Set(track)];
   $("#legend").innerHTML=used.map(k=>`<span><i style="background:var(${TILE[k][2]})"></i>${TILE[k][1]}</span>`).join("");
   const lg=$("#log");lg.textContent="";
@@ -1831,7 +1835,7 @@ if("serviceWorker" in navigator&&/^https:|^http:\/\/localhost/.test(location.hre
   navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had)toast("🔄 تم تحديث اللعبة لأحدث نسخة")});
 }
 let TAB="play";
-function setTab(t){TAB=t;document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));document.querySelectorAll(".pane").forEach(x=>x.classList.toggle("on",x.dataset.p===t));window.scrollTo(0,0)}
+function setTab(t){TAB=t;document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));document.querySelectorAll(".pane").forEach(x=>x.classList.toggle("on",x.dataset.p===t));window.scrollTo(0,0);window.DarbTabletop.refresh()}
 document.addEventListener("click",e=>{const b=e.target.closest("#tabs button");if(b)setTab(b.dataset.t);else if(e.target.closest("#mini"))setTab("me")});
 let briefP=null,briefRes=null;
 function closeModal(){if(modalKind==="brief"&&briefRes){const r=briefRes;briefRes=null;r()}$("#modal").classList.remove("on");modalKind=""}
@@ -2419,6 +2423,7 @@ function layoutMode(){
   if(wide&&chips.parentNode!==colR)colR.append(chips,sk,lg);
   else if(!wide&&chips.parentNode===colR){play.insertBefore(chips,$("#status"));colR.before(sk);colR.before(lg)}
   document.body.classList.toggle("tabl",wide);
+  window.DarbTabletop.refresh();
   if(wide&&(TAB==="souk"||TAB==="log"))setTab("play");
 }
 wideMQ.addEventListener("change",layoutMode);layoutMode();

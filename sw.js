@@ -1,10 +1,12 @@
 /* درب الثراء — عامل الخدمة: يعمل بلا إنترنت بعد أول فتح */
-const VER = "darb-cartoon-world-v4";
+const VER = "darb-tabletop-characters-v5";
 const SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./styles/identity.css",
+  "./styles/tabletop.css",
+  "./scripts/tabletop.js",
   "./fonts/Tajawal-Regular.ttf",
   "./fonts/Tajawal-Bold.ttf",
   "./icons/brand-mark.svg",
@@ -17,7 +19,9 @@ const SHELL = [
   "./art/identity/clear.svg",
   "./art/identity/world-sheet.png",
   "./art/identity/characters-sheet.png",
-  "./art/identity/goods-sheet.png"
+  "./art/identity/goods-sheet.png",
+  "./art/identity/pawns-sheet.png",
+  "./art/identity/tabletop-park.png"
 ];
 
 self.addEventListener("install", e => {

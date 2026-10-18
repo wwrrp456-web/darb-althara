@@ -56,7 +56,7 @@ async def verify(base_url):
         assert await page.locator('#board .tile').count() == 48
         assert await page.locator('#board .tile .ui-icon').count() == 48
         assert await page.locator('#goodsCard .gcell img').count() == 6
-        assert await page.locator('#board .board-mascot').count() == 1
+        assert await page.locator('#board .character-pawn').count() == 2
         await page.locator('#roll').click()
         await page.wait_for_function('__darb.G.dice2 && !__darb.G.rolling')
         assert await page.evaluate('__darb.G.dice2.every(n => n >= 1 && n <= 6)')
@@ -75,13 +75,15 @@ async def verify(base_url):
         await page.wait_for_function('navigator.serviceWorker.controller !== null')
         cached = await page.evaluate('''async () => {
             const keys = await caches.keys();
-            const cache = await caches.open('darb-cartoon-world-v4');
+            const cache = await caches.open('darb-tabletop-characters-v5');
             return {keys, urls: (await cache.keys()).map(r => r.url)};
         }''')
-        assert 'darb-cartoon-world-v4' in cached['keys']
+        assert 'darb-tabletop-characters-v5' in cached['keys']
         for asset in ['styles/identity.css', 'fonts/Tajawal-Regular.ttf', 'fonts/Tajawal-Bold.ttf',
                       'art/identity/world-sheet.png', 'art/identity/characters-sheet.png',
-                      'art/identity/goods-sheet.png', 'icons/game-icons.svg']:
+                      'art/identity/goods-sheet.png', 'icons/game-icons.svg',
+                      'styles/tabletop.css', 'scripts/tabletop.js',
+                      'art/identity/pawns-sheet.png', 'art/identity/tabletop-park.png']:
             assert any(url.endswith(asset) for url in cached['urls']), asset
         await context.set_offline(True)
         await page.reload(wait_until='networkidle')

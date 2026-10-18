@@ -11,7 +11,7 @@ async def main(root,dest,base_url):
   b=await p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
   c=await b.new_context();page=await c.new_page()
   await page.goto(base_url+'/',wait_until='networkidle')
-  await page.locator('#hClose').click()
+  if await page.locator('#hClose').is_visible():await page.locator('#hClose').click()
   await page.locator('#wNew').click();await page.locator('#sStart').click()
   await page.get_by_role('button',name='ابدأ المباراة 🎲',exact=True).click()
   for _ in range(15):
@@ -22,27 +22,27 @@ async def main(root,dest,base_url):
   await page.wait_for_function('!document.querySelector("#roll").disabled')
   await page.evaluate('navigator.serviceWorker.ready.then(()=>true)')
   await page.wait_for_function('navigator.serviceWorker.controller !== null')
-  assert 'darb-city-of-opportunity-v3' in await page.evaluate('caches.keys()')
+  assert 'darb-cartoon-world-v4' in await page.evaluate('caches.keys()')
   saved=await page.evaluate('JSON.parse(localStorage.getItem("darb-althara-v6")).players.map(p=>({name:p.name,pk:p.pk,cash:p.cash}))')
   for f in root.rglob('*'):
    if f.is_file() and '.git' not in f.relative_to(root).parts:
     to=dest/f.relative_to(root);to.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(f,to)
   await page.evaluate('navigator.serviceWorker.getRegistration().then(r=>r.update())')
-  await page.wait_for_function('''async () => (await caches.keys()).includes('darb-cartoon-world-v4') && !(await caches.keys()).includes('darb-city-of-opportunity-v3')''',timeout=30000)
+  await page.wait_for_function('''async () => (await caches.keys()).includes('darb-tabletop-characters-v5') && !(await caches.keys()).includes('darb-cartoon-world-v4')''',timeout=30000)
   await page.reload(wait_until='networkidle')
-  assert await page.locator('.board-mascot').count()==1
+  assert await page.locator('.character-pawn').count()==2
   after=await page.evaluate('__darb.G.players.map(p=>({name:p.name,pk:p.pk,cash:p.cash}))')
   assert saved==after,(saved,after)
-  await page.wait_for_function('''async () => (await (await caches.match('./index.html')).text()).includes('board-mascot')''')
+  await page.wait_for_function('''async () => (await (await caches.match('./index.html')).text()).includes('DarbTabletop.paint')''')
   await c.set_offline(True);await page.reload(wait_until='domcontentloaded')
   await page.wait_for_function('window.__darb && __darb.G')
-  assert await page.locator('.board-mascot').count()==1
-  print(json.dumps({'upgrade_v3_to_v4':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed'}))
+  assert await page.locator('.character-pawn').count()==2
+  print(json.dumps({'upgrade_v4_to_v5':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed'}))
   await b.close()
 if __name__ == '__main__':
  import argparse
  parser=argparse.ArgumentParser(description='Verify old PWA upgrade preserves an actual saved game.')
- parser.add_argument('--previous-ref',default='7f39e61')
+ parser.add_argument('--previous-ref',default='790a206')
  args=parser.parse_args()
  root=Path(__file__).resolve().parents[1]
  class QuietHandler(SimpleHTTPRequestHandler):
