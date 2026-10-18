@@ -9,7 +9,8 @@ from playwright.async_api import async_playwright
 async def main(root,dest,base_url):
  async with async_playwright() as p:
   b=await p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
-  c=await b.new_context();page=await c.new_page()
+  c=await b.new_context();page=await c.new_page();errors=[]
+  page.on('pageerror',lambda e:errors.append(str(e)))
   await page.goto(base_url+'/',wait_until='networkidle')
   if await page.locator('#hClose').is_visible():await page.locator('#hClose').click()
   await page.locator('#wNew').click();await page.locator('#sStart').click()
@@ -22,29 +23,33 @@ async def main(root,dest,base_url):
   await page.wait_for_function('!document.querySelector("#roll").disabled')
   await page.evaluate('navigator.serviceWorker.ready.then(()=>true)')
   await page.wait_for_function('navigator.serviceWorker.controller !== null')
-  assert 'darb-illustrated-cards-v7' in await page.evaluate('caches.keys()')
+  assert 'darb-solid-miniatures-v8' in await page.evaluate('caches.keys()')
+  old_nodes=await page.locator('#board *').count()
   saved=await page.evaluate('JSON.parse(localStorage.getItem("darb-althara-v6")).players.map(p=>({name:p.name,pk:p.pk,cash:p.cash}))')
   for f in root.rglob('*'):
    if f.is_file() and '.git' not in f.relative_to(root).parts:
     to=dest/f.relative_to(root);to.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(f,to)
   await page.evaluate('navigator.serviceWorker.getRegistration().then(r=>r.update())')
-  await page.wait_for_function('''async () => (await caches.keys()).includes('darb-solid-miniatures-v8') && !(await caches.keys()).includes('darb-illustrated-cards-v7')''',timeout=30000)
+  await page.wait_for_function('''async () => (await caches.keys()).includes('darb-light-illustrated-v9') && !(await caches.keys()).includes('darb-solid-miniatures-v8')''',timeout=30000)
   await page.reload(wait_until='networkidle')
-  assert await page.locator('.character-pawn').count()==2
+  assert await page.locator('.character-pawn').count()==2, {'errors':errors,'state':await page.evaluate('({engine:!!window.__darb,tabletop:!!window.DarbTabletop,game:!!window.__darb?.G})')}
   after=await page.evaluate('__darb.G.players.map(p=>({name:p.name,pk:p.pk,cash:p.cash}))')
   assert saved==after,(saved,after)
-  await page.wait_for_function('''async () => (await (await caches.match('./index.html')).text()).includes('scripts/models.js')''')
+  await page.wait_for_function('''async () => (await (await caches.match('./index.html')).text()).includes('scripts/identity.js')''')
   await c.set_offline(True);await page.reload(wait_until='domcontentloaded')
   await page.wait_for_function('window.__darb && __darb.G')
-  assert await page.locator('.character-pawn').count()==2
-  assert await page.locator('.tile .board-miniature').count()==48
-  assert await page.locator('.pawn-figure .toy-person').count()==2
-  print(json.dumps({'upgrade_v7_to_v8':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed'}))
+  assert await page.locator('.character-pawn').count()==2, {'errors':errors,'state':await page.evaluate('({engine:!!window.__darb,tabletop:!!window.DarbTabletop,game:!!window.__darb?.G})')}
+  new_nodes=await page.locator('#board *').count()
+  assert new_nodes<old_nodes/2,(old_nodes,new_nodes)
+  assert await page.locator('#board .solid, #board .board-miniature').count()==0
+  assert await page.locator('.pawn-art').first.is_visible()
+  assert not errors,errors
+  print(json.dumps({'board_nodes_before_after':[old_nodes,new_nodes],'upgrade_v8_to_v9':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed'}))
   await b.close()
 if __name__ == '__main__':
  import argparse
  parser=argparse.ArgumentParser(description='Verify old PWA upgrade preserves an actual saved game.')
- parser.add_argument('--previous-ref',default='00ebc40')
+ parser.add_argument('--previous-ref',default='5e8628c')
  args=parser.parse_args()
  root=Path(__file__).resolve().parents[1]
  class QuietHandler(SimpleHTTPRequestHandler):

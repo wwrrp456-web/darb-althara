@@ -1,5 +1,5 @@
 /* درب الثراء — عامل الخدمة: يعمل بلا إنترنت بعد أول فتح */
-const VER = "darb-solid-miniatures-v8";
+const VER = "darb-light-illustrated-v9";
 const SHELL = [
   "./",
   "./index.html",
@@ -7,14 +7,12 @@ const SHELL = [
   "./styles/identity.css",
   "./styles/tabletop.css",
   "./styles/illustrated.css",
-  "./styles/models.css",
-  "./scripts/models.js",
   "./scripts/identity.js",
   "./art/identity/icons-sheet.png",
   "./art/identity/cards-sheet.png",
   "./art/identity/reactions-sheet.png",
-  "./scripts/tabletop.js",
-  "./scripts/board-camera.js",
+  "./scripts/tabletop.js?v=9",
+  "./scripts/board-camera.js?v=9",
   "./fonts/Tajawal-Regular.ttf",
   "./fonts/Tajawal-Bold.ttf",
   "./icons/brand-mark.svg",
@@ -43,17 +41,23 @@ self.addEventListener("activate", e => {
 });
 self.addEventListener("fetch", e => {
   const req = e.request;
-  if (req.method !== "GET") return;
-  const url = new URL(req.url);
-  if (url.origin !== location.origin) return;           // STUN وغيره خارج النطاق: لا نتدخل
-  if (req.mode === "navigate") {                        // الصفحة: الشبكة أولاً ليصل التحديث، وإلا النسخة المحفوظة
-    e.respondWith(fetch(req).then(r => {
-      const copy = r.clone(); e.waitUntil(caches.open(VER).then(c => c.put("./index.html", copy))); return r;
-    }).catch(() => caches.match("./index.html")));
-    return;
-  }
-  e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {
-    if (r.ok) { const copy = r.clone(); e.waitUntil(caches.open(VER).then(c => c.put(req, copy))); }
-    return r;
-  })));
+  if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+  e.respondWith((async () => {
+    // Use this release's cache only, including while an older worker is retiring.
+    const cache = await caches.open(VER);
+    if (req.mode === "navigate") {
+      try {
+        const response = await fetch(req);
+        if (response.ok) e.waitUntil(cache.put("./index.html", response.clone()));
+        return response;
+      } catch (_) {
+        return await cache.match("./index.html") || Response.error();
+      }
+    }
+    const hit = await cache.match(req);
+    if (hit) return hit;
+    const response = await fetch(req);
+    if (response.ok) e.waitUntil(cache.put(req, response.clone()));
+    return response;
+  })());
 });

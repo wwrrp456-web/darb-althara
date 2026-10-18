@@ -248,7 +248,6 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 <link rel="stylesheet" href="styles/identity.css">
 <link rel="stylesheet" href="styles/tabletop.css">
 <link rel="stylesheet" href="styles/illustrated.css">
-<link rel="stylesheet" href="styles/models.css">
 </head>
 <body>
 <div class="wrap">
@@ -288,10 +287,9 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
       <button class="mini" id="mini" type="button"></button>
       <div class="card tabletop-card">
         <div class="tabletop-toolbar"><span>طاولة اللعب</span><div class="tabletop-views" role="group" aria-label="زاوية اللوحة"><button type="button" data-table-view="perspective" aria-pressed="true">مجسّمة</button><button type="button" data-table-view="top" aria-pressed="false">من الأعلى</button></div></div>
-        <label class="model-size-control"><span>حجم المجسّمات</span><input type="range" min="100" max="180" step="5" value="135" data-model-size aria-label="حجم المجسمات على الطاولة"><output data-model-size-output>135٪</output></label>
         <div class="tabletop-camera-controls" role="group" aria-label="تحريك اللوحة والتكبير"><button type="button" data-camera="follow" aria-pressed="true">تتبّع القطعة</button><button type="button" data-camera="reset">اللوحة كاملة</button><div class="tabletop-zoom-controls"><button type="button" data-camera="out" aria-label="تصغير اللوحة">−</button><span data-camera-zoom aria-label="مستوى التكبير">100٪</span><button type="button" data-camera="in" aria-label="تكبير اللوحة">+</button></div></div>
         <div class="tabletop-stage" data-view="perspective" tabindex="0" role="region" aria-label="مشهد اللوحة التفاعلي، اسحب للتحريك وقرّب للتكبير" aria-describedby="tabletop-camera-hint"><div class="board" id="board" role="group" aria-label="لوحة اللعب وقطع الشخصيات"></div></div>
-        <p class="tabletop-hint" id="tabletop-camera-hint">اسحب لتحريك اللوحة · قرّب بإصبعين أو بالأزرار · اضغط المجسّم لقراءة بياناته · كبّر القطع من شريط حجم المجسّمات</p>
+        <p class="tabletop-hint" id="tabletop-camera-hint">اسحب لتحريك اللوحة · قرّب بإصبعين أو بالأزرار · اضغط الخانة لقراءة تفاصيلها</p>
         <details class="tabletop-key"><summary>دليل الخانات</summary><div class="legend" id="legend"></div></details>
       </div>
     </section>
@@ -328,9 +326,8 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 
 <dialog id="board-inspector" class="board-inspector" aria-labelledby="board-info-title"><div class="board-info-top"><div class="board-info-symbol"><svg class="ui-icon" aria-hidden="true"><use href="icons/game-icons.svg#shop"/></svg></div><button type="button" class="board-info-close" data-close-inspector aria-label="إغلاق معلومات الخانة">×</button></div><p class="board-info-subtitle"></p><h2 id="board-info-title"></h2><p class="board-info-description"></p><dl></dl><p class="board-info-note">للاطّلاع فقط؛ تظهر قرارات اللعب عند الوقوف على الخانة.</p><button type="button" data-close-inspector>العودة إلى اللوحة</button></dialog>
 <script src="scripts/identity.js"></script>
-<script src="scripts/board-camera.js"></script>
-<script src="scripts/models.js"></script>
-<script src="scripts/tabletop.js"></script>
+<script src="scripts/board-camera.js?v=9"></script>
+<script src="scripts/tabletop.js?v=9"></script>
 <script>
 (()=>{
 "use strict";
@@ -1694,10 +1691,6 @@ function perimeter(n){
 /* Read-only descriptions: inspection never buys, moves or answers a game card. */
 function describeBoardItem(track, reference, player){
   if(!G)return null;
-  if(typeof reference==="string"&&reference.startsWith("player:")){
-    const p=G.players[Number(reference.slice(7))];if(!p)return null;
-    return {title:p.name,subtitle:p.prof+" · قطعة اللاعب",description:"مجسّم شخصيتك المختارة. يتحرّك خانةً خانةً مع رمية النرد؛ هذه بياناته الحالية للاطّلاع.",model:"player_"+p.pk,icon:"person",color:"#edf2ee",details:[["المهنة",p.prof],["النقد",fmt(p.cash)],["الراتب الشهري",fmt(p.salary)],["الدخل التلقائي",fmt(passive(p))],["السعادة",String(p.hap)+" / 100"],["الموضع","الخانة "+(p.pos+1)]]};
-  }
   const isTile=Number.isInteger(reference),index=isTile?reference:null;
   const key=isTile?track[index]:reference;
   if(!TILE[key])return null;
@@ -1728,7 +1721,7 @@ function describeBoardItem(track, reference, player){
   const color=getComputedStyle(document.documentElement).getPropertyValue(TILE[key][2]).trim();
   const info={title:!isTile?({deal:"رزمة الفرص",family:"بطاقات العائلة",quiz:"الأسئلة المالية"}[key]||TILE[key][1]):TILE[key][1],
     subtitle:isTile?`الخانة ${index+1} · ${player.fast?"المسار السريع":"سباق الفئران"}`:"رزمة بطاقات على الطاولة",
-    model:key,description:descriptions[key]||"تظهر خيارات هذه الخانة عند الوصول إليها أثناء اللعب.",icon:TILE_ICONS[key]||"star",color,details:[]};
+    description:descriptions[key]||"تظهر خيارات هذه الخانة عند الوصول إليها أثناء اللعب.",icon:TILE_ICONS[key]||"star",color,details:[]};
   if(key.startsWith("lm_")){
     const k=key.slice(3),land=LAND[k],owner=G.lm[k],lv=lmLv(k);
     const asset=owner!=null?G.players[owner]?.assets.find(a=>a.lm===k):null;
@@ -1825,7 +1818,7 @@ function render(){
     const [ic,name,col]=TILE[track[i]];
 
     const ow=(typeof track[i]==="string"&&track[i].startsWith("lm_")&&G.lm)?G.lm[track[i].slice(3)]:null,ob=ow!=null&&G.players[ow]?`<span class="own" style="--pc:${colr(G.players[ow])}">${esc(G.players[ow].avatar)}</span>`:"";
-    html+=`<div data-tile="${i}" role="button" tabindex="0" aria-label="${esc(name)}، معلومات الخانة ${i+1}" data-model="${track[i]}" class="tile ${i===me.pos?"me":""} ${track[i].startsWith("lm_")?"landmark":""}" title="${name}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${uiIcon(TILE_ICONS[track[i]]||"star")}</span><span class="tile-name">${name}</span>${ob}</div>`;
+    html+=`<div data-tile="${i}" role="button" tabindex="0" aria-label="${esc(name)}، معلومات الخانة ${i+1}" class="tile ${i===me.pos?"me":""} ${track[i].startsWith("lm_")?"landmark":""}" title="${name}" style="grid-row:${r+1};grid-column:${c+1};background:var(${col})"><span class="ic">${uiIcon(TILE_ICONS[track[i]]||"star")}</span><span class="tile-name">${name}</span>${ob}</div>`;
   }
   window.DarbTabletop.paint(b,html,{gameId:G.cid||"saved",track:me.fast?"fast":"rat",players:here.map(p=>({id:p.id,pos:p.pos,pk:p.pk,name:p.name,prof:p.prof,color:colr(p)})),currentId:G.cur,busy:Boolean(G.prompt),phase:G.phase,inspect:reference=>describeBoardItem(track,reference,me),duration:Math.max(35,140/SPEED)});
   const used=[...new Set(track)];

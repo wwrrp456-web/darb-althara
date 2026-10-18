@@ -70,14 +70,13 @@ async def verify():
             assert await page.locator(f'[data-table-view="{view}"]').get_attribute('aria-pressed') == 'true'
         await page.evaluate('''() => {
             window.__pawnNode=document.querySelector('.character-pawn[data-player="0"]');
-            window.__modelNode=document.querySelector('[data-tile="0"] .board-miniature');
             window.__pawnSteps=[47];window.__pawnAnimations=0;window.__pawnTravel=0;
             window.__pawnObserver=new MutationObserver(() => {
                 const node=window.__pawnNode;
                 const pos=Number(node.dataset.position);
                 if(pos!==__pawnSteps.at(-1)){
                     __pawnSteps.push(pos);
-                    if(node.querySelector('.pawn-figure').getAnimations().length) __pawnAnimations++;
+                    if(node.querySelector('img').getAnimations().length) __pawnAnimations++;
                     if(node.getAnimations().some(a=>a.transitionProperty==='transform')) __pawnTravel++;
                 }
             });
@@ -96,7 +95,6 @@ async def verify():
         assert result['steps'] == [47] + [i % 48 for i in range(48, 48+dice)], result
         assert result['sameNode'] and result['animations'] > 0 and result['travel'] > 0, result
         assert result['pawnPosition'] == result['gamePosition']
-        assert await page.evaluate("""__modelNode===document.querySelector('[data-tile="0"] .board-miniature')""")
         # Wait for the physical CSS transition, not a fixed wall-clock under browser load.
         await page.wait_for_function("""() => {
             const node=document.querySelector('.character-pawn[data-player="0"]');
