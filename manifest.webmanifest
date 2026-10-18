@@ -1,7 +1,7 @@
 {
   "name": "درب الثراء",
   "short_name": "درب الثراء",
-  "description": "لعبة عائلية عربية تعلّمك بناء الدخل التلقائي وضبط النفس: من سباق الفئران إلى الحرية المالية.",
+  "description": "لعبة مالية عائلية بالعربية، بشخصيات كرتونية متنوّعة: تاجر واستثمر وحقّق حلمك.",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "./index.html?source=pwa",
@@ -9,8 +9,8 @@
   "id": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f8f3e8",
-  "theme_color": "#124c40",
+  "background_color": "#fff7e5",
+  "theme_color": "#16614c",
   "categories": [
     "games",
     "education",

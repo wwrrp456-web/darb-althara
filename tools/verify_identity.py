@@ -30,6 +30,9 @@ async def verify(base_url):
             assert await page.evaluate('document.documentElement.scrollWidth <= innerWidth'), (width, height)
             assert await page.locator('#wNew').is_visible()
         await page.set_viewport_size({'width': 390, 'height': 844})
+        await page.locator('#wHow').click()
+        assert await page.locator('#hClose').is_visible()
+        await page.locator('#hClose').click()
         await page.locator('#wNew').click()
         await page.locator('[data-i="0"] [data-k="profbtn"]').click()
         portraits = page.locator('.pcard img')
@@ -53,6 +56,7 @@ async def verify(base_url):
         assert await page.locator('#board .tile').count() == 48
         assert await page.locator('#board .tile .ui-icon').count() == 48
         assert await page.locator('#goodsCard .gcell img').count() == 6
+        assert await page.locator('#board .board-mascot').count() == 1
         await page.locator('#roll').click()
         await page.wait_for_function('__darb.G.dice2 && !__darb.G.rolling')
         assert await page.evaluate('__darb.G.dice2.every(n => n >= 1 && n <= 6)')
@@ -71,10 +75,10 @@ async def verify(base_url):
         await page.wait_for_function('navigator.serviceWorker.controller !== null')
         cached = await page.evaluate('''async () => {
             const keys = await caches.keys();
-            const cache = await caches.open('darb-city-of-opportunity-v3');
+            const cache = await caches.open('darb-cartoon-world-v4');
             return {keys, urls: (await cache.keys()).map(r => r.url)};
         }''')
-        assert 'darb-city-of-opportunity-v3' in cached['keys']
+        assert 'darb-cartoon-world-v4' in cached['keys']
         for asset in ['styles/identity.css', 'fonts/Tajawal-Regular.ttf', 'fonts/Tajawal-Bold.ttf',
                       'art/identity/world-sheet.png', 'art/identity/characters-sheet.png',
                       'art/identity/goods-sheet.png', 'icons/game-icons.svg']:

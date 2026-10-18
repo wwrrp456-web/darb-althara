@@ -1,5 +1,5 @@
 /* درب الثراء — عامل الخدمة: يعمل بلا إنترنت بعد أول فتح */
-const VER = "darb-city-of-opportunity-v3";
+const VER = "darb-cartoon-world-v4";
 const SHELL = [
   "./",
   "./index.html",
@@ -21,7 +21,7 @@ const SHELL = [
 ];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(VER).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VER).then(c => c.addAll(SHELL.map(url => new Request(url, {cache: "reload"})))).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys()
@@ -35,12 +35,12 @@ self.addEventListener("fetch", e => {
   if (url.origin !== location.origin) return;           // STUN وغيره خارج النطاق: لا نتدخل
   if (req.mode === "navigate") {                        // الصفحة: الشبكة أولاً ليصل التحديث، وإلا النسخة المحفوظة
     e.respondWith(fetch(req).then(r => {
-      const copy = r.clone(); caches.open(VER).then(c => c.put("./index.html", copy)); return r;
+      const copy = r.clone(); e.waitUntil(caches.open(VER).then(c => c.put("./index.html", copy))); return r;
     }).catch(() => caches.match("./index.html")));
     return;
   }
   e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {
-    if (r.ok) { const copy = r.clone(); caches.open(VER).then(c => c.put(req, copy)); }
+    if (r.ok) { const copy = r.clone(); e.waitUntil(caches.open(VER).then(c => c.put(req, copy))); }
     return r;
   })));
 });

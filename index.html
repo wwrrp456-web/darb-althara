@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#124c40">
+<meta name="theme-color" content="#16614c">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="icons/brand-mark.svg">
 <link rel="icon" type="image/png" href="icons/favicon-64.png">
@@ -251,23 +251,23 @@ label.l{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 3px}
 <div class="wrap">
   <header>
     <div class="logo"><img src="icons/brand-mark.svg" alt="" width="48" height="48"></div>
-    <div class="brand-name"><h1>درب الثراء</h1><p>كل قرار يقرّبك من حلمك</p></div>
+    <div class="brand-name"><h1>درب الثراء</h1><p>فرص تجمعنا</p></div>
     <div class="sp"><button class="hbtn" id="helpBtn" aria-label="كيف ألعب؟">؟</button></div>
   </header>
 
   <div id="welcome" class="card welcome" hidden>
-    <div class="welcome-art"><img id="hero" class="hero" alt="مدينة عربية نابضة بالفرص، يصل سوقها إلى أفق المدينة عبر درب ذهبي"><span class="art-caption">مدينة الفرص</span></div>
+    <div class="welcome-art"><img id="hero" class="hero" alt="أصدقاء من ثقافات وأعمار مختلفة، بينهم مبرمجة محجبة، حول لعبة درب الثراء الكرتونية"><span class="art-caption">فرص تجمعنا</span></div>
     <div class="welcome-copy">
       <span class="eyebrow"><span></span> لعبة المال والحياة</span>
-      <h2>حلمك كبير.<br><em>ابدأ دربك.</em></h2>
-      <p class="welcome-description">من أول راتب إلى دخل يصنع حريتك.<br>تاجر، استثمر، وابنِ حياة على مقاس أحلامك.</p>
+      <h2>فرص تجمعنا.<br><em>وأحلام نحققها.</em></h2>
+      <p class="welcome-description">شخصيات من ثقافات مختلفة، وتحدٍّ يجمعنا.<br>تاجر، استثمر، وابدأ دربك نحو حلمك.</p>
       <div class="game-facts"><span><svg class="ui-icon" aria-hidden="true"><use href="icons/game-icons.svg#people"/></svg> ١–٨ لاعبين</span><span><svg class="ui-icon" aria-hidden="true"><use href="icons/game-icons.svg#robot"/></svg> منافس آلي</span><span><svg class="ui-icon" aria-hidden="true"><use href="icons/game-icons.svg#globe"/></svg> مع الأصدقاء</span></div>
       <div class="welcome-actions">
         <button id="wNew"><svg class="ui-icon" aria-hidden="true"><use href="icons/game-icons.svg#dice"/></svg><span>ابدأ رحلتك<small>لعبة جديدة</small></span><svg class="ui-icon" aria-hidden="true"><use href="icons/game-icons.svg#arrow"/></svg></button>
         <button class="alt" id="wJoin"><svg class="ui-icon" aria-hidden="true"><use href="icons/game-icons.svg#globe"/></svg> انضمّ إلى لعبة صديق</button>
         <button class="alt" id="installBox" hidden><svg class="ui-icon" aria-hidden="true"><use href="icons/game-icons.svg#download"/></svg> ثبّت اللعبة كتطبيق</button>
       </div>
-      <div class="welcome-note">قرارات ذكية. فرص جديدة. وحلم يستحق الوصول.</div>
+      <button class="welcome-help" id="wHow">أول مرة؟ تعرّف على طريقة اللعب</button><div class="welcome-note">واجهة عربية. عالم متنوّع. وفرصة لكل لاعب.</div>
     </div>
     <div class="welcome-bottom"><div class="journey-steps"><span><b>٠١</b> اكسب</span><i></i><span><b>٠٢</b> استثمر</span><i></i><span><b>٠٣</b> حقّق حلمك</span></div><div id="chBox"></div></div>
   </div>
@@ -340,7 +340,7 @@ const MAXP=8;
 const PROFS=[
  {k:"teacher",n:"معلّم",e:"📚",salary:4200,tax:620,home:520,car:140,cards:90,other:260,childCost:150,cash:3000,debt:"قرض سكن 72,000",perk:{quizMult:2},pt:"مكافأة الأسئلة المالية ×٢"},
  {k:"nurse",n:"ممرّضة",e:"🩺",salary:5100,tax:810,home:640,car:180,cards:110,other:300,childCost:170,cash:3500,debt:"قرض سكن 88,000",perk:{loveMult:2},pt:"نقاط ❤️ مضاعفة"},
- {k:"engineer",n:"مهندس",e:"📐",salary:7800,tax:1500,home:1250,car:290,cards:220,other:480,childCost:260,cash:5200,debt:"قرض سكن 150,000",perk:{downDisc:{"عقار":0.1}},pt:"خصم ١٠٪ على دفعة العقارات"},
+ {k:"engineer",n:"مهندسة",e:"📐",salary:7800,tax:1500,home:1250,car:290,cards:220,other:480,childCost:260,cash:5200,debt:"قرض سكن 150,000",perk:{downDisc:{"عقار":0.1}},pt:"خصم ١٠٪ على دفعة العقارات"},
  {k:"driver",n:"سائق",e:"🚚",salary:3300,tax:430,home:410,car:110,cards:60,other:210,childCost:120,cash:2200,debt:"قرض سكن 54,000",perk:{buyDisc:0.05},pt:"بضائع أرخص ٥٪ (توصيل)"},
  {k:"doctor",n:"طبيب",e:"⚕️",salary:12500,tax:2900,home:2300,car:480,cards:400,other:900,childCost:420,cash:9000,debt:"قرض سكن 310,000",perk:{quizMult:1.5,loveMult:1.5},pt:"أسئلة ونقاط ❤️ ×١.٥"},
  {k:"accountant",n:"محاسب",e:"🧮",salary:5600,tax:930,home:720,car:190,cards:130,other:330,childCost:180,cash:4000,debt:"قرض سكن 96,000",perk:{forecast:true},pt:"يرى اتجاه أسعار الجولة القادمة"},
@@ -1749,7 +1749,7 @@ function render(){
   for(let r=0;r<n;r++)for(let c=0;c<n;c++){
     const i=cells2.findIndex(x=>x[0]===r&&x[1]===c);
     if(i<0){
-      const ctr=`<div class="dice ${G.rolling?"roll":""}" id="dice">${diceHtml(G.dice2||[G.dice||1,G.dice||1])}</div><div class="big" style="color:${colr(cp)}">${esc(cp.avatar)} دور ${esc(cp.name)}</div><div class="mut">الجولة ${G.round} · ${thr(cp.turns+1)}</div>`;
+      const ctr=`<img class="board-mascot" src="${IMG[cp.pk]||IMG.trader}" alt="${esc(cp.prof)}"><div class="dice ${G.rolling?"roll":""}" id="dice">${diceHtml(G.dice2||[G.dice||1,G.dice||1])}</div><div class="big" style="color:${colr(cp)}">${esc(cp.avatar)} دور ${esc(cp.name)}</div><div class="mut">الجولة ${G.round} · ${thr(cp.turns+1)}</div>`;
       if(r===1&&c===1)html+=`<div class="center" style="grid-column:2/${n};grid-row:2/${n}">${ctr}</div>`;
       continue;
     }
@@ -2396,6 +2396,7 @@ $("#sheetBtn").onclick=()=>{if(G)sheet(viewP())};
 $("#menuBtn").onclick=menu;
 const ib=$("#installBox");if(ib){ib.onclick=installApp;renderInstall()}
 $("#helpBtn").onclick=()=>help(0);
+$("#wHow").onclick=()=>help(0);
 REACTS.forEach(e=>{const b=document.createElement("button");b.textContent=e;b.onclick=()=>{sendReact(e);$("#reactTray").hidden=true};$("#reactTray").appendChild(b)});
 $("#reactBtn").onclick=()=>{$("#reactTray").hidden=!$("#reactTray").hidden};
 document.addEventListener("pointerdown",()=>audio(),{once:true});
@@ -2407,8 +2408,7 @@ $("#modal").addEventListener("click",e=>{if(e.target.id==="modal"&&["sheet","men
 if(loadSaved()){render();loop()}
 else{
   render();
-  let seen=false;try{seen=localStorage.getItem(SEEN)}catch(e){}
-  if(!seen)help(0);
+  // Show the illustrated welcome first; instructions remain available via both help buttons.
 }
 $("#hero").src=IMG.hero;
 // للاختبار الآلي فقط
