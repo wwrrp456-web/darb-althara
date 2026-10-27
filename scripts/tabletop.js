@@ -8,7 +8,6 @@
   function positionPawns(animate = false) {
     if (!state || !state.board.isConnected || !state.board.clientWidth) return;
     const {board, layer, players, currentId, duration, tiles} = state;
-    board.classList.toggle('names', board.clientWidth >= 560);
     board.style.setProperty('--pawn-size', `${Math.max(48, Math.min(90, board.clientWidth * .16))}px`);
     const countByTile = new Map();
     for (const p of players) {
@@ -64,7 +63,26 @@
         ], {duration, easing:'ease-in-out'});
       }
     }
-    for (const pawn of layer.children) if (!keep.has(pawn.dataset.player)) pawn.remove();
+    for (const pawn of layer.querySelectorAll('.character-pawn')) if (!keep.has(pawn.dataset.player)) pawn.remove();
+    const groups=new Set();
+    for(const [position,ids] of countByTile){
+      const leader=ids.includes(currentId)?currentId:ids[0];
+      for(const id of ids){
+        const pawn=layer.querySelector(`.character-pawn[data-player="${id}"]`);
+        pawn.classList.toggle('clustered',ids.length>1);pawn.classList.toggle('cluster-lead',ids.length>1&&id===leader);
+        pawn.tabIndex=ids.length>1?-1:0;
+        if(ids.length>1)pawn.setAttribute('aria-hidden','true');else pawn.removeAttribute('aria-hidden');
+      }
+      if(ids.length<2)continue;
+      groups.add(String(position));
+      let group=layer.querySelector(`.pawn-cluster[data-position="${position}"]`);
+      if(!group){group=document.createElement('div');group.className='pawn-cluster';group.setAttribute('aria-hidden','true');group.dataset.position=String(position);layer.append(group);}
+      group.textContent=String(ids.length);
+      group.title=ids.length+' لاعبون؛ اختر من زر اللاعبين أسفل اللوحة';
+      const tile=tiles.get(position),x=tile.offsetLeft+tile.offsetWidth*.9,y=tile.offsetTop+tile.offsetHeight*.95;
+      group.style.transform=`translate3d(${x}px,${y}px,12px) translate(-50%,-100%) rotateZ(calc(-1 * var(--table-yaw))) rotateX(calc(-1 * var(--table-tilt)))`;
+    }
+    for(const group of layer.querySelectorAll('.pawn-cluster'))if(!groups.has(group.dataset.position))group.remove();
   }
 
   function setView(view) {
@@ -75,6 +93,7 @@
       button.setAttribute('aria-pressed', String(button.dataset.tableView === stage.dataset.view));
     });
     try { localStorage.setItem('darb-table-view', stage.dataset.view); } catch (_) {}
+    const select=document.getElementById("table-view-select");if(select)select.value=stage.dataset.view;
     window.DarbCamera?.viewChanged();
   }
 
@@ -117,5 +136,5 @@
   let initialView = 'perspective';
   try { initialView = localStorage.getItem('darb-table-view') || initialView; } catch (_) {}
   setView(initialView);
-  window.DarbTabletop = {paint, refresh: () => requestAnimationFrame(() => positionPawns(false))};
+  window.DarbTabletop = {paint, setView, refresh: () => requestAnimationFrame(() => positionPawns(false))};
 })();

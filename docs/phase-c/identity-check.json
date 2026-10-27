@@ -1,0 +1,14 @@
+{
+  "responsive_sizes": 5,
+  "profession_portraits": 14,
+  "goods": 6,
+  "board_tiles_and_vector_icons": 48,
+  "ui_icon_library": 32,
+  "dice_roll": "passed",
+  "save_reload": "passed",
+  "offline_with_new_identity": "passed",
+  "light_and_dark": "passed",
+  "brand_downloads": "passed",
+  "javascript_errors": [],
+  "http_errors": []
+}

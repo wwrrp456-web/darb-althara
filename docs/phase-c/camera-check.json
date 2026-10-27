@@ -1,0 +1,12 @@
+{
+  "mouse_drag": "passed",
+  "wheel_zoom": "passed",
+  "zoom_limits": "75–320%",
+  "native_touch_pinch_and_pan": "passed",
+  "keyboard_camera": "passed",
+  "automatic_pawn_follow": "passed",
+  "read_only_landmark_and_deck_inspection": "passed",
+  "game_prompt_priority": "passed",
+  "responsive_sizes": 4,
+  "javascript_errors": []
+}

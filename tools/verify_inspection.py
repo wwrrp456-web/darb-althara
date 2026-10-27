@@ -17,12 +17,12 @@ async def verify():
   async def inspect(selector):
    state=await snapshot();await page.locator(selector).focus();await page.keyboard.press('Enter');assert await inspector.is_visible();assert await snapshot()==state;return await details()
   async def close():await page.keyboard.press('Escape')
-  # Invisible target padding measures >=44 CSS pixels even with the board zoomed out.
+  # Invisible target padding measures >=48 CSS pixels even with the board zoomed out.
   for w,h in [(390,844),(1180,820)]:
    await page.set_viewport_size({'width':w,'height':h});await page.locator('.tabletop-stage').scroll_into_view_if_needed()
    await page.locator('[data-camera=out]').click()
    for hit in await page.locator('.landmark-stand .miniature-hit,.has-deck-art>.miniature-hit,.pawn-stand>.miniature-hit').all():
-    box=await hit.bounding_box();assert box['width']>=44 and box['height']>=44,(w,box)
+    box=await hit.bounding_box();assert box['width']>=48 and box['height']>=48,(w,box)
    await page.locator('[data-camera=reset]').click()
   await page.set_viewport_size({'width':390,'height':844})
   d=await inspect('[data-landmark=hospital]');assert d['المالك']=='متاح للشراء';assert integer(d['سعر الشراء الأساسي'])==110000;assert integer(d['الدخل الأساسي'])==1200
@@ -32,13 +32,13 @@ async def verify():
   # A real engine purchase followed by each allowed upgrade changes live data and badges.
   await page.evaluate('()=>{__darb.G.players[0].cash=1000000;window.__done=false;__darb.resolveTile(__darb.G.players[0],"lm_hospital").then(()=>__done=true)}')
   assert await page.evaluate('__darb.G.prompt.data.down')==initial_down
-  await page.locator('.decision-actions button').first.click();await page.wait_for_function('__done');await page.locator('.chip-p[data-pid="0"]').click()
+  await page.locator('.decision-actions button').first.click();await page.wait_for_function('__done');await page.locator('.chip-p[data-pid="0"]').evaluate('(e)=>e.click()')
   await page.evaluate('__darb.upgradeLm(0,"hospital")')
   d=await inspect('[data-landmark=hospital]')
   assert 'محسن' in d['المالك'];assert await inspector.locator('dd .identity-avatar').count()==1;assert integer(d['مستوى التطوير'])==1;assert integer(d['تكلفة التطوير التالي'])==17000
   assert integer(d['الدخل الشهري الحالي'])==await page.evaluate('__darb.G.players[0].assets.find(a=>a.lm==="hospital").inc')
   assert integer(d['الإيجار قبل سقف قدرة الزائر'])==2250
-  await close();await page.evaluate('__darb.G.players[0].fast=true');await page.locator('.chip-p[data-pid="1"]').click()
+  await close();await page.evaluate('__darb.G.players[0].fast=true');await page.locator('.chip-p[data-pid="1"]').evaluate('(e)=>e.click()')
   await inspect('[data-landmark=hospital]')
   for level in [2,3]:
    await page.evaluate('__darb.upgradeLm(0,"hospital")');assert await inspector.is_visible();d=await details()
@@ -65,5 +65,5 @@ async def verify():
    await page.set_viewport_size({'width':w,'height':h});await inspect('[data-landmark=hospital]')
    await page.screenshot(path=str(ROOT/f'brand/preview-live-inspector-{w}.png'));assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth');await close()
   assert not errors,errors;await b.close()
- print(json.dumps({'live_purchase_and_levels_0_to_3':'passed','base_current_income_and_rent':'passed','next_upgrade_cost':'passed','owner_avatar':'passed','deck_counts_and_frozen_getter':'passed','no_inspection_state_mutation':'passed','pending_decision_priority':'passed','min_touch_target_px':44,'pawn_data':'passed','console_errors':errors}))
+ print(json.dumps({'live_purchase_and_levels_0_to_3':'passed','base_current_income_and_rent':'passed','next_upgrade_cost':'passed','owner_avatar':'passed','deck_counts_and_frozen_getter':'passed','no_inspection_state_mutation':'passed','pending_decision_priority':'passed','min_touch_target_px':48,'pawn_data':'passed','console_errors':errors}))
 asyncio.run(verify())

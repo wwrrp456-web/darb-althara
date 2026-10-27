@@ -1,0 +1,12 @@
+{
+  "real_dice_steps": 10,
+  "wraparound_movement": "passed",
+  "persistent_pawn_nodes": "passed",
+  "selected_characters_including_hijabi": "passed",
+  "view_modes": 2,
+  "responsive_sizes": 4,
+  "fast_track_20_tiles": "passed",
+  "eight_pawns_same_tile": "passed",
+  "reduced_motion": "passed",
+  "javascript_errors": []
+}

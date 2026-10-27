@@ -6,49 +6,60 @@
   if (!stage || !board) return;
   const world = document.createElement('div');
   world.className = 'tabletop-camera-world';
-  const ground = document.createElement('div');
-  ground.className = 'tabletop-district';
-  ground.setAttribute('aria-hidden', 'true');
-  world.append(ground, board);
+  world.append(board);
   stage.append(world);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const camera = {x:0, y:0, zoom:1, follow:true};
+  const camera = {x:0, y:0, zoom:1, follow:false};
   let options = null, identity = null, lastTarget = null;
   let frame = 0, followUntil = 0, forceFollow = false;
   const pointers = new Map();
   let gesture = null;
   const inspector = document.getElementById('board-inspector');
   let inspectedReference=null;
+  let fit=1, footprint={width:640,height:640};
+  const crowd=document.getElementById("board-crowd");
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
+  function measureFit() {
+    const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;
+    const saved=world.style.transform;world.style.transform='none';
+    const viewport=stage.getBoundingClientRect(),cx=viewport.left+w/2,cy=viewport.top+h/2;
+    const pad=28;fit=1;
+    // Measure the browser's actual perspective projection, only on resize/view changes.
+    for(let i=0;i<3;i++){
+      stage.style.setProperty('--table-scale',String(fit));
+      const r=board.getBoundingClientRect();
+      const factor=Math.min((w/2-pad)/Math.max(cx-r.left,r.right-cx,1),(h/2-pad)/Math.max(cy-r.top,r.bottom-cy,1));
+      fit*=Math.max(.01,factor);
+    }
+    stage.style.setProperty('--table-scale',String(fit));
+    const r=board.getBoundingClientRect();footprint={width:r.width,height:r.height};
+    world.style.transform=saved;
+    stage.dataset.fit=String(fit);
+  }
   function limit() {
-    const w = stage.clientWidth, h = stage.clientHeight;
-    const maxX = Math.max(w * .15, (w * camera.zoom * 1.05 - w) / 2 + w * .3);
-    const maxY = Math.max(h * .12, (w * camera.zoom * .9 - h) / 2 + h * .28);
-    camera.x = clamp(camera.x, -maxX, maxX);
-    camera.y = clamp(camera.y, -maxY, maxY);
+    // Retain at least one touch target of the measured surface inside the viewport.
+    const maxX=Math.max(0,(footprint.width*camera.zoom+stage.clientWidth)/2-48);
+    const maxY=Math.max(0,(footprint.height*camera.zoom+stage.clientHeight)/2-48);
+    camera.x=clamp(camera.x,-maxX,maxX);camera.y=clamp(camera.y,-maxY,maxY);
   }
   function draw() {
     limit();
-    const width=stage.clientWidth, height=stage.clientHeight;
-    if(width && height){
-      stage.style.setProperty('--isometric-fit', String(.64*Math.min(1,height/(width*.8))));
-      stage.style.setProperty('--top-fit', String(.88*Math.min(1,height/width)));
-    }
     world.style.transform = `translate3d(${camera.x}px,${camera.y}px,0) scale(${camera.zoom})`;
     stage.dataset.zoom = String(Math.round(camera.zoom * 100));
     stage.dataset.follow = String(camera.follow);
     board.classList.toggle('camera-readable', camera.zoom >= 1.55);
+    board.classList.toggle('names', camera.zoom>=1.55 && footprint.width*camera.zoom>=560);
     document.querySelector('[data-camera-zoom]').textContent = `${Math.round(camera.zoom * 100)}٪`;
     document.querySelector('[data-camera="follow"]').setAttribute('aria-pressed', String(camera.follow));
     document.querySelector('[data-camera="in"]').disabled = camera.zoom >= 3.19;
     document.querySelector('[data-camera="out"]').disabled = camera.zoom <= .751;
   }
   function updateHitTargets() {
-    const width=stage.clientWidth,height=stage.clientHeight;
-    if(!width||!height)return;
-    const fit=stage.dataset.view==='top' ? .88*Math.min(1,height/width) : .64*Math.min(1,height/(width*.8));
-    stage.style.setProperty('--mini-hit-size',`${Math.ceil(52/(fit*camera.zoom))}px`);
+    const scale=Math.max(.01,fit*camera.zoom);
+    stage.style.setProperty('--mini-hit-size',`${Math.ceil(56/scale)}px`);
+    stage.style.setProperty('--projected-scale',String(scale));
+    stage.style.setProperty('--landmark-display-size',`${Math.max(49,28/Math.max(.01,fit))}px`);
   }
   function stopFollow() {
     camera.follow = false;
@@ -88,7 +99,8 @@
     followUntil = 0;
     camera.x = camera.y = 0;
     camera.zoom = 1;
-    camera.follow = true;
+    camera.follow = false;
+    measureFit();
     updateHitTargets();
     draw();
   }
@@ -104,10 +116,27 @@
     draw();
   }
   function inspect(reference) {
+    if(typeof reference==='string'&&(reference==='players'||reference.startsWith('group:'))){
+      if(!options||options.busy||document.querySelector('#modal.on'))return;
+      const people=reference==='players'?(options.allPlayers||options.players):options.players.filter(p=>p.pos===Number(reference.slice(6)));
+      const list=document.getElementById('crowd-list');list.replaceChildren();
+      document.getElementById('crowd-title').textContent=reference==='players'?'اللاعبون':'اللاعبون في هذه الخانة';
+      for(const p of people){
+        const button=document.createElement('button');button.type='button';button.dataset.player=String(p.id);
+        const image=document.createElement('img');image.src=`art/identity/clear.svg#${p.pk}`;image.alt='';
+        const label=document.createElement('span'),name=document.createElement('b'),job=document.createElement('small');
+        name.textContent=`${p.id+1} · ${p.name}`;job.textContent=p.prof;label.append(name,job);button.append(image,label);
+        button.onclick=()=>{crowd.close();inspect('player:'+p.id)};list.append(button);
+      }
+      if(!crowd.open)crowd.showModal();return;
+    }
     if (!options || options.busy || document.querySelector('#modal.on')) return;
     const info = options.inspect?.(reference);
     if (!info) return;
     inspectedReference=reference;
+    const view=document.getElementById('view-player-board');
+    view.hidden=!(typeof reference==='string'&&reference.startsWith('player:'));
+    view.onclick=()=>{inspector.close();options?.viewPlayer?.(Number(String(reference).slice(7)))};
     inspector.querySelector('#board-info-title').textContent = info.title;
     inspector.querySelector('.board-info-subtitle').textContent = info.subtitle;
     inspector.querySelector('.board-info-description').textContent = info.description;
@@ -127,6 +156,7 @@
     if(!inspector.open)inspector.showModal();
   }
   const referenceFor = target => {
+    const group=target.closest('.pawn-cluster');if(group)return 'group:'+group.dataset.position;
     const pawn=target.closest('.character-pawn');if(pawn)return 'player:'+pawn.dataset.player;
     const tile = target.closest('[data-tile]');
     if (tile) return Number(tile.dataset.tile);
@@ -226,12 +256,14 @@
       zoomAt(camera.zoom * (action === 'in' ? 1.25 : .8));
     }
   }));
+  crowd.querySelector('[data-close-crowd]').onclick=()=>crowd.close();
   inspector.querySelectorAll('[data-close-inspector]').forEach(button => button.addEventListener('click', () => inspector.close()));
   inspector.addEventListener('click', event => {
     const rect = inspector.getBoundingClientRect();
     if (event.target === inspector && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) inspector.close();
   });
-  new ResizeObserver(() => {updateHitTargets();draw();}).observe(stage);
+  new ResizeObserver(() => {measureFit();updateHitTargets();draw();if(camera.follow)startFollow();}).observe(stage);
+  measureFit();
   updateHitTargets();
   draw();
   window.DarbCamera = {
@@ -239,6 +271,7 @@
       options = next;
       const key = `${next.gameId}:${next.track}`;
       if (identity !== key) { identity=key; lastTarget=null; reset(); }
+      if(next.busy&&crowd.open)crowd.close();
       if (next.busy && inspector.open) inspector.close();
       else if(inspector.open&&inspectedReference!==null)inspect(inspectedReference);
       const pawn = next.players.find(p => p.id === next.currentId);
@@ -247,6 +280,7 @@
       lastTarget = target;
       draw();
     },
+    inspect,
     viewChanged:reset
   };
 })();

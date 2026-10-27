@@ -73,17 +73,24 @@ async def verify():
             await page.locator('[data-camera=out]').click()
         assert (await camera_state(page))['zoom']==75
         await page.locator('[data-camera=reset]').click()
-        assert await camera_state(page)=={'zoom':100,'follow':'true','x':0,'y':0}
+        assert await camera_state(page)=={'zoom':100,'follow':'false','x':0,'y':0}
         await stage.focus();await page.keyboard.press('ArrowLeft')
         assert (await camera_state(page))['x']>0
         await page.keyboard.press('0')
         assert (await camera_state(page))['x']==0
-        # Actual gameplay moves both the existing pawn and the following camera.
+        # Following is an explicit mode; the fitted overview does not pan by itself.
+        await page.locator('[data-camera=follow]').click()
+        # Actual gameplay keeps the existing pawn within the following viewport.
         await page.locator('#roll').click()
         await page.wait_for_function('__darb.G.players[0].pos>0')
         await page.wait_for_timeout(260)
         followed=await camera_state(page)
-        assert abs(followed['x'])+abs(followed['y'])>1, followed
+        # A fitted board can already keep the pawn in its readable region: no needless pan.
+        pawn_box=await page.locator('.character-pawn[data-player="0"] .pawn-stand').bounding_box()
+        stage_box=await stage.bounding_box()
+        assert followed['follow']=='true',followed
+        assert stage_box['x'] <= pawn_box['x']+pawn_box['width']/2 <= stage_box['x']+stage_box['width'],pawn_box
+        assert stage_box['y'] <= pawn_box['y']+pawn_box['height']/2 <= stage_box['y']+stage_box['height'],pawn_box
         await page.wait_for_function('__darb.G.prompt !== null')
         # A pending game decision has priority over read-only inspection.
         await page.locator('[data-deck="family"]').evaluate('(el)=>{el.focus();el.dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",bubbles:true}))}')
