@@ -1,0 +1,11 @@
+{
+  "artifact_sha256": "2c6de557675fae7c051c6b45f5e8c9239e48dc6cdf902823ec270eb43f531fa0",
+  "standalone_http": "passed",
+  "external_asset_requests": 0,
+  "requests": [
+    "http://localhost:8011/darb-althara-review.html"
+  ],
+  "javascript_errors": [],
+  "logo_switch_setup_and_decision": "passed",
+  "file_protocol": "blocked by browser policy"
+}

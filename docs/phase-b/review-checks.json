@@ -1,0 +1,237 @@
+{
+  "scope": "phase B design prototype, not production game",
+  "matrix": [
+    {
+      "overflow": false,
+      "stage": {
+        "x": 13,
+        "y": 216,
+        "w": 334,
+        "h": 192,
+        "bottom": 408
+      },
+      "dock": {
+        "x": 12,
+        "y": 567,
+        "w": 336,
+        "h": 73,
+        "bottom": 640
+      },
+      "smallControls": [],
+      "visibleImagesBroken": [],
+      "players": 2,
+      "width": 360,
+      "height": 640
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 13,
+        "y": 216,
+        "w": 364,
+        "h": 396,
+        "bottom": 612
+      },
+      "dock": {
+        "x": 12,
+        "y": 771,
+        "w": 366,
+        "h": 73,
+        "bottom": 844
+      },
+      "smallControls": [],
+      "visibleImagesBroken": [],
+      "players": 2,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 13,
+        "y": 216,
+        "w": 404,
+        "h": 484,
+        "bottom": 700
+      },
+      "dock": {
+        "x": 12,
+        "y": 859,
+        "w": 406,
+        "h": 73,
+        "bottom": 932
+      },
+      "smallControls": [],
+      "visibleImagesBroken": [],
+      "players": 2,
+      "width": 430,
+      "height": 932
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 25,
+        "y": 239.390625,
+        "w": 718,
+        "h": 444.609375,
+        "bottom": 684
+      },
+      "dock": {
+        "x": 24,
+        "y": 947,
+        "w": 720,
+        "h": 77,
+        "bottom": 1024
+      },
+      "smallControls": [],
+      "visibleImagesBroken": [],
+      "players": 2,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 415.671875,
+        "y": 239.390625,
+        "w": 739.328125,
+        "h": 324.609375,
+        "bottom": 564
+      },
+      "dock": {
+        "x": 24,
+        "y": 743,
+        "w": 1132,
+        "h": 77,
+        "bottom": 820
+      },
+      "smallControls": [],
+      "visibleImagesBroken": [],
+      "players": 2,
+      "width": 1180,
+      "height": 820
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 13,
+        "y": 216,
+        "w": 334,
+        "h": 192,
+        "bottom": 408
+      },
+      "dock": {
+        "x": 12,
+        "y": 567,
+        "w": 336,
+        "h": 73,
+        "bottom": 640
+      },
+      "smallControls": [],
+      "visibleImagesBroken": [],
+      "players": 8,
+      "width": 360,
+      "height": 640
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 13,
+        "y": 216,
+        "w": 364,
+        "h": 396,
+        "bottom": 612
+      },
+      "dock": {
+        "x": 12,
+        "y": 771,
+        "w": 366,
+        "h": 73,
+        "bottom": 844
+      },
+      "smallControls": [],
+      "visibleImagesBroken": [],
+      "players": 8,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 13,
+        "y": 216,
+        "w": 404,
+        "h": 484,
+        "bottom": 700
+      },
+      "dock": {
+        "x": 12,
+        "y": 859,
+        "w": 406,
+        "h": 73,
+        "bottom": 932
+      },
+      "smallControls": [],
+      "visibleImagesBroken": [],
+      "players": 8,
+      "width": 430,
+      "height": 932
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 25,
+        "y": 239.390625,
+        "w": 718,
+        "h": 444.609375,
+        "bottom": 684
+      },
+      "dock": {
+        "x": 24,
+        "y": 947,
+        "w": 720,
+        "h": 77,
+        "bottom": 1024
+      },
+      "smallControls": [],
+      "visibleImagesBroken": [],
+      "players": 8,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 415.671875,
+        "y": 239.390625,
+        "w": 739.328125,
+        "h": 324.609375,
+        "bottom": 564
+      },
+      "dock": {
+        "x": 24,
+        "y": 743,
+        "w": 1132,
+        "h": 77,
+        "bottom": 820
+      },
+      "smallControls": [],
+      "visibleImagesBroken": [],
+      "players": 8,
+      "width": 1180,
+      "height": 820
+    }
+  ],
+  "functional": {
+    "eight_person_picker_and_read_only_inspection": "passed",
+    "mock_camera_buttons_and_keyboard": "passed",
+    "three_step_setup_endings_and_replay": "passed (mock outcomes; no timers or settlement engine)",
+    "mandatory_decision_accept_decline_escape_and_repeat_input": "passed (fixture amounts)",
+    "three_logo_applications_and_32px_exports": "passed (human recognition review pending)",
+    "other_screens_five_viewports": "passed (25 cases)",
+    "isolated_from_saved_games_and_service_workers": "passed"
+  },
+  "errors": [],
+  "http_errors": [],
+  "browser": "154.0.8037.57"
+}
