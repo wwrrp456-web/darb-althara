@@ -1,0 +1,28 @@
+[
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "cpu_throttle": 4,
+    "fps": 59.01,
+    "median_frame_ms": 16.7,
+    "p95_frame_ms": 16.7,
+    "main_thread_task_ms": 1521.76,
+    "script_ms": 129.86,
+    "board_nodes": 324
+  },
+  {
+    "viewport": [
+      1180,
+      820
+    ],
+    "cpu_throttle": 4,
+    "fps": 59.01,
+    "median_frame_ms": 16.7,
+    "p95_frame_ms": 16.7,
+    "main_thread_task_ms": 2598.72,
+    "script_ms": 161.74,
+    "board_nodes": 324
+  }
+]

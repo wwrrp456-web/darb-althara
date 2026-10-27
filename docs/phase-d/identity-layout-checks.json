@@ -1,0 +1,87 @@
+{
+  "screens": [
+    {
+      "players": 2,
+      "width": 360,
+      "height": 640,
+      "stage": 207.59375,
+      "dockBottom": 640,
+      "small": []
+    },
+    {
+      "players": 2,
+      "width": 390,
+      "height": 844,
+      "stage": 411.59375,
+      "dockBottom": 844,
+      "small": []
+    },
+    {
+      "players": 2,
+      "width": 430,
+      "height": 932,
+      "stage": 499.59375,
+      "dockBottom": 932,
+      "small": []
+    },
+    {
+      "players": 2,
+      "width": 768,
+      "height": 1024,
+      "stage": 525.59375,
+      "dockBottom": 1024,
+      "small": []
+    },
+    {
+      "players": 2,
+      "width": 1180,
+      "height": 820,
+      "stage": 387.59375,
+      "dockBottom": 820,
+      "small": []
+    },
+    {
+      "players": 8,
+      "width": 360,
+      "height": 640,
+      "stage": 207.59375,
+      "dockBottom": 640,
+      "small": []
+    },
+    {
+      "players": 8,
+      "width": 390,
+      "height": 844,
+      "stage": 411.59375,
+      "dockBottom": 844,
+      "small": []
+    },
+    {
+      "players": 8,
+      "width": 430,
+      "height": 932,
+      "stage": 499.59375,
+      "dockBottom": 932,
+      "small": []
+    },
+    {
+      "players": 8,
+      "width": 768,
+      "height": 1024,
+      "stage": 525.59375,
+      "dockBottom": 1024,
+      "small": []
+    },
+    {
+      "players": 8,
+      "width": 1180,
+      "height": 820,
+      "stage": 387.59375,
+      "dockBottom": 820,
+      "small": []
+    }
+  ],
+  "errors": [],
+  "http_errors": [],
+  "actual_purchase_and_readonly_recap": "passed"
+}

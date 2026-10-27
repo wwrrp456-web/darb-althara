@@ -1,0 +1,22 @@
+{
+  "note": "Reused approved art, not a new atlas batch; review screenshots and PDF excluded from app precache. SVG logo symbols embed raster artwork.",
+  "bytes": {
+    "icons/logo-wordmark.svg": 2335,
+    "icons/logo-vertical.png": 250933,
+    "icons/logo-horizontal.svg": 180830,
+    "icons/logo-vertical.svg": 180828,
+    "icons/logo-horizontal.png": 103230,
+    "icons/logo-symbol.png": 133773,
+    "icons/logo-horizontal-dark.png": 103819,
+    "icons/logo-horizontal-dark.svg": 180830,
+    "icons/brand-mark.svg": 200984,
+    "icons/brand-lockup.svg": 180830,
+    "icons/brand-mark-mono.svg": 201155,
+    "icons/icon-192.png": 30972,
+    "icons/icon-512.png": 150579,
+    "icons/maskable-512.png": 56036,
+    "icons/apple-touch-icon.png": 14886,
+    "icons/favicon-64.png": 5782
+  },
+  "total_bytes": 1977802
+}

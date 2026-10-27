@@ -69,7 +69,7 @@
   function decorateCard(sheet,pr){
     let spec=families[pr.category||pr.kind];
     if(!spec){const t=pr.title||'';spec=/حلم|مبروك|فوز/.test(t)?[4,'خطوة في رحلتك','تابع ما تغيّر قبل إكمال دورك.']:/عائل|مولود/.test(t)?[1,'من الحياة','تفاصيل جديدة تؤثر على خطتك.']:/إجاب|سؤال/.test(t)?[2,'نتيجة التحدّي','تعلّم اليوم يفيدك في القرار القادم.']:[5,'ملخص القرار','راجع النتيجة ثم تابع رحلتك.'];}
-    sheet.classList.add('decision-card');sheet.dataset.cardKind=pr.kind;
+    sheet.classList.add('decision-card');sheet.dataset.cardKind=pr.kind;sheet.dataset.playerId=pr.pid;
     const [art,label,caption,additional]=spec,heading=sheet.querySelector('h2'),actions=sheet.querySelector(':scope > .row');
     const header=document.createElement('header');header.className='decision-heading';
     const image=document.createElement('span');image.className='card-illustration';image.setAttribute('aria-hidden','true');if(additional)image.classList.add('card-art-extra');image.style.setProperty('--cx',(art%(additional?2:3))*(additional?100:50)+'%');image.style.setProperty('--cy',Math.floor(art/(additional?2:3))*(additional?100:50)+'%');
@@ -77,7 +77,14 @@
     titles.append(kicker,heading);header.append(image,titles);
     const content=document.createElement('div');content.className='decision-content';
     for(const node of [...sheet.childNodes])if(node!==actions)content.append(node);
-    const hint=document.createElement('p');hint.className='card-guidance';hint.textContent=caption;
+    const hint=document.createElement('details');hint.className='card-guidance';
+    const summary=document.createElement('summary');summary.textContent='كيف أقرأ هذا القرار؟';
+    const explanation=document.createElement('p');explanation.textContent=caption;
+    hint.append(summary,explanation);
+    // Presentation preference only, scoped to this tab. No game save or network changes.
+    const guideKey='darb-guide-'+(pr.category||pr.kind);
+    try{hint.open=sessionStorage.getItem(guideKey)!=='seen';}catch(e){hint.open=true;}
+    hint.addEventListener('toggle',()=>{try{sessionStorage.setItem(guideKey,'seen');}catch(e){}});
     sheet.replaceChildren(header,hint,content,actions);
     actions.classList.add('decision-actions');actions.setAttribute('aria-label','خيارات القرار');
     [...actions.children].forEach((button,i)=>{
@@ -87,7 +94,39 @@
     });
     hydrate(sheet);
   }
-  window.DarbIdentity={decorateCard,hydrate,avatarNames};
+  let financeGame=null, finance=[], baseline=null;
+  const recapViews=new WeakMap();
+  function observeFinance(game,rows){
+    if(game!==financeGame){financeGame=game;baseline=null;}
+    finance=rows;
+  }
+  function appendRecap(root,pid){
+    const now=finance.find(p=>p.id===pid),signature=JSON.stringify([financeGame,pid,baseline,now]);
+    if(recapViews.get(root)===signature&&root.querySelector('.financial-recap'))return;
+    recapViews.set(root,signature);
+    root.querySelectorAll('.financial-recap').forEach(e=>e.remove());
+    if(!baseline||baseline.id!==pid)return;
+    if(!now)return;
+    const keys=[['cash','النقد'],['income','الدخل التلقائي'],['expenses','المصاريف'],['happiness','السعادة']];
+    const changed=keys.filter(([key])=>Math.round(now[key])!==Math.round(baseline[key]));
+    if(!changed.length)return;
+    const details=document.createElement('details');details.className='financial-recap';details.open=true;
+    const title=document.createElement('summary');title.textContent='منذ اختيارك الأخير: قبل ← الآن';details.append(title);
+    const note=document.createElement('p');note.textContent='القيم المرصودة تشمل الأحداث اللاحقة للاختيار، ولا تعزل أثره وحده. لا تُحفظ هذه المقارنة بعد إعادة التحميل.';note.className='sub';details.append(note);
+    const table=document.createElement('table'),head=document.createElement('tr');
+    for(const text of ['المؤشر','قبل','الآن']){const cell=document.createElement('th');cell.scope='col';cell.textContent=text;head.append(cell);}table.append(head);
+    for(const [key,label] of changed){const row=document.createElement('tr');for(const text of [label,Math.round(baseline[key]).toLocaleString('ar'),Math.round(now[key]).toLocaleString('ar')]){const cell=document.createElement('td');cell.textContent=text;row.append(cell);}table.append(row);}
+    details.append(table);(root.querySelector('h2,#who')||root.firstElementChild)?.after(details);
+  }
+  // Capture before the engine click handler; only copy primitive presentation data.
+  document.addEventListener('click',event=>{
+    if(!event.target.closest('.decision-actions button'))return;
+    const sheet=event.target.closest('.decision-card');
+    if(sheet?.dataset.cardKind==='ack')return;
+    const row=finance.find(p=>String(p.id)===sheet?.dataset.playerId);
+    if(row)baseline={...row};
+  },true);
+  window.DarbIdentity={decorateCard,hydrate,avatarNames,observeFinance,appendRecap};
   const observer=new MutationObserver(records=>{
     // Disconnect while replacing nodes so decorative nodes never trigger another pass.
     observer.disconnect();

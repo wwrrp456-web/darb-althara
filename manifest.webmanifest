@@ -8,9 +8,9 @@
   "scope": "./",
   "id": "./index.html",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#faf7f1",
-  "theme_color": "#527b78",
+  "orientation": "any",
+  "background_color": "#f8f5ed",
+  "theme_color": "#335f73",
   "categories": [
     "games",
     "education",
