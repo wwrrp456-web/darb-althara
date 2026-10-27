@@ -1,0 +1,30 @@
+{
+  "scope": "cartoon logo exploration only",
+  "sizes": [
+    {
+      "width": 360,
+      "height": 640,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1180,
+      "height": 820,
+      "horizontal_overflow": false
+    }
+  ],
+  "errors": [],
+  "http_errors": [],
+  "four_preview_choices": "passed; not approval",
+  "standalone_http": "passed",
+  "external_asset_requests": 0
+}
