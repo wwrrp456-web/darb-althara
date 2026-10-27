@@ -5,15 +5,16 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const ar = n => n.toLocaleString('ar-SA');
 const asset = path => window.REVIEW_ASSETS?.[path] || path;
+const brandPath = kind => state.logo==='cartoon1' ? (kind==='mark'?'selected-logo/symbol.png':'selected-logo/horizontal.svg') : `marks/${state.logo}-${kind}.svg`;
 const params = new URLSearchParams(location.search);
-const state = {logo:['a','b','c'].includes(params.get('logo'))?params.get('logo'):'a',count:params.get('players')==='8'?8:2,mode:'family',ending:'dreams',limit:12,phase:0,chosen:null,zoom:1,x:0,y:0};
+const state = {logo:['a','b','c','cartoon1'].includes(params.get('logo'))?params.get('logo'):'a',count:params.get('players')==='8'?8:2,mode:'family',ending:'dreams',limit:12,phase:0,chosen:null,zoom:1,x:0,y:0};
 const people=[{name:'محسن',job:'معلّم',art:'teacher',cash:15000},{name:'مريم',job:'مبرمجة',art:'programmer',cash:5500},{name:'ليلى',job:'ممرّضة',art:'nurse',cash:3500},{name:'آدم',job:'مهندس',art:'engineer',cash:4200},{name:'سامي',job:'سائق',art:'driver',cash:2200},{name:'نور',job:'صاحبة بقالة',art:'grocer',cash:3800},{name:'لينا',job:'صاحبة مطعم',art:'chef',cash:3000},{name:'سارة',job:'صيدلانية',art:'pharmacist',cash:5000}];
 const concepts=[{id:'a',code:'أ',name:'درب النجمة',story:'بوابة مفتوحة، ودرب ينتهي بنجمة. يربط هدف اللعبة برحلة مفهومة من أول نظرة.',strength:'الأقرب إلى معنى الرحلة والهدف. التوصية الأولية.',risk:'تمييزه عن شعار اللعبة السابق يحتاج ضبطاً نهائياً للكتابة والنسب.'},{id:'b',code:'ب',name:'بذرة الفرص',story:'بذرة ذهبية تتحول إلى ورقتين؛ النمو نتيجة قرارات صغيرة متراكمة.',strength:'هادئ ومناسب للعائلة؛ أقل اعتماداً على رموز المال.',risk:'قد يُقرأ كعلامة بيئية؛ اختبر ارتباطه باللعبة قبل اعتماده.'},{id:'c',code:'ج',name:'أفق الحلم',story:'شراع ذهبي يتحرك نحو أفق جديد. الاستقلال رحلة تختار فيها وجهتك.',strength:'شخصية مختلفة وواضحة، ومساحة لقصص مغامرة متعددة الثقافات.',risk:'قد يوحي بالسفر أكثر من المال؛ يحتاج اختبار المعنى مع الجمهور.'}];
 function esc(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function renderConcepts(){
  $('#concept-grid').innerHTML=concepts.map(c=>`<article class="concept-card ${state.logo===c.id?'selected':''}"><div class="concept-id"><b>المقترح ${c.code}</b><span>${state.logo===c.id?'قيد المعاينة':'للمقارنة'}</span></div><img class="concept-mark" src="${asset(`marks/${c.id}-mark.svg`)}" alt="رمز ${c.name}"><img class="concept-wordmark" src="${asset(`marks/${c.id}-wordmark.svg`)}" alt="درب الثراء — صياغة ${c.name}"><h2>${c.name}</h2><p>${c.story}</p><div class="application-row"><img class="icon-32" src="${asset(`marks/${c.id}-mark.svg`)}" alt="رمز ${c.name} بحجم ٣٢ بكسلاً"><span>٣٢px بالحجم الفعلي<br>وأيقونة تطبيق تجريبية</span><img class="app-icon" src="${asset(`marks/${c.id}-mark.svg`)}" alt="أيقونة تطبيق ${c.name}"></div><div class="dark-sample"><img src="${asset(`marks/${c.id}-light.svg`)}" alt="شعار ${c.name} على خلفية داكنة"></div><p class="helper"><b>${c.strength}</b><br>${c.risk}</p><button class="${state.logo===c.id?'primary':'quiet'}" data-concept="${c.id}" aria-pressed="${state.logo===c.id}">${state.logo===c.id?'هذا الاتجاه في المعاينة':'عاين هذا الاتجاه'}</button></article>`).join('');
 }
-function selectLogo(id){state.logo=id;$$('.brand-lockup').forEach(e=>e.src=asset(`marks/${id}-lockup.svg`));$('.hero-mark').src=asset(`marks/${id}-mark.svg`);const center=$('.map-center img');if(center)center.src=asset(`marks/${id}-mark.svg`);renderConcepts();}
+function selectLogo(id){state.logo=id;$$('.brand-lockup').forEach(e=>e.src=asset(brandPath('lockup')));$('.hero-mark').src=asset(brandPath('mark'));const center=$('.map-center img');if(center)center.src=asset(brandPath('mark'));if(state.logo==='cartoon1')$('.review-link').textContent='الشعار المختار';renderConcepts();}
 function renderPlayers(){
  $('#player-count').value=state.count;
  $('#player-editor').innerHTML=people.slice(0,state.count).map((p,i)=>`<div class="player-row"><span class="portrait ${p.art}" aria-hidden="true"></span><label><small>اسم اللاعب ${ar(i+1)}</small><input data-player-name="${i}" maxlength="14" value="${esc(p.name)}" aria-label="اسم اللاعب ${ar(i+1)}"></label><span>${p.job}</span></div>`).join('');
@@ -40,6 +41,7 @@ function renderSettings(){
  renderPlayers();
 }
 function show(screen){
+ if(screen==='concepts'&&state.logo==='cartoon1'){if(window.REVIEW_ASSETS){info('الاتجاه المختار: خطوة إلى الحلم','<p>الشعار ١ الكرتوني هو الاتجاه الذي اخترته. هذه معاينة للنموذج به، ولا تزال مراجعة تخطيط اللعب مستقلة.</p>');}else{location.href='selected-logo/index.html';}return;}
  if(!document.getElementById(screen)?.classList.contains('screen'))screen='home';
  $$('.screen').forEach(e=>e.hidden=e.id!==screen);
  document.body.dataset.screen=screen;
@@ -74,7 +76,7 @@ function outcome(accepted){
 function resetDemo(){state.chosen=null;phase(0,'استعد لخطوتك التالية');state.zoom=1;state.x=state.y=0;$('#gap-value').innerHTML='١٬٦٣٠ <span>شهرياً</span>';$('#goal-progress').style.width='0';$('#turn-message').textContent='الهدف: ابنِ دخلاً تلقائياً يغطي مصاريفك.';$('#roll-demo').disabled=false;$('#roll-demo').innerHTML='ارمِ النرد <span class="roll-dice" aria-hidden="true"></span>';}
 const tileKinds=['pay','opportunity','plain','family','plain','opportunity'];
 function buildBoard(){
- let html='<div class="map-center"><img src="'+asset('marks/'+state.logo+'-mark.svg')+'" alt=""><b>فرصة تجمعنا</b><span>كل خطوة تقرّبك</span><div class="dice-pair"><i>⚂</i><i>⚁</i></div></div>';
+ let html='<div class="map-center"><img src="'+asset(brandPath('mark'))+'" alt=""><b>فرصة تجمعنا</b><span>كل خطوة تقرّبك</span><div class="dice-pair"><i>⚂</i><i>⚁</i></div></div>';
  const cells=[];for(let c=1;c<=13;c++)cells.push([1,c]);for(let r=2;r<=13;r++)cells.push([r,13]);for(let c=12;c>=1;c--)cells.push([13,c]);for(let r=12;r>=2;r--)cells.push([r,1]);
  const buildings={4:'cafe',10:'mall',16:'uni',22:'hospital',28:'hotel',34:'bank',40:'tower',46:'airport'};
  cells.forEach(([r,c],i)=>{let kind=tileKinds[i%6];html+=`<div class="map-tile ${kind}" style="grid-area:${r}/${c}">${buildings[i]?`<span class="map-building"><i class="landmark ${buildings[i]}"></i></span>`:kind==='pay'?'✦':kind==='opportunity'?'↗':'<i class="tile-dot"></i>'}</div>`});

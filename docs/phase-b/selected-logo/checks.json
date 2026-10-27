@@ -1,0 +1,96 @@
+{
+  "scope": "selected logo and design prototype, not production game",
+  "matrix": [
+    {
+      "players": 2,
+      "width": 360,
+      "height": 640,
+      "overflow": false,
+      "stageBottom": 408,
+      "dockTop": 567
+    },
+    {
+      "players": 2,
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "stageBottom": 612,
+      "dockTop": 771
+    },
+    {
+      "players": 2,
+      "width": 430,
+      "height": 932,
+      "overflow": false,
+      "stageBottom": 700,
+      "dockTop": 859
+    },
+    {
+      "players": 2,
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "stageBottom": 684,
+      "dockTop": 947
+    },
+    {
+      "players": 2,
+      "width": 1180,
+      "height": 820,
+      "overflow": false,
+      "stageBottom": 564,
+      "dockTop": 743
+    },
+    {
+      "players": 8,
+      "width": 360,
+      "height": 640,
+      "overflow": false,
+      "stageBottom": 408,
+      "dockTop": 567
+    },
+    {
+      "players": 8,
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "stageBottom": 612,
+      "dockTop": 771
+    },
+    {
+      "players": 8,
+      "width": 430,
+      "height": 932,
+      "overflow": false,
+      "stageBottom": 700,
+      "dockTop": 859
+    },
+    {
+      "players": 8,
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "stageBottom": 684,
+      "dockTop": 947
+    },
+    {
+      "players": 8,
+      "width": 1180,
+      "height": 820,
+      "overflow": false,
+      "stageBottom": 564,
+      "dockTop": 743
+    }
+  ],
+  "errors": [],
+  "http_errors": [],
+  "standalone_http": "passed",
+  "standalone_external_asset_requests": 0,
+  "selected_brand_and_setup_decision": "passed",
+  "png_exports": [
+    32,
+    64,
+    192,
+    512
+  ]
+}
