@@ -1,0 +1,39 @@
+{
+  "errors": [],
+  "matrix": [
+    [
+      360,
+      640
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      430,
+      932
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      1180,
+      820
+    ]
+  ],
+  "offline_asset_bytes": {
+    "architecture-models": 420616,
+    "fast-models": 243960,
+    "concepts": 454778
+  },
+  "cities": 10,
+  "playable_new_cities": 1,
+  "remaining_cities": "honest previews, not selectable as finished artwork",
+  "classic_fallback": "passed",
+  "random_available_only": "passed",
+  "local_preference_reload": "passed",
+  "offline": "passed",
+  "setup_values_preserved": "passed",
+  "match_unchanged": "passed"
+}

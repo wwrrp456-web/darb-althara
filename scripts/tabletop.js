@@ -7,17 +7,20 @@
 
   function positionPawns(animate = false) {
     if (!state || !state.board.isConnected || !state.board.clientWidth) return;
-    const {board, layer, players, currentId, duration, tiles} = state;
+    const {board, layer, currentId, duration} = state;
+    const city=board.classList.contains('city-route-board'),players=city?(state.allPlayers||state.players):state.players;
+    const tileKey=p=>city?(p.fast?'fast:':'rat:')+p.pos:p.pos;
+    const tiles=city?new Map([...board.querySelectorAll('[data-tile],.city-route-hint')].map(tile=>[tile.hasAttribute('data-tile')?board.dataset.route+':'+tile.dataset.tile:tile.dataset.cityRoute+':'+tile.dataset.routeIndex,tile])):state.tiles;
     board.style.setProperty('--pawn-size', `${Math.max(48, Math.min(90, board.clientWidth * .16))}px`);
     const countByTile = new Map();
     for (const p of players) {
-      const key = p.pos;
+      const key = tileKey(p);
       if (!countByTile.has(key)) countByTile.set(key, []);
       countByTile.get(key).push(p.id);
     }
     const keep = new Set();
     for (const p of players) {
-      const tile = tiles.get(p.pos);
+      const tile = tiles.get(tileKey(p));
       if (!tile) continue;
       keep.add(String(p.id));
       let pawn = layer.querySelector(`[data-player="${p.id}"]`);
@@ -39,7 +42,7 @@
       pawn.classList.toggle('current', p.id === currentId);
       pawn.style.setProperty('--pawn-color', /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : '#16614c');
       pawn.querySelector('.pawn-number').textContent = String(p.id + 1);
-      const group = countByTile.get(p.pos);
+      const group = countByTile.get(tileKey(p));
       const index = group.indexOf(p.id);
       // Fan co-located pieces into two rows, including a full eight-player start.
       const columns = Math.min(group.length, 4);
@@ -52,7 +55,7 @@
       pawn.style.transitionDuration = animate && !fresh && !reducedMotion.matches ? `${duration}ms` : '0ms';
       pawn.style.transform = `translate3d(${x}px,${y}px,8px)`;
       pawn.style.zIndex = String(Math.round(y) + (p.id === currentId ? 10 : 0));
-      pawn.dataset.position = String(p.pos);
+      pawn.dataset.position = String(p.pos);pawn.dataset.track=p.fast?'fast':'rat';
       pawn.dataset.role = role;
       if (animate && moved && !reducedMotion.matches) {
         image.getAnimations().forEach(a => a.cancel());
@@ -118,8 +121,8 @@
     if (!sameBoard) layer.replaceChildren();
     // Replace only surface content. Pawn nodes stay connected to preserve their motion.
     cells.innerHTML = html;
+    window.DarbCities?.mount(board,options);
     window.DarbTabletopArt.mount(cells,options);
-    window.DarbCities?.mount(board);
     // Finalize illustrated labels before measuring cells for pawn coordinates.
     window.DarbIdentity?.hydrate(cells);
     const tiles = new Map([...cells.querySelectorAll('[data-tile]')].map(tile => [Number(tile.dataset.tile), tile]));

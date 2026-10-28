@@ -1,0 +1,57 @@
+{
+  "assets": [
+    {
+      "file": "art/cities/architecture-models.webp",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 420616,
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "grid_columns": 3,
+      "order": [
+        "bank",
+        "uni",
+        "hospital",
+        "hotel",
+        "mall",
+        "cafe"
+      ],
+      "cell_size": 512,
+      "safe_viewport_inset": 3,
+      "rendering": "clipped SVG viewBox; image dimensions and proportions preserved",
+      "sha256": "bfd0372fe4d12e4ab32cbcf440127d02c19f766949b985db453ed7336ae63950"
+    },
+    {
+      "file": "art/cities/fast-models.webp",
+      "dimensions": [
+        1774,
+        887
+      ],
+      "bytes": 243960,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "grid_columns": 2,
+      "order": [
+        "tower",
+        "airport"
+      ],
+      "cell_size": 887,
+      "safe_viewport_inset": 3,
+      "rendering": "clipped SVG viewBox; image dimensions and proportions preserved",
+      "sha256": "2b292ba0f8baf965e3a5b72d546a7120076f62f901edb8276bdd064aa5247134"
+    }
+  ],
+  "new_bytes": 664576,
+  "generation": "image_gen; transparent_background=true",
+  "conversion": "WebP q86 method6; no resize",
+  "source_images": [
+    "exec-3dac923d-5a2b-4ae9-b0ce-9455a70b8ef0.png",
+    "exec-1602b13b-909e-4517-b56b-8a2730702ff2.png"
+  ]
+}

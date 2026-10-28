@@ -13,6 +13,7 @@
   ['night','مدينة الأنوار','أجواء مسائية وإضاءة نوافذ دافئة.'],
   ['crystal','مدينة البلور','مجسمات على قواعد شفافة وطاولة خشبية فاتحة.']
  ];
+ let routeOptions=null;
  const ready=new Set(['architecture','classic']),key='darb-city-view';
  let selected='architecture',preview=0,origin=null;
  try{const saved=localStorage.getItem(key);if(ready.has(saved))selected=saved;}catch(_){}
@@ -25,7 +26,7 @@
   if(!ready.has(id))return;
   selected=id;document.documentElement.dataset.city=id;
   try{localStorage.setItem(key,id);}catch(_){}
-  updateLabels();mount(document.getElementById('board'));
+  updateLabels();const board=document.getElementById('board');mount(board);window.DarbTabletopArt?.fitLabels(board);window.DarbTabletop?.refresh();window.DarbCamera?.labelsChanged();window.DarbCamera?.viewChanged();
  }
  function paintPreview(host,index){
   const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');
@@ -66,19 +67,11 @@
   const note=document.createElement('small');note.textContent='المظهر على هذا الجهاز فقط؛ القواعد والأموال واحدة في جميع المدن.';
   row.append(text,button,note);anchor.before(row);
  }
- function mount(board){
-  const center=board?.querySelector('.center');if(!center)return;
-  center.querySelector('.city-projects')?.remove();if(selected!=='architecture')return;
-  const plots=document.createElement('div');plots.className='city-projects';
-  for(const [key,x,y,w,h] of [['bank',20,26,22,29],['uni',50,17,29,23],['hospital',83,26,22,29],['hotel',18,65,22,30],['mall',83,66,23,28],['cafe',50,80,25,21]]){
-   const tile=board.querySelector(`[data-landmark="${key}"]`);if(!tile)continue;
-   const button=document.createElement('button');button.type='button';button.dataset.cityProject=key;
-   button.setAttribute('aria-label','معلومات '+tile.title);button.title=tile.title;
-   button.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;
-   plots.append(button);
-  }
-  center.append(plots);
+ function mount(board,options){
+  if(options)routeOptions=options;
+  window.DarbCityRoutes?.apply(board,selected==='architecture',routeOptions);
  }
+
  activate(selected);
  window.DarbCities={open,mountSetup,name,mount};
 })();

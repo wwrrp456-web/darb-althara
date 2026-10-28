@@ -1,0 +1,30 @@
+[
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "cpu_throttle": 4,
+    "session_ending": "dreams",
+    "fps": 59.01,
+    "median_frame_ms": 16.7,
+    "p95_frame_ms": 16.7,
+    "main_thread_task_ms": 2160.35,
+    "script_ms": 204.63,
+    "board_nodes": 623
+  },
+  {
+    "viewport": [
+      1180,
+      820
+    ],
+    "cpu_throttle": 4,
+    "session_ending": "dreams",
+    "fps": 45.75,
+    "median_frame_ms": 16.7,
+    "p95_frame_ms": 33.4,
+    "main_thread_task_ms": 3824.71,
+    "script_ms": 194.67,
+    "board_nodes": 623
+  }
+]

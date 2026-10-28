@@ -1,0 +1,126 @@
+{
+  "matrix": [
+    {
+      "track": "rat",
+      "viewport": [
+        360,
+        640
+      ],
+      "active_cells": 48,
+      "other_cells": 20,
+      "max_step": 42.66
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        390,
+        844
+      ],
+      "active_cells": 48,
+      "other_cells": 20,
+      "max_step": 42.66
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        430,
+        932
+      ],
+      "active_cells": 48,
+      "other_cells": 20,
+      "max_step": 42.66
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        768,
+        1024
+      ],
+      "active_cells": 48,
+      "other_cells": 20,
+      "max_step": 42.66
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        1180,
+        820
+      ],
+      "active_cells": 48,
+      "other_cells": 20,
+      "max_step": 42.66
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        360,
+        640
+      ],
+      "active_cells": 20,
+      "other_cells": 48,
+      "max_step": 45.37
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        390,
+        844
+      ],
+      "active_cells": 20,
+      "other_cells": 48,
+      "max_step": 45.37
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        430,
+        932
+      ],
+      "active_cells": 20,
+      "other_cells": 48,
+      "max_step": 45.37
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        768,
+        1024
+      ],
+      "active_cells": 20,
+      "other_cells": 48,
+      "max_step": 45.37
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        1180,
+        820
+      ],
+      "active_cells": 20,
+      "other_cells": 48,
+      "max_step": 45.37
+    }
+  ],
+  "errors": [],
+  "rat_all_positions_follow_road": 48,
+  "fast_all_positions_follow_road": 20,
+  "mixed_tracks": "8 players, two separate clusters on the two physical roads",
+  "missing_model_images": "fallback symbols, projects still inspectable",
+  "actual_dice_steps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "rolled_sum": 11,
+  "stable_rule_indices": "unchanged, exhaustive positions checked",
+  "classic_switch": "no match mutation",
+  "alternate_route": "actual mission descriptions, read-only"
+}

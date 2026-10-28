@@ -22,7 +22,7 @@ async def main():
    await page.set_viewport_size({'width':w,'height':h});await page.locator('[data-camera=reset]').click()
    await page.wait_for_timeout(100)
    assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth')
-   assert 'architecture.webp' in await page.locator('.center').evaluate('(e)=>getComputedStyle(e).backgroundImage')
+   assert await page.locator('#board').get_attribute('data-route')=='rat'
    await page.screenshot(path=str(OUT/f'play-{w}.png'))
    await page.locator('#camera-help').click();await page.locator('#choose-city-play').click()
    await page.screenshot(path=str(OUT/f'chooser-{w}.png'))
@@ -48,10 +48,12 @@ async def main():
   # No state, financial or player changes from city selection; independent new device uses its own preference.
   other=await browser.new_context();tab=await other.new_page();await tab.goto('http://localhost:8000/');assert await tab.evaluate('document.documentElement.dataset.city')=='architecture';await other.close()
   await context.set_offline(True);await page.reload(wait_until='domcontentloaded');await page.wait_for_selector('.center')
-  assert 'architecture.webp' in await page.locator('.center').evaluate('(e)=>getComputedStyle(e).backgroundImage')
-  result['offline_asset_bytes']=await page.evaluate("async()=>{const out={};for(const name of ['architecture','concepts']){const r=await fetch('art/cities/'+name+'.webp');if(!r.ok)throw Error(name+' offline missing');out[name]=(await r.blob()).size;}return out;}")
-  assert result['offline_asset_bytes']=={'architecture':266286,'concepts':454778}
+  assert await page.locator('#board').get_attribute('data-route')=='rat'
+  result['offline_asset_bytes']=await page.evaluate("async()=>{const out={};for(const name of ['architecture-models','fast-models','concepts']){const r=await fetch('art/cities/'+name+'.webp');if(!r.ok)throw Error(name+' offline missing');out[name]=(await r.blob()).size;}return out;}")
+  assert result['offline_asset_bytes']=={'architecture-models':420616,'fast-models':243960,'concepts':454778}
   assert not result['errors'],result;await browser.close()
  result.update(cities=10,playable_new_cities=1,remaining_cities='honest previews, not selectable as finished artwork',classic_fallback='passed',random_available_only='passed',local_preference_reload='passed',offline='passed',setup_values_preserved='passed',match_unchanged='passed')
  (OUT/'checks.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))
-if __name__=='__main__':asyncio.run(main())
+if __name__=='__main__':
+ import argparse
+ parser=argparse.ArgumentParser();parser.add_argument('--output',type=Path,default=OUT);args=parser.parse_args();OUT=args.output;OUT.mkdir(parents=True,exist_ok=True);asyncio.run(main())

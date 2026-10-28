@@ -50,6 +50,8 @@ async def verify():
   for level in [2,3]:
    await page.evaluate('__darb.upgradeLm(0,"hospital")');assert await inspector.is_visible();d=await details()
    assert integer(d['مستوى التطوير'])==level
+   if await page.locator('.city-route-board').count():
+    model=page.locator('[data-city-project=hospital]');assert 'city-model-owned' in await model.get_attribute('class');assert await model.locator('.city-model-level').inner_text()==str(level)
    assert await page.locator('[data-landmark=hospital] .landmark-level-art').inner_text()==str(level)
    assert integer(d['الدخل الشهري الحالي'])==await page.evaluate('__darb.G.players[0].assets.find(a=>a.lm==="hospital").inc')
    assert integer(d['الإيجار قبل سقف قدرة الزائر'])==await page.evaluate('__darb.lmRent("hospital")')

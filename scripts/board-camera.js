@@ -165,7 +165,7 @@
     }
     if(typeof reference==='string'&&(reference==='players'||reference.startsWith('group:'))){
       if(!options||options.busy||document.querySelector('#modal.on'))return;
-      const people=reference==='players'?(options.allPlayers||options.players):options.players.filter(p=>p.pos===Number(reference.slice(6)));
+      const parts=reference.slice(6).split(':'),people=reference==='players'?(options.allPlayers||options.players):parts.length===2?(options.allPlayers||options.players).filter(p=>(p.fast?'fast':'rat')===parts[0]&&p.pos===Number(parts[1])):options.players.filter(p=>p.pos===Number(parts[0]));
       const list=document.getElementById('crowd-list');list.replaceChildren();
       document.getElementById('crowd-title').textContent=reference==='players'?'اللاعبون':'اللاعبون في هذه الخانة';
       for(const p of people){
@@ -178,7 +178,8 @@
       if(!crowd.open)crowd.showModal();return;
     }
     if (!options || options.busy || document.querySelector('#modal.on')) return;
-    const info = options.inspect?.(reference);
+    const route=typeof reference==='string'&&reference.startsWith('route:')?reference.split(':'):null;
+    const info = route?options.inspectRoute?.(route[1],Number(route[2])):options.inspect?.(reference);
     if (!info) return;
     inspectedReference=reference;
     const tile=typeof reference==='number'?board.querySelector(`[data-tile="${reference}"]`):typeof reference==='string'&&reference.startsWith('lm_')?[...board.querySelectorAll('[data-landmark]')].find(tile=>tile.dataset.landmark===reference.slice(3)):null;
@@ -209,7 +210,8 @@
     if(!inspector.open)inspector.showModal();
   }
   const referenceFor = target => {
-    const project=target.closest('[data-city-project]');if(project)return 'lm_'+project.dataset.cityProject;
+    const route=target.closest('[data-city-route]');if(route)return 'route:'+route.dataset.cityRoute+':'+route.dataset.routeIndex;
+    const project=target.closest('[data-city-project]');if(project)return project.dataset.projectRoute===board.dataset.route?'lm_'+project.dataset.cityProject:'route:'+project.dataset.projectRoute+':'+project.dataset.routeTile;
     const group=target.closest('.pawn-cluster');if(group)return 'group:'+group.dataset.position;
     const pawn=target.closest('.character-pawn');if(pawn)return 'player:'+pawn.dataset.player;
     const tile = target.closest('[data-tile]');

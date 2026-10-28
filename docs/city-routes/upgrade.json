@@ -1,0 +1,1 @@
+{"board_nodes_before_after": [450, 623], "upgrade_from": "darb-cities-v22", "upgrade_to": "darb-routes-v23", "upgrade": "passed", "previous_game_players_professions_cash": "preserved", "upgraded_offline_game": "passed", "offline_mode": "network-toggle"}

@@ -1,12 +1,3 @@
-/* City art remains inside the playing route. One selected environment, no frame loop. */
-html[data-city=architecture] .tabletop-stage .board{background:#e6d6bb;border-color:#8b6644}
-html[data-city=architecture] .tabletop-stage .center{background:#f3e9d6 url('../art/cities/architecture.webp') center/cover;border-color:#bba885;box-shadow:inset 0 0 0 2px #f3ead8;overflow:hidden}
-html[data-city=architecture] .tabletop-crest{position:absolute;top:37%;left:28%;right:28%;font-size:14px}
-html[data-city=architecture] .tabletop-hud{position:absolute;top:45%;left:29%;right:29%;gap:4px}
-html[data-city=architecture] .tabletop-hud .mut{font-size:14px;white-space:normal;text-align:center;line-height:1.2}
-html[data-city=architecture] .tabletop-hud .dice{gap:6px}
-html[data-city=architecture] .tabletop-hud .die{width:42px}
-html[data-city=architecture] .tabletop-stage .board.dense .tabletop-hud .die{width:36px}
 #city-picker{width:min(900px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:20px;border:1px solid var(--line);border-radius:22px;background:var(--card);color:var(--ink);font:16px/1.6 Tajawal,Tahoma,sans-serif}
 #city-picker::backdrop{background:#142c36aa}#city-picker h2{margin:0}#city-picker h2:focus{outline:none}
 .city-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}.city-preview-pane{min-width:0;position:sticky;top:0;align-self:start;background:var(--card)}
@@ -16,5 +7,23 @@ html[data-city=architecture] .tabletop-stage .board.dense .tabletop-hud .die{wid
 #city-status{font-weight:700}#city-apply:disabled{opacity:1;background:#e4e0d7;color:#536269;cursor:default}
 @media(max-width:620px){.city-layout{grid-template-columns:1fr}.city-preview-pane{position:static}#city-picker{padding:14px}#city-preview{max-height:210px}}
 
-.city-projects{position:absolute;inset:0;pointer-events:none}.city-projects button{position:absolute;transform:translate(-50%,-50%);border:0;background:transparent;color:var(--ink);box-shadow:none;padding:0;min-height:0;min-width:0;border-radius:12px;pointer-events:auto;cursor:pointer}.city-projects button:hover,.city-projects button:focus-visible{outline:3px solid #315f70;outline-offset:1px;background:#fff3d522}
-html[data-city=architecture] .tabletop-crest,html[data-city=architecture] .tabletop-hud{z-index:2}
+/* The road and tile coordinates share a 640px city surface. */
+.tabletop-stage .board.city-route-board{display:block!important;box-sizing:content-box;width:640px;height:640px;padding:0!important;background:#eee3ce;border-color:#8b6644}
+.city-route-board .center{position:absolute!important;inset:0!important;margin:0!important;padding:0!important;display:block;grid-area:auto!important;border:0!important;border-radius:0!important;background:radial-gradient(circle at center,#fffaf0 0 20%,#eee3ce 40%,#e4dbc7 100%)!important;box-shadow:none!important;pointer-events:none}
+.city-route-board .center .tabletop-crest{position:absolute;left:235px;top:270px;width:170px;font-size:14px}
+.city-route-board .center .tabletop-hud{position:absolute;left:235px;top:310px;width:170px;gap:6px}.city-route-board .center .tabletop-hud .die{width:48px}.city-route-board .center .tabletop-hud .mut{font-size:14px}
+.city-roads{position:absolute;inset:0;width:640px;height:640px;pointer-events:none;overflow:visible;z-index:1}
+.city-road-base{fill:none;stroke:#ad9774;stroke-width:48;stroke-linejoin:round}.city-fast-road{fill:none;stroke:#c4a15c;stroke-width:38;stroke-dasharray:none}.city-project-link{fill:none;stroke:#b5a385;stroke-width:14;stroke-linecap:round}
+.city-route-board[data-route=fast] .city-road-base{opacity:.35}.city-route-board[data-route=rat] .city-fast-road{opacity:.45}
+.tabletop-stage .city-route-board .tile{position:absolute;box-sizing:border-box;margin:0!important;z-index:3;display:flex;align-items:center;justify-content:center;padding:1px!important;gap:0;border-radius:5px}
+.city-route-board .landmark-stand{display:none!important}.city-route-board .landmark-has-art>.ic{display:flex!important}.tabletop-stage .city-route-board.camera-readable .landmark-has-art.label-readable .tile-name{padding-top:0}
+.city-models{position:absolute;inset:0;pointer-events:none;z-index:2}.city-model{position:absolute;width:70px;height:70px;min-width:0;min-height:0;padding:0;border:0;background:transparent;color:var(--ink);box-shadow:none;pointer-events:auto;border-radius:10px;transform:translateZ(7px)}
+.city-model>svg{display:block;width:100%;height:100%;overflow:hidden;pointer-events:none}.city-model:hover,.city-model:focus-visible{outline:2px solid #315f70;outline-offset:0;background:#fff3d533}
+.city-model-caption{display:none;position:absolute;left:0;right:0;bottom:-7px;text-align:center;font-size:10px;line-height:1.1;background:#fff9e9;border-radius:4px;pointer-events:none}.camera-readable .city-model-caption{display:block}.city-model-fallback{display:block;width:100%;height:100%}.city-model-owned{border-bottom:3px solid var(--city-owner)}.city-model-level{position:absolute;right:0;top:0;border-radius:50%;background:var(--card);border:1px solid var(--ink);width:14px;height:14px;font:700 10px/14px Tajawal}
+
+.city-route-hints{position:absolute;inset:0;pointer-events:none;z-index:3}.city-route-hint{position:absolute;width:38px;height:28px;border:1px solid #b6a680;border-radius:5px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;pointer-events:auto;cursor:pointer;opacity:.7}.city-route-hint .city-task-symbol{width:16px;height:16px}.city-route-hint:focus-visible,.city-route-hint:hover{opacity:1;outline:2px solid #315f70;outline-offset:1px}
+
+.city-model-placeholder{position:absolute;inset:0;display:grid;place-items:center;font-size:32px;pointer-events:none}
+/* Facades stand above their ground plots; atlas clipping stays within each sprite. */
+.city-models,.city-model{transform-style:preserve-3d}
+.city-model>svg{position:absolute;left:8px;top:-11px;width:54px;height:54px;transform-origin:50% 85%;transform:rotateZ(calc(-1 * var(--table-yaw))) rotateX(calc(-1 * var(--table-tilt)));pointer-events:auto}

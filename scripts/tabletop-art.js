@@ -54,6 +54,7 @@
   function decorateSymbol(symbol,info){
     symbol.querySelector('.inspector-art,.inspector-character')?.remove();symbol.classList.remove('has-inspector-art');
     if(info.portrait){const image=document.createElement('img');image.className='inspector-character';image.alt=info.subtitle;image.onload=()=>{if(image.isConnected)symbol.classList.add('has-inspector-art')};image.src=info.portrait;symbol.append(image);return;}
+    if(window.DarbCityRoutes?.decorateSymbol(symbol,info))return;
     const art=info.art;if(!art)return;
     const i=art.sheet==='landmark'?keys.indexOf(art.key):({family:0,quiz:1,deal:2}[art.key]);
     if(i===undefined||i<0||!board.classList.contains(art.sheet==='landmark'?'landmarks-ready':'decks-ready'))return;

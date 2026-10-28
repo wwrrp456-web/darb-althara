@@ -74,7 +74,9 @@ if __name__ == '__main__':
   def log_message(self,*args):pass
  with tempfile.TemporaryDirectory(prefix='darb-upgrade-') as directory:
   dest=Path(directory)
-  archived=subprocess.run(['git','archive',args.previous_ref,'index.html','sw.js','manifest.webmanifest','icons','fonts','styles','scripts','art/identity'],cwd=root,check=True,stdout=subprocess.PIPE).stdout
+  paths=['index.html','sw.js','manifest.webmanifest','icons','fonts','styles','scripts','art/identity']
+  if subprocess.check_output(['git','ls-tree','--name-only',args.previous_ref,'art/cities'],cwd=root).strip():paths.append('art/cities')
+  archived=subprocess.run(['git','archive',args.previous_ref,*paths],cwd=root,check=True,stdout=subprocess.PIPE).stdout
   with tarfile.open(fileobj=io.BytesIO(archived)) as tar:tar.extractall(dest,filter='data')
   server=ThreadingHTTPServer(('127.0.0.1',0),partial(QuietHandler,directory=str(dest)))
   threading.Thread(target=server.serve_forever,daemon=True).start()
