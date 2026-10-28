@@ -1,0 +1,27 @@
+{
+  "read_only_model_and_real_purchase_levels_1_to_3": "passed",
+  "rat_roll": {
+    "sum": 2,
+    "visited": [
+      0,
+      1
+    ],
+    "length": 13
+  },
+  "fast_roll": {
+    "sum": 7,
+    "visited": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "length": 10
+  },
+  "missing_art_fallback": "live grid, original missions and dice retained",
+  "invalid_save": "rejected without deleting stored data",
+  "errors": []
+}

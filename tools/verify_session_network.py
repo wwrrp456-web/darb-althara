@@ -12,6 +12,7 @@ async def main(simulated=False,ending="rounds"):
   hc=await b.new_context();gc=await b.new_context();host=await hc.new_page();guest=await gc.new_page()
   for page in [host,guest]:page.set_default_timeout(20000);page.on('pageerror',lambda e:result['errors'].append(str(e)))
   for page in [host,guest]:await page.add_init_script("""window.__wireLog=[];const originalSend=RTCDataChannel.prototype.send;RTCDataChannel.prototype.send=function(message){try{const o=JSON.parse(message);__wireLog.push({type:o.t,protocol:o.protocol});}catch(e){}return originalSend.call(this,message);};""")
+  await hc.add_init_script("localStorage.setItem('darb-city-view','harbor')");await gc.add_init_script("localStorage.setItem('darb-city-view','night')")
   await host.goto('http://localhost:8000/?speed=80',wait_until='networkidle');await host.locator('#wNew').click()
   await host.locator('[data-i="1"] [data-k="ctrl"]').select_option('remote');await host.locator('#sStart').click()
   await host.locator('#sSession').select_option('extended' if ending=='time' else 'family');await host.locator('#sEnding').select_option(ending);await host.locator('#sLimit').fill('1')
@@ -43,13 +44,16 @@ async def main(simulated=False,ending="rounds"):
    diagnostics=[]
    for page in [host,guest]:diagnostics.append(await page.evaluate("({role:__darb.Net.role,open:__darb.Net.open,connection:__darb.Net.pc?.connectionState,ice:__darb.Net.pc?.iceConnectionState,channel:__darb.Net.dc?.readyState,message:document.querySelector('#iMsg,#jMsg')?.textContent,errors:window.__wireLog})"))
    (OUT/'network-diagnostic.json').write_text(json.dumps({'initial':initial,'after_timeout':diagnostics,'environment_policy':'/etc/chromium/policies/managed/misc.json: WebRtcIPHandling=disable_non_proxied_udp'},ensure_ascii=False,indent=2));print(diagnostics,flush=True);raise
+  assert await guest.evaluate('__darb.G.board.id')=='harbor'
+  assert await host.evaluate('__darb.G.board')==await guest.evaluate('__darb.G.board')
+  result['host_city_and_missions_authoritative']='passed'
   assert await guest.evaluate('__darb.G.session.ending')==ending
   assert await guest.evaluate('document.documentElement.dataset.session')==('extended' if ending=='time' else 'family')
   if ending=='time':
    await host.evaluate('__darb.G.clock.elapsedMs=60001')
   else:
    snapshot=await host.evaluate('JSON.stringify(__darb.G)')
-   await host.evaluate('''()=>{__darb.Net.dc.onmessage({data:JSON.stringify({protocol:1,t:'roll'})});__darb.Net.dc.onmessage({data:JSON.stringify({protocol:2,t:'clock',clock:{elapsedMs:1e12},round:999})});}''')
+   await host.evaluate('''()=>{__darb.Net.dc.onmessage({data:JSON.stringify({protocol:1,t:'roll'})});__darb.Net.dc.onmessage({data:JSON.stringify({protocol:__darb.protocol,t:'clock',clock:{elapsedMs:1e12},round:999})});}''')
    assert await host.evaluate('JSON.stringify(__darb.G)')==snapshot
    result['guest_cannot_override_clock_or_use_wrong_protocol']='passed'
   for _ in range(1500):
@@ -70,4 +74,6 @@ async def main(simulated=False,ending="rounds"):
   assert not result['errors'],result['errors'];await b.close()
  (OUT/('network-simulated-'+ending+'-check.json' if simulated else 'network-check.json')).write_text(json.dumps(result,ensure_ascii=False,indent=2));print(json.dumps(result,ensure_ascii=False))
 if __name__=='__main__':
- parser=argparse.ArgumentParser();parser.add_argument('--simulated-transport',action='store_true');parser.add_argument('--ending',choices=['rounds','time'],default='rounds');args=parser.parse_args();asyncio.run(main(args.simulated_transport,args.ending))
+ parser=argparse.ArgumentParser();parser.add_argument('--simulated-transport',action='store_true');parser.add_argument('--ending',choices=['rounds','time'],default='rounds');parser.add_argument('--output',type=Path);args=parser.parse_args();
+ if args.output:OUT=args.output;OUT.mkdir(parents=True,exist_ok=True)
+ asyncio.run(main(args.simulated_transport,args.ending))

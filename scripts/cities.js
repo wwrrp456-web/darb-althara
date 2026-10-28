@@ -1,4 +1,4 @@
-/* Local visual preference only. Never reads/writes match state or network messages. */
+/* Setup preference selects the next match; rendering always follows the saved host board. */
 (() => {
  'use strict';
  const cities=[
@@ -13,12 +13,12 @@
   ['night','مدينة الأنوار','أجواء مسائية وإضاءة نوافذ دافئة.'],
   ['crystal','مدينة البلور','مجسمات على قواعد شفافة وطاولة خشبية فاتحة.']
  ];
- let routeOptions=null;
- const ready=new Set(['architecture','classic']),key='darb-city-view';
+ let routeOptions=null,matchId=null;
+ const ready=new Set(cities.map(([id])=>id)),key='darb-city-view';
  let selected='architecture',preview=0,origin=null;
  try{const saved=localStorage.getItem(key);if(ready.has(saved))selected=saved;}catch(_){}
  const dialog=document.getElementById('city-picker'),list=document.getElementById('city-list'),apply=document.getElementById('city-apply');
- const name=()=>selected==='classic'?'الطاولة السابقة':cities[0][1];
+ const name=()=>cities.find(([id])=>id===selected)?.[1]||'الطاولة السابقة';
  function updateLabels(){
   document.querySelectorAll('[data-city-name]').forEach(el=>el.textContent=name());
  }
@@ -37,8 +37,9 @@
  function showPreview(index){
   preview=index;const [id,title,description]=cities[index];
   paintPreview(document.getElementById('city-preview'),index);
+  const spec=DarbCityScenes.create(id);
   document.getElementById('city-preview-title').textContent=title;
-  document.getElementById('city-preview-description').textContent=description;
+  document.getElementById('city-preview-description').textContent=description+' · '+spec.rat.length+' خانة لبناء الدخل، و'+spec.fast.length+' خانة لمرحلة الأحلام.';
   document.getElementById('city-status').textContent=ready.has(id)?'متاحة للعب الآن':'معاينة معتمدة · المدينة قيد التجهيز';
   apply.disabled=!ready.has(id);apply.textContent=ready.has(id)?'العب في هذه المدينة':'قيد التجهيز';
   for(const button of list.querySelectorAll('button'))button.setAttribute('aria-pressed',String(Number(button.dataset.cityIndex)===index));
@@ -52,26 +53,26 @@
    const label=document.createElement('b');label.textContent=(index+1)+' · '+title;
    const state=document.createElement('small');state.textContent=ready.has(id)?'متاحة للعب':'معاينة';button.append(image,label,state);button.onclick=()=>showPreview(index);list.append(button);
   }
-  showPreview(selected==='classic'?preview:0);if(!dialog.open)dialog.showModal();
+  showPreview(selected==='classic'?preview:cities.findIndex(([id])=>id===selected));if(!dialog.open)dialog.showModal();
  }
  function close(){dialog.close();if(origin?.isConnected&&!origin.closest('dialog:not([open])'))origin.focus({preventScroll:true});else document.getElementById('camera-help').focus({preventScroll:true});}
  apply.onclick=()=>{activate(cities[preview][0]);close();};
  document.getElementById('city-classic').onclick=()=>{activate('classic');close();};
  document.getElementById('city-random').onclick=()=>{const available=cities.filter(([id])=>ready.has(id));activate(available[Math.floor(Math.random()*available.length)][0]);close();};
  dialog.querySelector('[data-close-cities]').onclick=close;
- document.getElementById('choose-city-play').onclick=open;
+ document.getElementById('choose-city-play').onclick=()=>{if(!matchId)open();};
  function mountSetup(anchor){
   const row=document.createElement('div');row.className='city-setup';
   const text=document.createElement('p');text.textContent='مدينتك: ';const value=document.createElement('b');value.dataset.cityName='';value.textContent=name();text.append(value);
   const button=document.createElement('button');button.type='button';button.id='choose-city-setup';button.textContent='اختر مدينتك';button.setAttribute('aria-haspopup','dialog');button.onclick=open;
-  const note=document.createElement('small');note.textContent='المظهر على هذا الجهاز فقط؛ القواعد والأموال واحدة في جميع المدن.';
+  const note=document.createElement('small');note.textContent='المدينة تحدد الخانات والمهام للمباراة كلها؛ المبالغ الأساسية ثابتة. يتغير توزيع الأحداث وطول الدورة بين المدن.';
   row.append(text,button,note);anchor.before(row);
  }
  function mount(board,options){
   if(options)routeOptions=options;
-  window.DarbCityRoutes?.apply(board,selected==='architecture',routeOptions);
+  window.DarbCityRoutes?.apply(board,routeOptions?.boardId||'legacy',routeOptions);
  }
 
  activate(selected);
- window.DarbCities={open,mountSetup,name,mount};
+ window.DarbCities={open,mountSetup,name,mount,selection:()=>selected,setMatch(id){matchId=id;const button=document.getElementById('choose-city-play');button.disabled=!!id;button.setAttribute('aria-label',id==='legacy'?'مباراة محفوظة باللوحة السابقة':id?'مدينة المباراة ثابتة حتى النهاية':'اختر مدينة المباراة');document.querySelectorAll('#choose-city-play [data-city-name]').forEach(el=>el.textContent=id==='legacy'?'اللوحة السابقة':cities.find(([key])=>key===(id||selected))?.[1]||'');}};
 })();

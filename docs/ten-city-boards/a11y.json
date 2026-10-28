@@ -1,0 +1,900 @@
+{
+  "axe_version": "4.10.3",
+  "scope": "Chromium automated WCAG 2.0/2.1 A/AA; not a screen-reader certification",
+  "screens": [
+    {
+      "name": "home",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".game-facts > span:nth-child(3)"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".chrow:nth-child(1) > b"
+              ],
+              "html": "<b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".chrow:nth-child(1) > span"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".chrow:nth-child(2) > b"
+              ],
+              "html": "<b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 23
+    },
+    {
+      "name": "players",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "div[data-i=\"0\"] > .t > span"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            },
+            {
+              "target": [
+                "input[aria-label=\"اسم اللاعب 1\"]"
+              ],
+              "html": "<input type=\"text\" data-k=\"name\" aria-label=\"اسم اللاعب 1\" maxlength=\"14\" value=\"أنا\" placeholder=\"الاسم\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "div[data-i=\"1\"] > .t > span"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".x"
+              ],
+              "html": "<button class=\"x\" data-x=\"1\" aria-label=\"حذف اللاعب 2\">✕</button>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                "input[aria-label=\"اسم اللاعب 2\"]"
+              ],
+              "html": "<input type=\"text\" data-k=\"name\" aria-label=\"اسم اللاعب 2\" maxlength=\"14\" value=\"منافس 2\" placeholder=\"الاسم\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "#sAdd"
+              ],
+              "html": "<button class=\"alt\" id=\"sAdd\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "#sHelp"
+              ],
+              "html": "<button class=\"alt\" id=\"sHelp\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 24
+    },
+    {
+      "name": "eight-players",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "input[aria-label=\"اسم اللاعب 1\"]"
+              ],
+              "html": "<input type=\"text\" data-k=\"name\" aria-label=\"اسم اللاعب 1\" maxlength=\"14\" value=\"أنا\" placeholder=\"الاسم\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-x=\"1\"]"
+              ],
+              "html": "<button class=\"x\" data-x=\"1\" aria-label=\"حذف اللاعب 2\">✕</button>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                "input[aria-label=\"اسم اللاعب 2\"]"
+              ],
+              "html": "<input type=\"text\" data-k=\"name\" aria-label=\"اسم اللاعب 2\" maxlength=\"14\" value=\"منافس 2\" placeholder=\"الاسم\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "div[data-i=\"2\"] > .t > span"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-x=\"2\"]"
+              ],
+              "html": "<button class=\"x\" data-x=\"2\" aria-label=\"حذف اللاعب 3\">✕</button>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                "input[aria-label=\"اسم اللاعب 3\"]"
+              ],
+              "html": "<input type=\"text\" data-k=\"name\" aria-label=\"اسم اللاعب 3\" maxlength=\"14\" value=\"منافس 3\" placeholder=\"الاسم\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "div[data-i=\"3\"] > .t > span"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-x=\"3\"]"
+              ],
+              "html": "<button class=\"x\" data-x=\"3\" aria-label=\"حذف اللاعب 4\">✕</button>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                "select[aria-label=\"طريقة تحكم اللاعب 4\"]"
+              ],
+              "html": "<select data-k=\"ctrl\" aria-label=\"طريقة تحكم اللاعب 4\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "input[aria-label=\"اسم اللاعب 4\"]"
+              ],
+              "html": "<input type=\"text\" data-k=\"name\" aria-label=\"اسم اللاعب 4\" maxlength=\"14\" value=\"منافس 4\" placeholder=\"الاسم\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "div[data-i=\"4\"] > .t > span"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-x=\"4\"]"
+              ],
+              "html": "<button class=\"x\" data-x=\"4\" aria-label=\"حذف اللاعب 5\">✕</button>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                "input[aria-label=\"اسم اللاعب 5\"]"
+              ],
+              "html": "<input type=\"text\" data-k=\"name\" aria-label=\"اسم اللاعب 5\" maxlength=\"14\" value=\"منافس 5\" placeholder=\"الاسم\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "div[data-i=\"5\"] > .t > span"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-x=\"5\"]"
+              ],
+              "html": "<button class=\"x\" data-x=\"5\" aria-label=\"حذف اللاعب 6\">✕</button>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                "select[aria-label=\"طريقة تحكم اللاعب 6\"]"
+              ],
+              "html": "<select data-k=\"ctrl\" aria-label=\"طريقة تحكم اللاعب 6\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "input[aria-label=\"اسم اللاعب 6\"]"
+              ],
+              "html": "<input type=\"text\" data-k=\"name\" aria-label=\"اسم اللاعب 6\" maxlength=\"14\" value=\"منافس 6\" placeholder=\"الاسم\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "div[data-i=\"6\"] > .t > span"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-x=\"6\"]"
+              ],
+              "html": "<button class=\"x\" data-x=\"6\" aria-label=\"حذف اللاعب 7\">✕</button>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                "select[aria-label=\"طريقة تحكم اللاعب 7\"]"
+              ],
+              "html": "<select data-k=\"ctrl\" aria-label=\"طريقة تحكم اللاعب 7\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "input[aria-label=\"اسم اللاعب 7\"]"
+              ],
+              "html": "<input type=\"text\" data-k=\"name\" aria-label=\"اسم اللاعب 7\" maxlength=\"14\" value=\"منافس 7\" placeholder=\"الاسم\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "div[data-i=\"7\"] > .t > span"
+              ],
+              "html": "<span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-x=\"7\"]"
+              ],
+              "html": "<button class=\"x\" data-x=\"7\" aria-label=\"حذف اللاعب 8\">✕</button>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                "select[aria-label=\"طريقة تحكم اللاعب 8\"]"
+              ],
+              "html": "<select data-k=\"ctrl\" aria-label=\"طريقة تحكم اللاعب 8\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "input[aria-label=\"اسم اللاعب 8\"]"
+              ],
+              "html": "<input type=\"text\" data-k=\"name\" aria-label=\"اسم اللاعب 8\" maxlength=\"14\" value=\"منافس 8\" placeholder=\"الاسم\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 25
+    },
+    {
+      "name": "session",
+      "violations": [],
+      "incomplete": [],
+      "passes": 24
+    },
+    {
+      "name": "city-ready",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "#city-preview-title"
+              ],
+              "html": "<h3 id=\"city-preview-title\">مدينة المعمار</h3>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"0\"] > b"
+              ],
+              "html": "<b>1 · مدينة المعمار</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"1\"] > b"
+              ],
+              "html": "<b>2 · مدينة الحكايات</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"2\"] > b"
+              ],
+              "html": "<b>3 · مدينة العاج</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"3\"] > b"
+              ],
+              "html": "<b>4 · مدينة المرفأ</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"4\"] > b"
+              ],
+              "html": "<b>5 · مدينة المدار</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"5\"] > b"
+              ],
+              "html": "<b>6 · مدينة الورق</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"6\"] > b"
+              ],
+              "html": "<b>7 · مدينة الآفاق</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"7\"] > b"
+              ],
+              "html": "<b>8 · مدينة الأحياء</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 17
+    },
+    {
+      "name": "city-preview",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "button[data-city-index=\"0\"] > b"
+              ],
+              "html": "<b>1 · مدينة المعمار</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"1\"] > b"
+              ],
+              "html": "<b>2 · مدينة الحكايات</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"2\"] > b"
+              ],
+              "html": "<b>3 · مدينة العاج</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"3\"] > b"
+              ],
+              "html": "<b>4 · مدينة المرفأ</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"4\"] > b"
+              ],
+              "html": "<b>5 · مدينة المدار</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"5\"] > b"
+              ],
+              "html": "<b>6 · مدينة الورق</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"6\"] > b"
+              ],
+              "html": "<b>7 · مدينة الآفاق</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-city-index=\"7\"] > b"
+              ],
+              "html": "<b>8 · مدينة الأحياء</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 17
+    },
+    {
+      "name": "review",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "#modal-title"
+              ],
+              "html": "<h2 id=\"modal-title\" tabindex=\"-1\">٣ من ٣ · راجع وابدأ</h2>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            },
+            {
+              "target": [
+                "#sheet > p:nth-child(2)"
+              ],
+              "html": "<p>المدينة: <b>مدينة المعمار</b> · 25 خانة</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".identity-status"
+              ],
+              "html": "<span class=\"illustrated-icon identity-status\" role=\"img\" aria-label=\"🟡\" data-status=\"🟡\">●</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                "li:nth-child(1)"
+              ],
+              "html": "<li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "li:nth-child(2)"
+              ],
+              "html": "<li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "li:nth-child(3)"
+              ],
+              "html": "<li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "li:nth-child(4)"
+              ],
+              "html": "<li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "li:nth-child(5)"
+              ],
+              "html": "<li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            },
+            {
+              "target": [
+                "li:nth-child(6)"
+              ],
+              "html": "<li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            },
+            {
+              "target": [
+                "li:nth-child(7)"
+              ],
+              "html": "<li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            },
+            {
+              "target": [
+                "li:nth-child(8)"
+              ],
+              "html": "<li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            }
+          ]
+        }
+      ],
+      "passes": 23
+    },
+    {
+      "name": "play",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-valid-attr-value",
+          "nodes": [
+            {
+              "target": [
+                ".opportunity"
+              ],
+              "html": "<button type=\"button\" class=\"tabletop-deck opportunity has-deck-art\" data-deck=\"deal\" aria-haspopup=\"dialog\" aria-controls=\"board-inspector\" aria-label=\"معلومات رزمة الفرص\">",
+              "summary": "Fix all of the following:\n  Unable to determine if aria-controls referenced ID exists on the page while using aria-haspopup: aria-controls=\"board-inspector\""
+            },
+            {
+              "target": [
+                ".family"
+              ],
+              "html": "<button type=\"button\" class=\"tabletop-deck family has-deck-art\" data-deck=\"family\" aria-haspopup=\"dialog\" aria-controls=\"board-inspector\" aria-label=\"معلومات رزمة العائلة\">",
+              "summary": "Fix all of the following:\n  Unable to determine if aria-controls referenced ID exists on the page while using aria-haspopup: aria-controls=\"board-inspector\""
+            },
+            {
+              "target": [
+                ".question"
+              ],
+              "html": "<button type=\"button\" class=\"tabletop-deck question has-deck-art\" data-deck=\"quiz\" aria-haspopup=\"dialog\" aria-controls=\"board-inspector\" aria-label=\"معلومات رزمة الأسئلة\">",
+              "summary": "Fix all of the following:\n  Unable to determine if aria-controls referenced ID exists on the page while using aria-haspopup: aria-controls=\"board-inspector\""
+            },
+            {
+              "target": [
+                "#board-projects-open"
+              ],
+              "html": "<button type=\"button\" id=\"board-projects-open\" aria-haspopup=\"dialog\" aria-controls=\"board-projects\" aria-label=\"استعراض مشاريع المسار\">",
+              "summary": "Fix all of the following:\n  Unable to determine if aria-controls referenced ID exists on the page while using aria-haspopup: aria-controls=\"board-projects\""
+            }
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "#mini > span:nth-child(1) > b"
+              ],
+              "html": "<b>محسن</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "#mini > span:nth-child(1) > small"
+              ],
+              "html": "<small>فجوة الدخل</small>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "#mini > span:nth-child(2) > b"
+              ],
+              "html": "<b>1,630</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "#mini > span:nth-child(2) > small"
+              ],
+              "html": "<small>شهرياً</small>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".mini-link"
+              ],
+              "html": "<span class=\"mini-link\">تفاصيل والأثر ←</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".current > .pawn-stand > .pawn-number"
+              ],
+              "html": "<span class=\"pawn-number\">1</span>",
+              "summary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+            },
+            {
+              "target": [
+                "button[data-camera=\"out\"]"
+              ],
+              "html": "<button type=\"button\" data-camera=\"out\" aria-label=\"تصغير اللوحة\">−</button>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": [
+                "#roll > span"
+              ],
+              "html": "<span>ارمِ يا محسن<small class=\"rsub\">الرمية الأولى</small></span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 23
+    },
+    {
+      "name": "financial",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "#modal-title"
+              ],
+              "html": "<h2 id=\"modal-title\" tabindex=\"-1\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".sub:nth-child(5)"
+              ],
+              "html": "<p class=\"sub\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".sub:nth-child(6)"
+              ],
+              "html": "<p class=\"sub\">قرض سكن 72,000 (مدرج ضمن قسط السكن)</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".row > .alt"
+              ],
+              "html": "<button class=\"alt\">إغلاق</button>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 24
+    },
+    {
+      "name": "player-picker",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "button[data-player=\"0\"][type=\"button\"] > span > b"
+              ],
+              "html": "<b>1 · محسن</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-player=\"1\"][type=\"button\"] > span > b"
+              ],
+              "html": "<b>2 · مريم</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 13
+    },
+    {
+      "name": "projects",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "button[data-project=\"cafe\"] > span:nth-child(2) > b"
+              ],
+              "html": "<b>مقهى الحي</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-project=\"bank\"] > span:nth-child(2) > b"
+              ],
+              "html": "<b>بنك</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "button[data-project=\"uni\"] > span:nth-child(2) > b"
+              ],
+              "html": "<b>جامعة</b>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 12
+    },
+    {
+      "name": "quiz",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "#modal-title"
+              ],
+              "html": "<h2 id=\"modal-title\" tabindex=\"-1\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+            },
+            {
+              "target": [
+                ".pwho"
+              ],
+              "html": "<span class=\"pwho\" style=\"--pc:#0f766e\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                ".decision-content > .sub"
+              ],
+              "html": "<p class=\"sub\">الإجابة الصحيحة تمنحك <b class=\"good\">+1,600</b> (نصف مصاريف شهر × ميزة مهنتك).</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            }
+          ]
+        }
+      ],
+      "passes": 22
+    },
+    {
+      "name": "join",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "#modal-title"
+              ],
+              "html": "<h2 id=\"modal-title\" tabindex=\"-1\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "label[for=\"jName\"]"
+              ],
+              "html": "<label class=\"l\" for=\"jName\">اسمك</label>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "#jCode"
+              ],
+              "html": "<textarea id=\"jCode\" placeholder=\"الصق الرمز هنا\"></textarea>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 25
+    },
+    {
+      "name": "invite",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "#modal-title"
+              ],
+              "html": "<h2 id=\"modal-title\" tabindex=\"-1\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "li:nth-child(1)"
+              ],
+              "html": "<li>اضغط «إنشاء رمز الدعوة» وأرسل الرمز لصديقك (واتساب مثلاً).</li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            },
+            {
+              "target": [
+                "li:nth-child(2)"
+              ],
+              "html": "<li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            }
+          ]
+        }
+      ],
+      "passes": 23
+    },
+    {
+      "name": "invite-code",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                "#modal-title"
+              ],
+              "html": "<h2 id=\"modal-title\" tabindex=\"-1\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "li:nth-child(1)"
+              ],
+              "html": "<li>اضغط «إنشاء رمز الدعوة» وأرسل الرمز لصديقك (واتساب مثلاً).</li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            },
+            {
+              "target": [
+                "li:nth-child(2)"
+              ],
+              "html": "<li>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it partially overlaps other elements"
+            },
+            {
+              "target": [
+                "#iCode"
+              ],
+              "html": "<textarea id=\"iCode\" readonly=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+            },
+            {
+              "target": [
+                "#iCopy"
+              ],
+              "html": "<button class=\"alt\" id=\"iCopy\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "#iShare"
+              ],
+              "html": "<button class=\"alt\" id=\"iShare\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "label[for=\"iAns\"]"
+              ],
+              "html": "<label class=\"l\" for=\"iAns\">رمز الرد من صديقك</label>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": [
+                "#iAns"
+              ],
+              "html": "<textarea id=\"iAns\" placeholder=\"الصق الرمز هنا\"></textarea>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+            }
+          ]
+        }
+      ],
+      "passes": 25
+    }
+  ],
+  "errors": []
+}

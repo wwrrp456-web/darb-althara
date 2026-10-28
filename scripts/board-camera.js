@@ -161,18 +161,19 @@
         }
         const thumb=button.querySelector('.project-thumb');if(!thumb.querySelector('.inspector-art'))window.DarbTabletopArt?.decorateSymbol(thumb,info);
       }
+      if(!list.children.length){const note=document.createElement('p');note.textContent='لا توجد خانات مشاريع ثابتة في هذه المرحلة على هذه اللوحة. تتوفر عروض الأعمال في خانات المشاريع الكبيرة.';list.append(note);}
       if(!projects.open)projects.showModal();return;
     }
     if(typeof reference==='string'&&(reference==='players'||reference.startsWith('group:'))){
       if(!options||options.busy||document.querySelector('#modal.on'))return;
-      const parts=reference.slice(6).split(':'),people=reference==='players'?(options.allPlayers||options.players):parts.length===2?(options.allPlayers||options.players).filter(p=>(p.fast?'fast':'rat')===parts[0]&&p.pos===Number(parts[1])):options.players.filter(p=>p.pos===Number(parts[0]));
+      const parts=reference.slice(6).split(':'),people=reference==='players'?(options.allPlayers||options.players):parts.length===2?(options.allPlayers||options.players).filter(p=>(parts[0]==='shared'||(p.fast?'fast':'rat')===parts[0])&&p.pos===Number(parts[1])):options.players.filter(p=>p.pos===Number(parts[0]));
       const list=document.getElementById('crowd-list');list.replaceChildren();
       document.getElementById('crowd-title').textContent=reference==='players'?'اللاعبون':'اللاعبون في هذه الخانة';
       for(const p of people){
         const button=document.createElement('button');button.type='button';button.dataset.player=String(p.id);
         const image=document.createElement('img');image.src=`art/identity/clear.svg#${p.pk}`;image.alt='';
         const label=document.createElement('span'),name=document.createElement('b'),job=document.createElement('small');
-        name.textContent=`${p.id+1} · ${p.name}`;job.textContent=p.prof;label.append(name,job);button.append(image,label);
+        name.textContent=`${p.id+1} · ${p.name}`;job.textContent=p.prof+(p.fast?" · مرحلة الأحلام":" · بناء الدخل");label.append(name,job);button.append(image,label);
         button.onclick=()=>{crowd.close();inspect('player:'+p.id)};list.append(button);
       }
       if(!crowd.open)crowd.showModal();return;

@@ -9,8 +9,9 @@
     if (!state || !state.board.isConnected || !state.board.clientWidth) return;
     const {board, layer, currentId, duration} = state;
     const city=board.classList.contains('city-route-board'),players=city?(state.allPlayers||state.players):state.players;
-    const tileKey=p=>city?(p.fast?'fast:':'rat:')+p.pos:p.pos;
-    const tiles=city?new Map([...board.querySelectorAll('[data-tile],.city-route-hint')].map(tile=>[tile.hasAttribute('data-tile')?board.dataset.route+':'+tile.dataset.tile:tile.dataset.cityRoute+':'+tile.dataset.routeIndex,tile])):state.tiles;
+    const shared=city&&window.DarbCityScenes.defs.find(d=>d.id===board.dataset.scene)?.sharedRoad;
+    const tileKey=p=>city?(shared?'shared:':p.fast?'fast:':'rat:')+p.pos:p.pos;
+    const tiles=city?new Map([...board.querySelectorAll('[data-tile],.city-route-hint')].map(tile=>[tile.hasAttribute('data-tile')?(shared?'shared':board.dataset.route)+':'+tile.dataset.tile:tile.dataset.cityRoute+':'+tile.dataset.routeIndex,tile])):state.tiles;
     board.style.setProperty('--pawn-size', `${Math.max(48, Math.min(90, board.clientWidth * .16))}px`);
     const countByTile = new Map();
     for (const p of players) {
@@ -30,6 +31,9 @@
         pawn.className = 'character-pawn';
         pawn.dataset.player = String(p.id);
         pawn.innerHTML = '<span class="pawn-shadow"></span><span class="pawn-base"></span><span class="pawn-stand"><img class="pawn-art" alt=""><span class="pawn-number"></span><span class="miniature-hit" aria-hidden="true"></span></span>';
+        const ns='http://www.w3.org/2000/svg',token=document.createElementNS(ns,'svg');token.classList.add('city-pawn');token.setAttribute('viewBox','0 0 60 64');token.setAttribute('aria-hidden','true');token.setAttribute('focusable','false');
+        token.innerHTML=`<defs><linearGradient id="city-token-${p.id}" x1="0" x2="1"><stop stop-color="#ffffff" stop-opacity=".8"/><stop offset=".35" stop-color="var(--pawn-color)"/><stop offset="1" stop-color="#182d32"/></linearGradient></defs><ellipse cx="30" cy="55" rx="23" ry="7" fill="#182d3233"/><path d="M23 25Q26 35 16 45Q9 49 13 54Q30 61 47 54Q51 49 44 45Q34 35 37 25Z" fill="url(#city-token-${p.id})"/><ellipse cx="30" cy="50" rx="20" ry="6" fill="var(--pawn-color)"/><circle cx="30" cy="16" r="12" fill="url(#city-token-${p.id})"/><ellipse cx="26" cy="12" rx="4" ry="5" fill="#ffffff77"/>`;
+        pawn.querySelector('.pawn-stand').prepend(token);
         layer.append(pawn);
       }
       const role = professionKeys.has(p.pk) ? p.pk : 'trader';
