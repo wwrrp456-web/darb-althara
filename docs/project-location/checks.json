@@ -1,0 +1,409 @@
+{
+  "cases": [
+    {
+      "track": "rat",
+      "viewport": [
+        360,
+        640
+      ],
+      "project": "cafe",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        360,
+        640
+      ],
+      "project": "mall",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        360,
+        640
+      ],
+      "project": "bank",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        360,
+        640
+      ],
+      "project": "hospital",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        360,
+        640
+      ],
+      "project": "uni",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        360,
+        640
+      ],
+      "project": "hotel",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        390,
+        844
+      ],
+      "project": "cafe",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        390,
+        844
+      ],
+      "project": "mall",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        390,
+        844
+      ],
+      "project": "bank",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        390,
+        844
+      ],
+      "project": "hospital",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        390,
+        844
+      ],
+      "project": "uni",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        390,
+        844
+      ],
+      "project": "hotel",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        430,
+        932
+      ],
+      "project": "cafe",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        430,
+        932
+      ],
+      "project": "mall",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        430,
+        932
+      ],
+      "project": "bank",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        430,
+        932
+      ],
+      "project": "hospital",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        430,
+        932
+      ],
+      "project": "uni",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        430,
+        932
+      ],
+      "project": "hotel",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        768,
+        1024
+      ],
+      "project": "cafe",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        768,
+        1024
+      ],
+      "project": "mall",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        768,
+        1024
+      ],
+      "project": "bank",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        768,
+        1024
+      ],
+      "project": "hospital",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        768,
+        1024
+      ],
+      "project": "uni",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        768,
+        1024
+      ],
+      "project": "hotel",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        1180,
+        820
+      ],
+      "project": "cafe",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        1180,
+        820
+      ],
+      "project": "mall",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        1180,
+        820
+      ],
+      "project": "bank",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        1180,
+        820
+      ],
+      "project": "hospital",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        1180,
+        820
+      ],
+      "project": "uni",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "rat",
+      "viewport": [
+        1180,
+        820
+      ],
+      "project": "hotel",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        360,
+        640
+      ],
+      "project": "tower",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        360,
+        640
+      ],
+      "project": "airport",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        390,
+        844
+      ],
+      "project": "tower",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        390,
+        844
+      ],
+      "project": "airport",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        430,
+        932
+      ],
+      "project": "tower",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        430,
+        932
+      ],
+      "project": "airport",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        768,
+        1024
+      ],
+      "project": "tower",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        768,
+        1024
+      ],
+      "project": "airport",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        1180,
+        820
+      ],
+      "project": "tower",
+      "centered": true,
+      "state_unchanged": true
+    },
+    {
+      "track": "fast",
+      "viewport": [
+        1180,
+        820
+      ],
+      "project": "airport",
+      "centered": true,
+      "state_unchanged": true
+    }
+  ],
+  "errors": [],
+  "keyboard_focus": "scene after locating",
+  "reset": "selection cleared, overview restored",
+  "decks": "locate action hidden",
+  "decision_priority": "preserved"
+}

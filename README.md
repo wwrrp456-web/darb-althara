@@ -144,3 +144,5 @@ python3 tools/verify_identity.py
 [إصلاح قص الأيقونات والشنطة والرسومات المجاورة — الصور والاختبارات](docs/sprite-fix/README.md) · إصدار الأصول الحالي `darb-sprites-v19`.
 
 [تنظيم الطاولة والمشاريع ومعالجة قص المسميات — مقارنة قبل وبعد والاختبارات](docs/table-finish/README.md) · إصدار الأصول الحالي `darb-table-v20`.
+
+[أظهر المشروع على اللوحة — الوصول المباشر إلى خانته ونتائج التحقق](docs/project-location/README.md) · إصدار الأصول الحالي `darb-locate-v21`.

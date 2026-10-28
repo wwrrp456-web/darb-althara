@@ -1,0 +1,1 @@
+{"board_nodes_before_after": [443, 443], "upgrade_from": "darb-table-v20", "upgrade_to": "darb-locate-v21", "upgrade": "passed", "previous_game_players_professions_cash": "preserved", "upgraded_offline_game": "passed", "offline_mode": "network-toggle"}

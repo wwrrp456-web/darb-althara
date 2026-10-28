@@ -15,7 +15,7 @@
   const pointers = new Map();
   let gesture = null;
   const inspector = document.getElementById('board-inspector');
-  let inspectedReference=null;
+  let inspectedReference=null,locatedProject=null;
   let fit=1, footprint={width:640,height:640};
   const crowd=document.getElementById("board-crowd"),projects=document.getElementById("board-projects");
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -97,7 +97,12 @@
     followUntil = performance.now() + (force ? 800 : 450);
     if (!frame) frame = requestAnimationFrame(followTick);
   }
+  function clearLocation() {
+    locatedProject=null;board.querySelectorAll('.project-located').forEach(tile=>tile.classList.remove('project-located'));
+    stage.setAttribute('aria-label','مشهد اللوحة التفاعلي، اسحب للتحريك وقرّب للتكبير');
+  }
   function reset() {
+    clearLocation();
     if (frame) cancelAnimationFrame(frame);
     frame = 0;
     followUntil = 0;
@@ -118,6 +123,22 @@
     camera.zoom = next;
     updateHitTargets();
     draw();
+  }
+  function locateProject(key) {
+    if(!options||options.busy||document.querySelector('#modal.on'))return;
+    const tile=[...board.querySelectorAll('[data-landmark]')].find(tile=>tile.dataset.landmark===key);
+    if(!tile)return;
+    const info=options.inspect?.('lm_'+key);if(!info)return;
+    stopFollow();clearLocation();
+    const label=tile.querySelector('.tile-name');
+    const readableScale=Math.max(44/(640/(options.track==='fast'?6:13)),Number(label?.dataset.minimumScale)||0);
+    zoomAt(Math.max(camera.zoom,readableScale/fit*1.1));
+    const scene=stage.getBoundingClientRect(),target=tile.getBoundingClientRect();
+    camera.x+=scene.left+scene.width/2-target.left-target.width/2;
+    camera.y+=scene.top+scene.height/2-target.top-target.height/2;
+    locatedProject=key;tile.classList.add('project-located');draw();
+    stage.setAttribute('aria-label',`موضع ${info.title} على اللوحة، اسحب للتحريك وقرّب للتكبير`);
+    inspector.close();stage.focus({preventScroll:true});
   }
   function inspect(reference) {
     if(reference==='projects'){
@@ -160,6 +181,11 @@
     const info = options.inspect?.(reference);
     if (!info) return;
     inspectedReference=reference;
+    const tile=typeof reference==='number'?board.querySelector(`[data-tile="${reference}"]`):typeof reference==='string'&&reference.startsWith('lm_')?[...board.querySelectorAll('[data-landmark]')].find(tile=>tile.dataset.landmark===reference.slice(3)):null;
+    const locate=document.getElementById('locate-project');
+    locate.hidden=!tile?.dataset.landmark;
+    locate.onclick=()=>locateProject(tile.dataset.landmark);
+
     const view=document.getElementById('view-player-board');
     view.hidden=!(typeof reference==='string'&&reference.startsWith('player:'));
     view.onclick=()=>{inspector.close();options?.viewPlayer?.(Number(String(reference).slice(7)))};
@@ -300,7 +326,9 @@
   draw();
   window.DarbCamera = {
     update(next) {
-      options = next;labels=[...board.querySelectorAll('.tile-name')];
+      options = next;
+      if(locatedProject){const tile=[...board.querySelectorAll('[data-landmark]')].find(tile=>tile.dataset.landmark===locatedProject);if(tile)tile.classList.add('project-located');else clearLocation();}
+      labels=[...board.querySelectorAll('.tile-name')];
       const key = `${next.gameId}:${next.track}`;
       if (identity !== key) { if(projects.open)projects.close();identity=key; lastTarget=null; reset(); }
       if(next.busy&&crowd.open)crowd.close();

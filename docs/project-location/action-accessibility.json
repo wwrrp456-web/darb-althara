@@ -1,0 +1,12 @@
+[
+  {
+    "name": "project-inspector",
+    "violations": [],
+    "passes": 16
+  },
+  {
+    "name": "located-board",
+    "violations": [],
+    "passes": 25
+  }
+]
