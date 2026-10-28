@@ -1,0 +1,40 @@
+/* The table is a readable play surface: printed project markers, stable card rail. */
+body.ingame header .brand-name{display:block;position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#turn-readout{display:none}body.ingame header #turn-readout{display:flex;flex:1;min-width:0;flex-direction:column;align-items:flex-start;justify-content:center;gap:0;line-height:1.4}#turn-readout b{font-size:16px;max-width:100%;overflow-wrap:anywhere}#turn-readout small{font-size:14px}
+.cols>.pane[data-p=play].on{grid-template-rows:auto auto auto minmax(0,1fr) auto}.pane[data-p=play]>#event{grid-row:1}.pane[data-p=play]>#status{grid-row:2}.pane[data-p=play]>#mini{grid-row:3}.pane[data-p=play]>.tabletop-card{grid-row:4}.pane[data-p=play]>#chips{grid-row:5}
+.tabletop-card{grid-template-rows:56px minmax(0,1fr) auto 56px}
+#board-deck-rack{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;transform:none;margin:0;padding:4px 6px;background:var(--card);border-bottom:1px solid var(--line);min-width:0;align-items:stretch;direction:rtl}
+#board-deck-rack>button{display:flex;align-items:center;justify-content:center;flex-direction:row;gap:4px;min-width:48px;min-height:48px;width:auto;height:auto;aspect-ratio:auto;position:relative;padding:4px;border:1px solid var(--line);border-radius:10px;background:var(--card)!important;color:var(--ink);box-shadow:none;transform:none;line-height:1.2;font-size:14px}
+#board-deck-rack>button::after,#board-deck-rack .miniature-hit{display:none}
+#board-deck-rack b{position:static;transform:none;white-space:normal;overflow:visible;text-overflow:clip;background:none;padding:0;font-size:14px;line-height:1.3}
+#board-deck-rack .deck-sprite{position:static;display:none;width:20px;height:20px;flex:0 0 20px;transform:none;background-size:300% 100%;background-position:var(--dx) 0}
+#board-deck-rack.decks-ready .deck-sprite{display:block}#board-deck-rack.decks-ready .has-deck-art>.ui-icon{display:none}#board-deck-rack .ui-icon{width:20px;height:20px;flex:none}
+.tabletop-stage{border-radius:0 0 12px 12px;border-top:0}
+.tabletop-stage .center{background-image:linear-gradient(#fffdf85c,#fffdf85c),url('../art/identity/tabletop-park.png');background-blend-mode:normal;border-color:#d5cfbb;box-shadow:inset 0 0 0 2px #fffdf8}
+.tabletop-hud .big{display:none}.tabletop-crest{font-size:16px}.tabletop-hud .mut{font-size:14px}.tabletop-decks:not(#board-deck-rack){display:none}
+/* Each project is printed inside its own tile. No independent elevated hit target. */
+.tabletop-stage .board:not(.camera-readable) .tile-name{display:none}
+.tabletop-stage .board.camera-readable .tile{gap:1px;padding:2px;justify-content:center}
+.tabletop-stage .board.camera-readable .tile-name,.tabletop-stage .board.dense.camera-readable .tile-name{display:block;font-size:min(calc(14px / var(--projected-scale,1)),var(--tile-font-limit,14px));font-weight:700;line-height:1.1;flex:none}
+.tabletop-stage .board.camera-readable .tile .ic{line-height:1;height:calc(12px / var(--projected-scale,1));flex:none}
+.tabletop-stage .board.camera-readable .tile .ui-icon,.tabletop-stage .board.dense.camera-readable .tile .ui-icon{width:calc(12px / var(--projected-scale,1));height:calc(12px / var(--projected-scale,1))}
+.tabletop-stage .board.camera-readable .tile.label-readable .landmark-stand{top:3px;width:calc(18px / var(--projected-scale,1));height:calc(18px / var(--projected-scale,1));transform:translateX(-50%)}
+.tabletop-stage .board.camera-readable .landmark-has-art.label-readable .tile-name{padding-top:calc(18px / var(--projected-scale,1))}
+#board-projects{font:16px/1.65 Tajawal,Tahoma,sans-serif;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;width:min(560px,calc(100vw - 24px));max-height:calc(var(--viewport-height,100dvh) - 24px);overflow:auto}#board-projects::backdrop{background:#142c36aa}#project-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}#project-list button{display:flex;gap:10px;align-items:center;min-height:72px;padding:10px;min-width:0;background:var(--soft);color:var(--ink);border:1px solid var(--line);text-align:start;font-size:16px}#project-list button>span:last-child{min-width:0}#project-list small{display:block;font-size:14px;color:var(--muted)}.project-thumb{position:relative;width:42px;height:42px;flex:0 0 42px}
+@media(max-width:767px){.cols>.pane[data-p=play].on{grid-template-rows:auto auto auto minmax(0,1fr)}#project-list{grid-template-columns:1fr}}
+@media(min-width:768px) and (orientation:portrait){.cols>.pane[data-p=play].on{grid-template-rows:auto auto auto minmax(0,1fr) 62px}}
+@media(min-width:768px) and (orientation:landscape){.cols>.pane[data-p=play].on{grid-template-rows:auto auto auto minmax(0,1fr)}}
+
+#board-projects-open>.ui-icon{display:none}
+
+
+.tabletop-stage{background:radial-gradient(ellipse,#fbf8f1,#eee9dd)}
+.tabletop-stage .board.camera-readable .tile.label-readable:not(.landmark)>.ic{display:none}
+
+.landmark-owned:after{height:calc(3px / var(--projected-scale,1));bottom:calc(2px / var(--projected-scale,1))}
+.landmark-level-art{width:calc(10px / var(--projected-scale,1));height:calc(10px / var(--projected-scale,1));font-size:calc(8px / var(--projected-scale,1));border-width:calc(1px / var(--projected-scale,1));top:calc(-2px / var(--projected-scale,1));right:calc(-3px / var(--projected-scale,1))}
+.tabletop-stage .tile .own{width:calc(16px / var(--projected-scale,1));height:calc(16px / var(--projected-scale,1));font-size:calc(10px / var(--projected-scale,1));border-width:calc(1px / var(--projected-scale,1));top:calc(-3px / var(--projected-scale,1));inset-inline-start:calc(-3px / var(--projected-scale,1))}
+
+#project-list .project-meta{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:4px;font-weight:400;line-height:1.5}#project-list .project-meta>span{display:inline-block;background:var(--card);border-radius:6px;padding:1px 6px;white-space:normal}#board-projects h2:focus{outline:none}
+
+.tabletop-stage .board.camera-readable .tile:not(.label-readable) .tile-name{display:none}

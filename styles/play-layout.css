@@ -22,7 +22,7 @@ body.ingame #toast{position:static;inset:auto;max-width:none;width:100%;margin:0
 
 #mini>span:first-child{flex:1}#mini>span:last-child{flex:none}.bar-actions #roll>span{white-space:nowrap}
 
-.character-pawn.clustered .pawn-stand{pointer-events:none}.tabletop-stage .landmark-stand,.tabletop-stage .landmark-occupied .landmark-stand{width:var(--landmark-display-size,62px)}
+.character-pawn.clustered .pawn-stand{pointer-events:none}
 
 #view-player-board[hidden]{display:none}
 /* Preserve the existing 320px card workflow with compact camera labels. */

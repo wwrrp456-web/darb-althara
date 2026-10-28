@@ -1,0 +1,11 @@
+{
+  "matrix_cases": 10,
+  "errors": [],
+  "http_errors": [],
+  "browser": "154.0.8037.57",
+  "read_only_all_players": "passed; including board selection",
+  "financial_focus_trap_restore_and_background_inert": "passed",
+  "mandatory_choice_escape_and_duplicate_confirmation": "passed",
+  "zoomed_follow_after_manual_recovery": "passed (position fixture)",
+  "rotations": "passed (viewport simulation)"
+}

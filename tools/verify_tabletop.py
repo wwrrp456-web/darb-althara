@@ -15,8 +15,8 @@ async def complete_setup(page):
         await page.get_by_role('button',name='مراجعة الإعدادات',exact=True).click()
         await page.locator('#sLaunch').click()
 
-async def start_game(page, eight=False):
-    await page.goto('http://localhost:8000/', wait_until='networkidle')
+async def start_game(page, eight=False, base_url="http://localhost:8000"):
+    await page.goto(base_url+'/', wait_until='networkidle')
     await page.locator('#wNew').click()
     await page.locator('[data-i="1"] [data-k="ctrl"]').select_option('local')
     await page.locator('[data-i="0"] [data-k="name"]').fill('محسن')

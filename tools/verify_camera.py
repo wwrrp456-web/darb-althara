@@ -39,7 +39,6 @@ async def verify():
         await page.locator('[data-camera=in]').click()
         assert (await camera_state(page))['zoom'] == 125
         await page.locator('[data-camera=in]').click()
-        assert await page.locator('#board').evaluate('(b)=>b.classList.contains("camera-readable")')
         assert await page.locator('#board').evaluate('(b)=>Math.abs(b.offsetWidth-b.offsetHeight)<2')
         rect=await stage.bounding_box()
         x=rect['x']+rect['width']/2;y=rect['y']+rect['height']/2
@@ -68,7 +67,8 @@ async def verify():
         assert await page.evaluate('JSON.stringify(__darb.G)') == before
         while await page.locator('[data-camera=in]').is_enabled():
             await page.locator('[data-camera=in]').click()
-        assert (await camera_state(page))['zoom']==320
+        assert (await camera_state(page))['zoom']==640
+        assert await page.locator('#board').evaluate('(b)=>b.classList.contains("camera-readable")')
         while await page.locator('[data-camera=out]').is_enabled():
             await page.locator('[data-camera=out]').click()
         assert (await camera_state(page))['zoom']==75
@@ -126,7 +126,7 @@ async def verify():
         await touch.locator('[data-camera=in]').click()
         await touch.locator('.tabletop-card').screenshot(path=str(ROOT/'brand/preview-camera-mobile.png'),style='.bar-actions,.react-fab,#toast{visibility:hidden!important}')
         assert not errors,errors
-        print(json.dumps({'mouse_drag':'passed','wheel_zoom':'passed','zoom_limits':'75–320%',
+        print(json.dumps({'mouse_drag':'passed','wheel_zoom':'passed','zoom_limits':'75–640%',
                           'native_touch_pinch_and_pan':'passed','keyboard_camera':'passed','automatic_pawn_follow':'passed',
                           'read_only_landmark_and_deck_inspection':'passed','game_prompt_priority':'passed',
                           'responsive_sizes':4,'javascript_errors':errors},ensure_ascii=False,indent=2))

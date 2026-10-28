@@ -21,14 +21,15 @@ async def verify():
   for w,h in [(390,844),(1180,820)]:
    await page.set_viewport_size({'width':w,'height':h});await page.locator('.tabletop-stage').scroll_into_view_if_needed()
    await page.locator('[data-camera=out]').click()
-   for hit in await page.locator('.landmark-stand .miniature-hit,.has-deck-art>.miniature-hit,.pawn-stand>.miniature-hit').all():
+   for hit in await page.locator('.pawn-stand>.miniature-hit,#board-deck-rack button,#board-players').all():
+    if not await hit.is_visible():continue
     box=await hit.bounding_box();assert box['width']>=48 and box['height']>=48,(w,box)
    await page.locator('[data-camera=reset]').click()
   await page.set_viewport_size({'width':390,'height':844})
   d=await inspect('[data-landmark=hospital]');assert d['المالك']=='متاح للشراء';assert integer(d['سعر الشراء الأساسي'])==110000;assert integer(d['الدخل الأساسي'])==1200
   initial_down=integer(d['الدفعة الأولى']);await close()
-  # Native pointer on the actual miniature, not just its tile, opens the same inspector.
-  state=await snapshot();await page.locator('[data-landmark=hospital] .landmark-stand').click();assert await inspector.locator('h2').inner_text()=='مستشفى خاص';assert await snapshot()==state;await close()
+  # The stable project catalog provides the full-size pointer target.
+  state=await snapshot();await page.locator('#board-projects-open').click();await page.locator('#project-list [data-project=hospital]').click();assert await inspector.locator('h2').inner_text()=='مستشفى خاص';assert await snapshot()==state;await close()
   # A real engine purchase followed by each allowed upgrade changes live data and badges.
   await page.evaluate('()=>{__darb.G.players[0].cash=1000000;window.__done=false;__darb.resolveTile(__darb.G.players[0],"lm_hospital").then(()=>__done=true)}')
   assert await page.evaluate('__darb.G.prompt.data.down')==initial_down
@@ -38,11 +39,18 @@ async def verify():
   assert 'محسن' in d['المالك'];assert await inspector.locator('dd .identity-avatar').count()==1;assert integer(d['مستوى التطوير'])==1;assert integer(d['تكلفة التطوير التالي'])==17000
   assert integer(d['الدخل الشهري الحالي'])==await page.evaluate('__darb.G.players[0].assets.find(a=>a.lm==="hospital").inc')
   assert integer(d['الإيجار قبل سقف قدرة الزائر'])==2250
-  await close();await page.evaluate('__darb.G.players[0].fast=true');await page.locator('.chip-p[data-pid="1"]').evaluate('(e)=>e.click()')
+  await close();await page.locator('#board-projects-open').click()
+  catalog=await page.locator('#project-list [data-project=hospital]').inner_text();assert 'محسن' in catalog and 'المستوى 1' in catalog,catalog
+  await page.locator('#project-list [data-project=hospital]').focus()
+  await page.evaluate('window.__catalogFocus=document.activeElement')
+  await page.locator('.chip-p[data-pid="0"]').evaluate('(e)=>e.click()')
+  assert await page.evaluate('document.activeElement===window.__catalogFocus&&window.__catalogFocus===document.querySelector("#project-list [data-project=hospital]")')
+  await page.keyboard.press('Escape');await page.evaluate('__darb.G.players[0].fast=true');await page.locator('.chip-p[data-pid="1"]').evaluate('(e)=>e.click()')
   await inspect('[data-landmark=hospital]')
   for level in [2,3]:
    await page.evaluate('__darb.upgradeLm(0,"hospital")');assert await inspector.is_visible();d=await details()
    assert integer(d['مستوى التطوير'])==level
+   assert await page.locator('[data-landmark=hospital] .landmark-level-art').inner_text()==str(level)
    assert integer(d['الدخل الشهري الحالي'])==await page.evaluate('__darb.G.players[0].assets.find(a=>a.lm==="hospital").inc')
    assert integer(d['الإيجار قبل سقف قدرة الزائر'])==await page.evaluate('__darb.lmRent("hospital")')
    if level==3:assert d['تكلفة التطوير التالي']=='اكتملت المستويات الثلاثة'

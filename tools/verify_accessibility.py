@@ -27,7 +27,7 @@ async def main(args):
   await start_game(page);await audit('play')
   await page.locator('#sheetBtn').click();await audit('financial')
   await page.get_by_role('button',name='إغلاق',exact=True).click();await page.locator('#board-players').click();await audit('player-picker')
-  await page.keyboard.press('Escape');await page.evaluate("()=>{__darb.resolveTile(__darb.G.players[0],'quiz');}");await page.wait_for_selector('#sheet.decision-card');await audit('quiz')
+  await page.keyboard.press('Escape');await page.locator('#board-projects-open').click();await audit('projects');await page.keyboard.press('Escape');await page.evaluate("()=>{__darb.resolveTile(__darb.G.players[0],'quiz');}");await page.wait_for_selector('#sheet.decision-card');await audit('quiz')
   await page.goto('http://localhost:8000/',wait_until='networkidle')
   # Fresh context avoids restoring the active fixture for the join screen.
   await page.evaluate('localStorage.removeItem("darb-althara-v6")');await page.reload(wait_until='networkidle');await page.locator('#wJoin').click();await audit('join')

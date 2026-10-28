@@ -1,0 +1,300 @@
+{
+  "matrix": [
+    {
+      "players": 2,
+      "width": 360,
+      "height": 640,
+      "overflow": false,
+      "stageHeight": 191.59375,
+      "rackBottom": 236,
+      "stageTop": 236,
+      "dockBottom": 640,
+      "deckLabels": [
+        {
+          "text": "الفرص",
+          "clipped": false
+        },
+        {
+          "text": "العائلة",
+          "clipped": false
+        },
+        {
+          "text": "الأسئلة",
+          "clipped": false
+        },
+        {
+          "text": "المشاريع",
+          "clipped": false
+        }
+      ],
+      "oversizedMarkers": 0
+    },
+    {
+      "players": 2,
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "stageHeight": 395.59375,
+      "rackBottom": 236,
+      "stageTop": 236,
+      "dockBottom": 844,
+      "deckLabels": [
+        {
+          "text": "الفرص",
+          "clipped": false
+        },
+        {
+          "text": "العائلة",
+          "clipped": false
+        },
+        {
+          "text": "الأسئلة",
+          "clipped": false
+        },
+        {
+          "text": "المشاريع",
+          "clipped": false
+        }
+      ],
+      "oversizedMarkers": 0
+    },
+    {
+      "players": 2,
+      "width": 430,
+      "height": 932,
+      "overflow": false,
+      "stageHeight": 483.59375,
+      "rackBottom": 236,
+      "stageTop": 236,
+      "dockBottom": 932,
+      "deckLabels": [
+        {
+          "text": "الفرص",
+          "clipped": false
+        },
+        {
+          "text": "العائلة",
+          "clipped": false
+        },
+        {
+          "text": "الأسئلة",
+          "clipped": false
+        },
+        {
+          "text": "المشاريع",
+          "clipped": false
+        }
+      ],
+      "oversizedMarkers": 0
+    },
+    {
+      "players": 2,
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "stageHeight": 509.59375,
+      "rackBottom": 236,
+      "stageTop": 236,
+      "dockBottom": 1024,
+      "deckLabels": [
+        {
+          "text": "الفرص",
+          "clipped": false
+        },
+        {
+          "text": "العائلة",
+          "clipped": false
+        },
+        {
+          "text": "الأسئلة",
+          "clipped": false
+        },
+        {
+          "text": "المشاريع",
+          "clipped": false
+        }
+      ],
+      "oversizedMarkers": 0
+    },
+    {
+      "players": 2,
+      "width": 1180,
+      "height": 820,
+      "overflow": false,
+      "stageHeight": 371.59375,
+      "rackBottom": 236,
+      "stageTop": 236,
+      "dockBottom": 820,
+      "deckLabels": [
+        {
+          "text": "الفرص",
+          "clipped": false
+        },
+        {
+          "text": "العائلة",
+          "clipped": false
+        },
+        {
+          "text": "الأسئلة",
+          "clipped": false
+        },
+        {
+          "text": "المشاريع",
+          "clipped": false
+        }
+      ],
+      "oversizedMarkers": 0
+    },
+    {
+      "players": 8,
+      "width": 360,
+      "height": 640,
+      "overflow": false,
+      "stageHeight": 191.59375,
+      "rackBottom": 236,
+      "stageTop": 236,
+      "dockBottom": 640,
+      "deckLabels": [
+        {
+          "text": "الفرص",
+          "clipped": false
+        },
+        {
+          "text": "العائلة",
+          "clipped": false
+        },
+        {
+          "text": "الأسئلة",
+          "clipped": false
+        },
+        {
+          "text": "المشاريع",
+          "clipped": false
+        }
+      ],
+      "oversizedMarkers": 0
+    },
+    {
+      "players": 8,
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "stageHeight": 395.59375,
+      "rackBottom": 236,
+      "stageTop": 236,
+      "dockBottom": 844,
+      "deckLabels": [
+        {
+          "text": "الفرص",
+          "clipped": false
+        },
+        {
+          "text": "العائلة",
+          "clipped": false
+        },
+        {
+          "text": "الأسئلة",
+          "clipped": false
+        },
+        {
+          "text": "المشاريع",
+          "clipped": false
+        }
+      ],
+      "oversizedMarkers": 0
+    },
+    {
+      "players": 8,
+      "width": 430,
+      "height": 932,
+      "overflow": false,
+      "stageHeight": 483.59375,
+      "rackBottom": 236,
+      "stageTop": 236,
+      "dockBottom": 932,
+      "deckLabels": [
+        {
+          "text": "الفرص",
+          "clipped": false
+        },
+        {
+          "text": "العائلة",
+          "clipped": false
+        },
+        {
+          "text": "الأسئلة",
+          "clipped": false
+        },
+        {
+          "text": "المشاريع",
+          "clipped": false
+        }
+      ],
+      "oversizedMarkers": 0
+    },
+    {
+      "players": 8,
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "stageHeight": 509.59375,
+      "rackBottom": 236,
+      "stageTop": 236,
+      "dockBottom": 1024,
+      "deckLabels": [
+        {
+          "text": "الفرص",
+          "clipped": false
+        },
+        {
+          "text": "العائلة",
+          "clipped": false
+        },
+        {
+          "text": "الأسئلة",
+          "clipped": false
+        },
+        {
+          "text": "المشاريع",
+          "clipped": false
+        }
+      ],
+      "oversizedMarkers": 0
+    },
+    {
+      "players": 8,
+      "width": 1180,
+      "height": 820,
+      "overflow": false,
+      "stageHeight": 371.59375,
+      "rackBottom": 236,
+      "stageTop": 236,
+      "dockBottom": 820,
+      "deckLabels": [
+        {
+          "text": "الفرص",
+          "clipped": false
+        },
+        {
+          "text": "العائلة",
+          "clipped": false
+        },
+        {
+          "text": "الأسئلة",
+          "clipped": false
+        },
+        {
+          "text": "المشاريع",
+          "clipped": false
+        }
+      ],
+      "oversizedMarkers": 0
+    }
+  ],
+  "errors": [],
+  "http_errors": [],
+  "deck_and_project_inspection": "read-only",
+  "fast_track_catalog": "2 projects",
+  "close_labels": "no ellipsis or overflow at readable zoom",
+  "project_markers": "contained, no oversized independent hit planes"
+}

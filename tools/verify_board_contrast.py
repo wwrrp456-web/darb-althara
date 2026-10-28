@@ -47,7 +47,9 @@ async def main(args):
      await page.locator('.tabletop-stage').focus()
      for _ in range(5):await page.keyboard.press('+')
      await page.wait_for_timeout(350)
-     el=page.locator('.tabletop-hud .big');rect=await el.bounding_box();fg,_=rgba(await el.evaluate('(e)=>getComputedStyle(e).color'))
+     el=page.locator('.tabletop-hud .big');title_selector='.tabletop-hud .big'
+     if not await el.is_visible():el=page.locator('#turn-readout b');title_selector='#turn-readout b'
+     rect=await el.bounding_box();fg,_=rgba(await el.evaluate('(e)=>getComputedStyle(e).color'))
      # Exclude the light shadow so evidence does not rely on it for contrast.
      await el.evaluate('(e)=>e.style.setProperty("text-shadow","none","important")')
      visible=Image.open(io.BytesIO(await page.screenshot())).convert('RGB')
@@ -58,7 +60,7 @@ async def main(args):
       for x in range(max(0,int(rect['x'])),min(w,int(rect['x']+rect['width']+1))):
        v=visible.getpixel((x,y));bg=background.getpixel((x,y))
        if max(abs(a-c) for a,c in zip(v,fg))<12 and sum(abs(a-c) for a,c in zip(v,bg))>30:ratios.append(contrast(fg,bg))
-     row={'viewport':[w,h],'view':view,'name':name,'glyph_pixels':len(ratios),'min_contrast':round(min(ratios),3) if ratios else None,'text_shadow_used':False}
+     row={'title_selector':title_selector,'viewport':[w,h],'view':view,'name':name,'glyph_pixels':len(ratios),'min_contrast':round(min(ratios),3) if ratios else None,'text_shadow_used':False}
      result['glyph_samples'].append(row)
      await el.evaluate('(e)=>{e.style.removeProperty("visibility");e.style.removeProperty("text-shadow");}')
      await page.locator('.tabletop-stage').evaluate('(e)=>e.blur()')

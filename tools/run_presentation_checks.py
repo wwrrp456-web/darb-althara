@@ -6,7 +6,7 @@ import argparse,runpy,sys
 from pathlib import Path
 from playwright.async_api import Page,Locator
 parser=argparse.ArgumentParser()
-parser.add_argument('suite',choices=['camera','tabletop','inspection','cards'])
+parser.add_argument('suite',choices=['camera','tabletop','inspection','cards','sprite_art'])
 parser.add_argument('--artifacts',type=Path,default=Path('/tmp/darb-presentation-checks'))
 args=parser.parse_args();args.artifacts.mkdir(parents=True,exist_ok=True)
 def redirect(original):

@@ -10,18 +10,20 @@
   stage.append(world);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const camera = {x:0, y:0, zoom:1, follow:false};
-  let options = null, identity = null, lastTarget = null;
+  let options = null, identity = null, lastTarget = null,labels=[];
   let frame = 0, followUntil = 0, forceFollow = false;
   const pointers = new Map();
   let gesture = null;
   const inspector = document.getElementById('board-inspector');
   let inspectedReference=null;
   let fit=1, footprint={width:640,height:640};
-  const crowd=document.getElementById("board-crowd");
+  const crowd=document.getElementById("board-crowd"),projects=document.getElementById("board-projects");
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
   function measureFit() {
     const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;
+    const tilt=stage.dataset.view==='top'?0:Math.acos(clamp((h-56)/Math.max(1,w-56),Math.cos(52*Math.PI/180),Math.cos(24*Math.PI/180)))*180/Math.PI;
+    stage.style.setProperty('--table-tilt',tilt+'deg');
     const saved=world.style.transform;world.style.transform='none';
     const viewport=stage.getBoundingClientRect(),cx=viewport.left+w/2,cy=viewport.top+h/2;
     const pad=28;fit=1;
@@ -48,18 +50,20 @@
     world.style.transform = `translate3d(${camera.x}px,${camera.y}px,0) scale(${camera.zoom})`;
     stage.dataset.zoom = String(Math.round(camera.zoom * 100));
     stage.dataset.follow = String(camera.follow);
-    board.classList.toggle('camera-readable', camera.zoom >= 1.55);
-    board.classList.toggle('names', camera.zoom>=1.55 && footprint.width*camera.zoom>=560);
+    const readable=fit*camera.zoom*(640/(options?.track==='fast'?6:13))>=44;
+    for(const label of labels)label.parentElement.classList.toggle('label-readable',readable&&fit*camera.zoom>=Number(label.dataset.minimumScale||Infinity));
+    board.classList.toggle('camera-readable',readable);board.classList.toggle('names',readable);
     document.querySelector('[data-camera-zoom]').textContent = `${Math.round(camera.zoom * 100)}٪`;
     document.querySelector('[data-camera="follow"]').setAttribute('aria-pressed', String(camera.follow));
-    document.querySelector('[data-camera="in"]').disabled = camera.zoom >= 3.19;
+    document.querySelector('[data-camera="in"]').disabled = camera.zoom >= 6.39;
     document.querySelector('[data-camera="out"]').disabled = camera.zoom <= .751;
   }
   function updateHitTargets() {
     const scale=Math.max(.01,fit*camera.zoom);
     stage.style.setProperty('--mini-hit-size',`${Math.ceil(56/scale)}px`);
     stage.style.setProperty('--projected-scale',String(scale));
-    stage.style.setProperty('--landmark-display-size',`${Math.max(49,28/Math.max(.01,fit))}px`);
+    stage.style.setProperty('--pawn-size',`${Math.min(80,48/scale)}px`);
+
   }
   function stopFollow() {
     camera.follow = false;
@@ -108,7 +112,7 @@
     const rect = stage.getBoundingClientRect();
     const x = (clientX ?? rect.left + rect.width / 2) - rect.left - rect.width / 2;
     const y = (clientY ?? rect.top + rect.height / 2) - rect.top - rect.height / 2;
-    const next = clamp(nextZoom, .75, 3.2), factor = next / camera.zoom;
+    const next = clamp(nextZoom, .75, 6.4), factor = next / camera.zoom;
     camera.x = x - (x - camera.x) * factor;
     camera.y = y - (y - camera.y) * factor;
     camera.zoom = next;
@@ -116,6 +120,28 @@
     draw();
   }
   function inspect(reference) {
+    if(reference==='projects'){
+      if(!options||options.busy||document.querySelector('#modal.on'))return;
+      const list=document.getElementById('project-list');if(!projects.open)list.replaceChildren();
+      for(const tile of board.querySelectorAll('[data-landmark]')){
+        const key=tile.dataset.landmark,info=options.inspect?.('lm_'+key);if(!info)continue;
+        let button=list.querySelector(`[data-project="${key}"]`);
+        if(!button){
+          button=document.createElement('button');button.type='button';button.dataset.project=key;
+          const thumb=document.createElement('span');thumb.className='project-thumb';thumb.setAttribute('aria-hidden','true');
+          const label=document.createElement('span'),title=document.createElement('b'),meta=document.createElement('small');meta.className='project-meta';label.append(title,meta);button.append(thumb,label);
+          button.onclick=()=>{projects.close();document.getElementById('board-projects-open').focus();inspect('lm_'+key);};list.append(button);
+        }
+        const signature=JSON.stringify([info.title,info.owner,(info.details||[]).filter(([key])=>['المالك','مستوى التطوير'].includes(key))]);
+        if(button.dataset.info!==signature){
+          button.dataset.info=signature;button.querySelector('b').textContent=info.title;
+          const meta=button.querySelector('.project-meta');meta.replaceChildren();
+          for(const [key,value] of info.details||[]){if(!['المالك','مستوى التطوير'].includes(key)||key==='مستوى التطوير'&&!info.owner)continue;const tag=document.createElement('span');tag.textContent=key==='المالك'?(value==='متاح للشراء'?value:'المالك: '+value):'المستوى '+value;meta.append(tag);}
+        }
+        const thumb=button.querySelector('.project-thumb');if(!thumb.querySelector('.inspector-art'))window.DarbTabletopArt?.decorateSymbol(thumb,info);
+      }
+      if(!projects.open)projects.showModal();return;
+    }
     if(typeof reference==='string'&&(reference==='players'||reference.startsWith('group:'))){
       if(!options||options.busy||document.querySelector('#modal.on'))return;
       const people=reference==='players'?(options.allPlayers||options.players):options.players.filter(p=>p.pos===Number(reference.slice(6)));
@@ -257,6 +283,11 @@
       zoomAt(camera.zoom * (action === 'in' ? 1.25 : .8));
     }
   }));
+  projects.querySelector('[data-close-projects]').onclick=()=>projects.close();
+  for(const button of document.querySelectorAll('#board-deck-rack [data-deck]')){
+    button.onclick=()=>inspect(button.dataset.deck);
+    button.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();inspect(button.dataset.deck);}});
+  }
   crowd.querySelector('[data-close-crowd]').onclick=()=>crowd.close();
   inspector.querySelectorAll('[data-close-inspector]').forEach(button => button.addEventListener('click', () => inspector.close()));
   inspector.addEventListener('click', event => {
@@ -269,10 +300,12 @@
   draw();
   window.DarbCamera = {
     update(next) {
-      options = next;
+      options = next;labels=[...board.querySelectorAll('.tile-name')];
       const key = `${next.gameId}:${next.track}`;
-      if (identity !== key) { identity=key; lastTarget=null; reset(); }
+      if (identity !== key) { if(projects.open)projects.close();identity=key; lastTarget=null; reset(); }
       if(next.busy&&crowd.open)crowd.close();
+      if(next.busy&&projects.open)projects.close();
+      else if(projects.open)inspect('projects');
       if (next.busy && inspector.open) inspector.close();
       else if(inspector.open&&inspectedReference!==null)inspect(inspectedReference);
       const pawn = next.players.find(p => p.id === next.currentId);
@@ -282,6 +315,7 @@
       draw();
     },
     inspect,
+    labelsChanged(){labels=[...board.querySelectorAll('.tile-name')];draw();},
     viewChanged:reset
   };
 })();

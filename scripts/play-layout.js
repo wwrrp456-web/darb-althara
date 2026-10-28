@@ -4,6 +4,8 @@
   const $ = s => document.querySelector(s);
   const wrap = $('.wrap'), modal = $('#modal'), sheet = $('#sheet');
   wrap.append($('#toast'), $('.bar-actions'));
+  const header=$('.wrap > header');header.insertBefore($('#turn-readout'),header.querySelector('.sp'));
+  $('#board-projects-open').onclick=()=>window.DarbCamera?.inspect('projects');
   const viewport = () => {
     const v = window.visualViewport;
     document.documentElement.style.setProperty('--viewport-height', `${v?.height || innerHeight}px`);

@@ -3,9 +3,25 @@
   'use strict';
   const board=document.getElementById('board');
   const keys=['cafe','mall','uni','hospital','hotel','bank','tower','airport'];
+  const textMeasure=document.createElement('canvas').getContext('2d'),wordWidths=new Map();
+  function fitLabels(cells){
+    const tiles=cells.querySelectorAll('[data-tile]');if(!tiles.length)return;
+    const available=Math.max(1,tiles[0].clientWidth-6);
+    if(textMeasure){textMeasure.font='700 100px Tajawal';textMeasure.direction='rtl';}
+    for(const label of cells.querySelectorAll('.tile-name')){
+      let widest=0;
+      for(const word of label.textContent.trim().split(/\s+/)){
+        if(!wordWidths.has(word))wordWidths.set(word,textMeasure?textMeasure.measureText(word).width/100:word.length*.7);
+        widest=Math.max(widest,wordWidths.get(word));
+      }
+      const limit=available/Math.max(.1,widest);
+      label.style.setProperty('--tile-font-limit',limit+'px');label.dataset.minimumScale=String(12.5/limit);
+    }
+  }
+  document.fonts?.ready.then(()=>{wordWidths.clear();fitLabels(board);window.DarbCamera?.labelsChanged();});
   function probe(file,cssClass){
     const image=new Image();
-    image.onload=()=>board.classList.add(cssClass);
+    image.onload=()=>{board.classList.add(cssClass);if(cssClass==='decks-ready')document.getElementById('board-deck-rack').classList.add(cssClass);};
     image.onerror=()=>board.classList.remove(cssClass); // Keep the original flat icons as fallback.
     image.src='art/identity/'+file;
   }
@@ -19,22 +35,17 @@
       const art=document.createElement('span');art.className='landmark-sprite';
       art.style.setProperty('--sx',(i%4)*100/3+'%');art.style.setProperty('--sy',Math.floor(i/4)*100+'%');
       stand.append(art);
-      const hit=document.createElement("span");hit.className="miniature-hit";stand.append(hit);
+
       const level=Math.max(0,Math.min(3,Number(tile.dataset.level)||0));
-      if(level){const badge=document.createElement('span');badge.className='landmark-level-art';badge.dataset.level=String(level);badge.style.setProperty('--lx',(level-1)*50+'%');stand.append(badge);}
+      if(level){const badge=document.createElement('span');badge.className='landmark-level-art';badge.dataset.level=String(level);badge.style.setProperty('--lx',(level-1)*50+'%');badge.textContent=String(level);stand.append(badge);}
       if(tile.dataset.ownerColor){tile.classList.add('landmark-owned');tile.style.setProperty('--owner-color',tile.dataset.ownerColor);}
       const occupied=options.players.some(p=>p.pos===Number(tile.dataset.tile));
       tile.classList.toggle('landmark-occupied',occupied);
-      // Buildings sit toward the park edge of their tile, leaving the road to the pawns.
-      const row=parseInt(tile.style.gridRow,10),col=parseInt(tile.style.gridColumn,10);
-      const n=options.track==='fast'?6:13,offset=occupied?100:65;
-      if(row===1)stand.style.top=(50+offset)+'%';
-      else if(row===n)stand.style.top=(50-offset)+'%';
-      else if(col===1)stand.style.left=(50+offset)+'%';
-      else stand.style.left=(50-offset)+'%';
       tile.append(stand);
     }
-    for(const deck of cells.querySelectorAll('[data-deck]')){
+    fitLabels(cells);
+    for(const deck of document.querySelectorAll('#board-deck-rack [data-deck]')){
+      if(deck.querySelector('.deck-sprite'))continue;
       const i={family:0,quiz:1,deal:2}[deck.dataset.deck];if(i===undefined)continue;
       deck.classList.add('has-deck-art');
       const art=document.createElement('span');art.className='deck-sprite';art.setAttribute('aria-hidden','true');art.style.setProperty('--dx',i*50+'%');deck.append(art);const hit=document.createElement('span');hit.className='miniature-hit';hit.setAttribute('aria-hidden','true');deck.append(hit);
@@ -50,5 +61,5 @@
     image.style.setProperty('--sx',(art.sheet==='landmark'?i%4*100/3:i*50)+'%');image.style.setProperty('--sy',(art.sheet==='landmark'?Math.floor(i/4)*100:0)+'%');
     symbol.append(image);symbol.classList.add('has-inspector-art');
   }
-  window.DarbTabletopArt={mount,decorateSymbol};
+  window.DarbTabletopArt={mount,decorateSymbol,fitLabels};
 })();
