@@ -1,0 +1,306 @@
+{
+  "scope": "computed opaque colors, conservative alpha background bound, and background under solid text pixels",
+  "palette": [
+    {
+      "selector": ".pawn-number",
+      "index": 0,
+      "foreground": "rgb(255, 255, 255)",
+      "background": "rgb(15, 118, 110)",
+      "opacity": "1",
+      "background_over_black": [
+        15.0,
+        118.0,
+        110.0
+      ],
+      "contrast": 5.473,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".pawn-number",
+      "index": 1,
+      "foreground": "rgb(255, 255, 255)",
+      "background": "rgb(194, 65, 12)",
+      "opacity": "1",
+      "background_over_black": [
+        194.0,
+        65.0,
+        12.0
+      ],
+      "contrast": 5.178,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".pawn-number",
+      "index": 2,
+      "foreground": "rgb(255, 255, 255)",
+      "background": "rgb(124, 58, 237)",
+      "opacity": "1",
+      "background_over_black": [
+        124.0,
+        58.0,
+        237.0
+      ],
+      "contrast": 5.699,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".pawn-number",
+      "index": 3,
+      "foreground": "rgb(255, 255, 255)",
+      "background": "rgb(190, 18, 60)",
+      "opacity": "1",
+      "background_over_black": [
+        190.0,
+        18.0,
+        60.0
+      ],
+      "contrast": 6.285,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".pawn-number",
+      "index": 4,
+      "foreground": "rgb(255, 255, 255)",
+      "background": "rgb(29, 78, 216)",
+      "opacity": "1",
+      "background_over_black": [
+        29.0,
+        78.0,
+        216.0
+      ],
+      "contrast": 6.702,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".pawn-number",
+      "index": 5,
+      "foreground": "rgb(255, 255, 255)",
+      "background": "rgb(161, 98, 7)",
+      "opacity": "1",
+      "background_over_black": [
+        161.0,
+        98.0,
+        7.0
+      ],
+      "contrast": 4.923,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".pawn-number",
+      "index": 6,
+      "foreground": "rgb(255, 255, 255)",
+      "background": "rgb(190, 24, 93)",
+      "opacity": "1",
+      "background_over_black": [
+        190.0,
+        24.0,
+        93.0
+      ],
+      "contrast": 6.038,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".pawn-number",
+      "index": 7,
+      "foreground": "rgb(255, 255, 255)",
+      "background": "rgb(77, 124, 15)",
+      "opacity": "1",
+      "background_over_black": [
+        77.0,
+        124.0,
+        15.0
+      ],
+      "contrast": 4.993,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".pawn-cluster",
+      "index": 0,
+      "foreground": "rgb(255, 253, 248)",
+      "background": "rgb(51, 95, 115)",
+      "opacity": "1",
+      "background_over_black": [
+        51.0,
+        95.0,
+        115.0
+      ],
+      "contrast": 6.828,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".has-deck-art>b",
+      "index": 0,
+      "foreground": "rgb(104, 83, 66)",
+      "background": "rgba(255, 252, 246, 0.867)",
+      "opacity": "1",
+      "background_over_black": [
+        221.085,
+        218.484,
+        213.282
+      ],
+      "contrast": 5.205,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".has-deck-art>b",
+      "index": 1,
+      "foreground": "rgb(104, 83, 66)",
+      "background": "rgba(255, 252, 246, 0.867)",
+      "opacity": "1",
+      "background_over_black": [
+        221.085,
+        218.484,
+        213.282
+      ],
+      "contrast": 5.205,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".has-deck-art>b",
+      "index": 2,
+      "foreground": "rgb(104, 83, 66)",
+      "background": "rgba(255, 252, 246, 0.867)",
+      "opacity": "1",
+      "background_over_black": [
+        221.085,
+        218.484,
+        213.282
+      ],
+      "contrast": 5.205,
+      "threshold": 4.5
+    },
+    {
+      "selector": ".tabletop-hud .mut",
+      "index": 0,
+      "foreground": "rgb(113, 103, 84)",
+      "background": "rgba(255, 250, 240, 0.933)",
+      "opacity": "1",
+      "background_over_black": [
+        237.91500000000002,
+        233.25,
+        223.92000000000002
+      ],
+      "contrast": 4.613,
+      "threshold": 4.5
+    },
+    {
+      "selector": "[data-camera=out]",
+      "index": 0,
+      "foreground": "rgb(51, 95, 115)",
+      "background": "rgb(255, 253, 248)",
+      "opacity": "1",
+      "background_over_black": [
+        255.0,
+        253.0,
+        248.0
+      ],
+      "contrast": 6.828,
+      "threshold": 4.5
+    },
+    {
+      "selector": "[data-close-crowd]",
+      "index": 0,
+      "foreground": "rgb(255, 253, 248)",
+      "background": "rgb(51, 95, 115)",
+      "opacity": "1",
+      "background_over_black": [
+        51.0,
+        95.0,
+        115.0
+      ],
+      "contrast": 6.828,
+      "threshold": 4.5
+    }
+  ],
+  "glyph_samples": [
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "view": "top",
+      "name": "محسن",
+      "glyph_pixels": 3,
+      "min_contrast": 10.973,
+      "text_shadow_used": false
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "view": "top",
+      "name": "عبدالرحمن سالم",
+      "glyph_pixels": 296,
+      "min_contrast": 10.892,
+      "text_shadow_used": false
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "view": "perspective",
+      "name": "محسن",
+      "glyph_pixels": 17,
+      "min_contrast": 10.988,
+      "text_shadow_used": false
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "view": "perspective",
+      "name": "عبدالرحمن سالم",
+      "glyph_pixels": 27,
+      "min_contrast": 10.811,
+      "text_shadow_used": false
+    },
+    {
+      "viewport": [
+        1180,
+        820
+      ],
+      "view": "top",
+      "name": "محسن",
+      "glyph_pixels": 165,
+      "min_contrast": 10.833,
+      "text_shadow_used": false
+    },
+    {
+      "viewport": [
+        1180,
+        820
+      ],
+      "view": "top",
+      "name": "عبدالرحمن سالم",
+      "glyph_pixels": 845,
+      "min_contrast": 10.477,
+      "text_shadow_used": false
+    },
+    {
+      "viewport": [
+        1180,
+        820
+      ],
+      "view": "perspective",
+      "name": "محسن",
+      "glyph_pixels": 145,
+      "min_contrast": 10.805,
+      "text_shadow_used": false
+    },
+    {
+      "viewport": [
+        1180,
+        820
+      ],
+      "view": "perspective",
+      "name": "عبدالرحمن سالم",
+      "glyph_pixels": 267,
+      "min_contrast": 10.488,
+      "text_shadow_used": false
+    }
+  ],
+  "errors": []
+}
