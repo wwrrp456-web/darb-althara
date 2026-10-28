@@ -209,6 +209,7 @@
     if(!inspector.open)inspector.showModal();
   }
   const referenceFor = target => {
+    const project=target.closest('[data-city-project]');if(project)return 'lm_'+project.dataset.cityProject;
     const group=target.closest('.pawn-cluster');if(group)return 'group:'+group.dataset.position;
     const pawn=target.closest('.character-pawn');if(pawn)return 'player:'+pawn.dataset.player;
     const tile = target.closest('[data-tile]');

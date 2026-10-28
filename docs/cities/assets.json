@@ -1,0 +1,50 @@
+{
+  "assets": [
+    {
+      "file": "art/cities/architecture.webp",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "bytes": 266286,
+      "sha256": "2fcf9c6d31ae319bf87008c8d2f2f31406f7c444509b51546d529179b42a40fd",
+      "source": "image_gen/exec-6c1d6f64-c915-4bbe-ba6b-45c3985c2991.png",
+      "alpha": false,
+      "conversion": "WebP q86 method6; unchanged dimensions",
+      "use": "selected city environment"
+    },
+    {
+      "file": "art/cities/concepts.webp",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "bytes": 454778,
+      "sha256": "a652aa5f7beb9a488be8da1c759c56a5cc7d9b6e655c9bea4e603b71bc763b4b",
+      "source": "image_gen/exec-e93264ae-9e0b-494d-b063-1f95cc7e0a26.png",
+      "alpha": false,
+      "conversion": "WebP q86 method6; unchanged dimensions",
+      "use": "approved concept previews only"
+    }
+  ],
+  "total_bytes": 721064,
+  "concept_grid": {
+    "columns": 2,
+    "row_y": [
+      0,
+      288,
+      576,
+      864,
+      1152
+    ],
+    "cell_width": 512,
+    "row_heights": [
+      288,
+      288,
+      288,
+      288,
+      384
+    ],
+    "region_display": "SVG viewBox, original image unchanged"
+  }
+}

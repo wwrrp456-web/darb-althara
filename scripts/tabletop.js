@@ -119,6 +119,7 @@
     // Replace only surface content. Pawn nodes stay connected to preserve their motion.
     cells.innerHTML = html;
     window.DarbTabletopArt.mount(cells,options);
+    window.DarbCities?.mount(board);
     // Finalize illustrated labels before measuring cells for pawn coordinates.
     window.DarbIdentity?.hydrate(cells);
     const tiles = new Map([...cells.querySelectorAll('[data-tile]')].map(tile => [Number(tile.dataset.tile), tile]));

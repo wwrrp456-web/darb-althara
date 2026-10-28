@@ -23,6 +23,7 @@ async def main(args):
    if number>1:assert await page.get_by_role('button',name=f'حذف اللاعب {number}',exact=True).count()==1
   await audit('eight-players')
   await page.locator('#sStart').click();await page.locator('#sEnding').select_option('time');await audit('session')
+  await page.locator('#choose-city-setup').click();await audit('city-ready');await page.locator('[data-city-index="1"]').click();await audit('city-preview');await page.keyboard.press('Escape')
   await page.get_by_role('button',name='مراجعة الإعدادات',exact=True).click();await audit('review')
   await start_game(page);await audit('play')
   await page.locator('#sheetBtn').click();await audit('financial')

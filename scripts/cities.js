@@ -1,0 +1,84 @@
+/* Local visual preference only. Never reads/writes match state or network messages. */
+(() => {
+ 'use strict';
+ const cities=[
+  ['architecture','مدينة المعمار','مجسمات واقعية، خشب دافئ وساحات حجرية.'],
+  ['cartoon','مدينة الحكايات','مدينة كرتونية مرسومة بعمق وألوان مريحة.'],
+  ['ivory','مدينة العاج','ماكيت معماري هادئ بتفاصيل عاجية ولمسات ذهبية.'],
+  ['harbor','مدينة المرفأ','قنوات مائية وجسور وأحياء ساحلية.'],
+  ['rings','مدينة المدار','تكوين دائري بمسارات متداخلة.'],
+  ['paper','مدينة الورق','طبقات ورقية ومجسمات كرتونية ملموسة.'],
+  ['strategy','مدينة الآفاق','منظور أعلى وتفاصيل منخفضة لسهولة القراءة.'],
+  ['districts','مدينة الأحياء','أربعة أحياء متنوعة حول حديقة مشتركة.'],
+  ['night','مدينة الأنوار','أجواء مسائية وإضاءة نوافذ دافئة.'],
+  ['crystal','مدينة البلور','مجسمات على قواعد شفافة وطاولة خشبية فاتحة.']
+ ];
+ const ready=new Set(['architecture','classic']),key='darb-city-view';
+ let selected='architecture',preview=0,origin=null;
+ try{const saved=localStorage.getItem(key);if(ready.has(saved))selected=saved;}catch(_){}
+ const dialog=document.getElementById('city-picker'),list=document.getElementById('city-list'),apply=document.getElementById('city-apply');
+ const name=()=>selected==='classic'?'الطاولة السابقة':cities[0][1];
+ function updateLabels(){
+  document.querySelectorAll('[data-city-name]').forEach(el=>el.textContent=name());
+ }
+ function activate(id){
+  if(!ready.has(id))return;
+  selected=id;document.documentElement.dataset.city=id;
+  try{localStorage.setItem(key,id);}catch(_){}
+  updateLabels();mount(document.getElementById('board'));
+ }
+ function paintPreview(host,index){
+  const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox',`${index%2*512} ${Math.floor(index/2)*288} 512 ${index>=8?384:288}`);
+  svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
+  const image=document.createElementNS(ns,'image');image.setAttribute('href','art/cities/concepts.webp');image.setAttribute('width','1024');image.setAttribute('height','1536');svg.append(image);host.replaceChildren(svg);
+ }
+ function showPreview(index){
+  preview=index;const [id,title,description]=cities[index];
+  paintPreview(document.getElementById('city-preview'),index);
+  document.getElementById('city-preview-title').textContent=title;
+  document.getElementById('city-preview-description').textContent=description;
+  document.getElementById('city-status').textContent=ready.has(id)?'متاحة للعب الآن':'معاينة معتمدة · المدينة قيد التجهيز';
+  apply.disabled=!ready.has(id);apply.textContent=ready.has(id)?'العب في هذه المدينة':'قيد التجهيز';
+  for(const button of list.querySelectorAll('button'))button.setAttribute('aria-pressed',String(Number(button.dataset.cityIndex)===index));
+ }
+ function open(){
+  origin=document.activeElement;
+  const guide=document.getElementById('camera-guide');if(guide.open)guide.close();
+  if(!list.children.length)for(const [index,[id,title]] of cities.entries()){
+   const button=document.createElement('button');button.type='button';button.dataset.cityIndex=String(index);button.setAttribute('aria-pressed','false');
+   const image=document.createElement('span');image.className='city-thumb';image.setAttribute('aria-hidden','true');paintPreview(image,index);
+   const label=document.createElement('b');label.textContent=(index+1)+' · '+title;
+   const state=document.createElement('small');state.textContent=ready.has(id)?'متاحة للعب':'معاينة';button.append(image,label,state);button.onclick=()=>showPreview(index);list.append(button);
+  }
+  showPreview(selected==='classic'?preview:0);if(!dialog.open)dialog.showModal();
+ }
+ function close(){dialog.close();if(origin?.isConnected&&!origin.closest('dialog:not([open])'))origin.focus({preventScroll:true});else document.getElementById('camera-help').focus({preventScroll:true});}
+ apply.onclick=()=>{activate(cities[preview][0]);close();};
+ document.getElementById('city-classic').onclick=()=>{activate('classic');close();};
+ document.getElementById('city-random').onclick=()=>{const available=cities.filter(([id])=>ready.has(id));activate(available[Math.floor(Math.random()*available.length)][0]);close();};
+ dialog.querySelector('[data-close-cities]').onclick=close;
+ document.getElementById('choose-city-play').onclick=open;
+ function mountSetup(anchor){
+  const row=document.createElement('div');row.className='city-setup';
+  const text=document.createElement('p');text.textContent='مدينتك: ';const value=document.createElement('b');value.dataset.cityName='';value.textContent=name();text.append(value);
+  const button=document.createElement('button');button.type='button';button.id='choose-city-setup';button.textContent='اختر مدينتك';button.setAttribute('aria-haspopup','dialog');button.onclick=open;
+  const note=document.createElement('small');note.textContent='المظهر على هذا الجهاز فقط؛ القواعد والأموال واحدة في جميع المدن.';
+  row.append(text,button,note);anchor.before(row);
+ }
+ function mount(board){
+  const center=board?.querySelector('.center');if(!center)return;
+  center.querySelector('.city-projects')?.remove();if(selected!=='architecture')return;
+  const plots=document.createElement('div');plots.className='city-projects';
+  for(const [key,x,y,w,h] of [['bank',20,26,22,29],['uni',50,17,29,23],['hospital',83,26,22,29],['hotel',18,65,22,30],['mall',83,66,23,28],['cafe',50,80,25,21]]){
+   const tile=board.querySelector(`[data-landmark="${key}"]`);if(!tile)continue;
+   const button=document.createElement('button');button.type='button';button.dataset.cityProject=key;
+   button.setAttribute('aria-label','معلومات '+tile.title);button.title=tile.title;
+   button.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;
+   plots.append(button);
+  }
+  center.append(plots);
+ }
+ activate(selected);
+ window.DarbCities={open,mountSetup,name,mount};
+})();
