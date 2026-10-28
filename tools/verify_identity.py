@@ -59,7 +59,7 @@ async def verify(base_url):
         assert await page.evaluate('__darb.G.players.length') == 2
         assert await page.locator('#board .tile').count() == 48
         assert await page.locator('#board .tile .ui-icon').count() == 48
-        assert await page.locator('#goodsCard .gcell img').count() == 6
+        assert await page.locator('#goodsCard .gcell .goods-art').count() == 6
         assert await page.locator('#board .character-pawn').count() == 2
         assert await page.locator('#board .solid, #board .board-miniature').count() == 0
         assert await page.locator('#board .pawn-art').first.is_visible()

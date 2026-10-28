@@ -95,7 +95,7 @@ async def verify():
   assert await page.locator('.identity-extra').count()>0
   semantic=await page.evaluate("""()=>{const box=document.createElement('div');box.textContent='⬆️ ⬇️ ↔️ 😟 😵 🔇';document.body.append(box);DarbIdentity.hydrate(box);const result={directions:[...box.querySelectorAll('.identity-direction')].map(e=>e.textContent),extras:box.querySelectorAll('.identity-extra').length,additional:box.querySelectorAll('.identity-additional').length};box.remove();return result}""")
   assert semantic=={'directions':['↑','↓','↔'],'extras':1,'additional':2},semantic
-  assert await page.locator('#board .ui-icon').first.evaluate('(e)=>getComputedStyle(e).backgroundImage.includes("icons-sheet.png")')
+  assert await page.locator('#board .ui-icon').first.evaluate('(e)=>e.querySelector(".sprite-viewport image")?.getAttribute("href").includes("icons-sheet.png")')
   await page.locator('#menuBtn').click()
   assert 'decision-card' not in (await page.locator('#sheet').get_attribute('class'))
   assert not errors,errors;assert not missing,missing

@@ -1,0 +1,40 @@
+{
+  "errors": [],
+  "http_errors": [],
+  "gallery": {
+    "icons": 36,
+    "extra": 15,
+    "reactions": 16,
+    "cards": 9,
+    "cardExtra": 4,
+    "goods": 6,
+    "avatars": 16
+  },
+  "runtime": [
+    [
+      360,
+      640
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      430,
+      932
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      1180,
+      820
+    ]
+  ],
+  "briefcase_neighbor_purple_pixels": {
+    "before": 1626,
+    "after": 0
+  },
+  "brand_guide_framed_icons": 32
+}

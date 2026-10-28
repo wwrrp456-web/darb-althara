@@ -7,7 +7,7 @@ from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 from pathlib import Path
 from verify_tabletop import complete_setup
 from playwright.async_api import async_playwright
-async def main(root,dest,base_url,stop_server):
+async def main(root,dest,base_url,stop_server,offline_mode="origin-stop"):
  old_version=re.search(r'const VER = "([^"]+)"', (dest/"sw.js").read_text()).group(1)
  new_version=re.search(r'const VER = "([^"]+)"', (root/"sw.js").read_text()).group(1)
  async with async_playwright() as p:
@@ -43,8 +43,10 @@ async def main(root,dest,base_url,stop_server):
   after=await page.evaluate('__darb.G.players.map(p=>({name:p.name,pk:p.pk,cash:p.cash}))')
   assert saved==after,(saved,after)
   await page.wait_for_function('''async () => (await (await caches.match('./index.html')).text()).includes('scripts/identity.js')''')
-  # Cut the origin itself: this verifies cache-only reload without a CDP offline-toggle race.
+  # Keep the origin-stop fixture; allow explicit disconnection when dead localhost
+  # requests stall in an execution environment. Both modes require cache-only assets.
   await asyncio.to_thread(stop_server)
+  if offline_mode=="network-toggle":await c.set_offline(True)
   try:await page.reload(wait_until='domcontentloaded',timeout=10000)
   except Exception:
    print({'offline_pending_requests':sorted(pending),'workers':[await w.evaluate('typeof VER!=="undefined"?VER:"unknown"') for w in c.service_workers]},flush=True)
@@ -59,12 +61,13 @@ async def main(root,dest,base_url,stop_server):
   assert await page.locator('.landmark-sprite').count()==6
   assert await page.locator('.deck-sprite').count()==3
   assert not errors,errors
-  print(json.dumps({'board_nodes_before_after':[old_nodes,new_nodes],'upgrade_from':old_version,'upgrade_to':new_version,'upgrade':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed'}))
+  print(json.dumps({'board_nodes_before_after':[old_nodes,new_nodes],'upgrade_from':old_version,'upgrade_to':new_version,'upgrade':'passed','previous_game_players_professions_cash':'preserved','upgraded_offline_game':'passed','offline_mode':offline_mode}))
   await b.close()
 if __name__ == '__main__':
  import argparse
  parser=argparse.ArgumentParser(description='Verify old PWA upgrade preserves an actual saved game.')
  parser.add_argument('--previous-ref',default='be053fc')
+ parser.add_argument('--offline-mode',choices=['origin-stop','network-toggle'],default='origin-stop')
  args=parser.parse_args()
  root=Path(__file__).resolve().parents[1]
  class QuietHandler(SimpleHTTPRequestHandler):
@@ -77,6 +80,6 @@ if __name__ == '__main__':
   threading.Thread(target=server.serve_forever,daemon=True).start()
   def stop_server():
    server.shutdown();server.server_close()
-  try:asyncio.run(asyncio.wait_for(main(root,dest,f'http://localhost:{server.server_port}',stop_server),timeout=80))
+  try:asyncio.run(asyncio.wait_for(main(root,dest,f'http://localhost:{server.server_port}',stop_server,args.offline_mode),timeout=80))
   finally:stop_server();server.server_close()
 

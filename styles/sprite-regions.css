@@ -1,0 +1,8 @@
+/* Complete, isolated atlas drawings with an internal safe margin. */
+.sprite-framed{position:relative;background-image:none!important;background-color:transparent}
+.sprite-viewport{display:block;width:100%;height:100%;overflow:hidden;pointer-events:none;flex:none}
+span.sprite-framed>.sprite-viewport{position:absolute;inset:0}
+svg.ui-icon.sprite-framed>.sprite-viewport{width:100%;height:100%}
+.card-illustration.sprite-framed{background-color:#fffaf0;isolation:isolate}
+.goods-art{display:inline-block;width:46px;height:46px;border-radius:8px;vertical-align:middle;flex:none}
+@media(max-width:767px){.goods-art{width:33px;height:33px}}

@@ -1,0 +1,16 @@
+{
+  "base_ref": "d952903233faee448b173e04e032ec747b7a19b5",
+  "engine_identical": true,
+  "engine_sha256": "abf5a5509a0dd3493cfbeff589a67a03993c51504b65bedb40061387c256265d",
+  "source_artwork_unchanged_sha256": {
+    "icons-sheet.png": "9255513312561e8d23a61422f22c5665b3bc51a6d05ec53669bbebb05b63b2ba",
+    "icons-extra-sheet.png": "e397d8b6b65ae7df2ece91c91c8329313260728e8093edab56b2e887269f253e",
+    "reactions-sheet.png": "123b367cb2f90b9baa046eebf8d835b84ac51b505aae39d2523d6d0e705f2404",
+    "cards-sheet.png": "2b54323ddeb66616c7a08a8fed8f0faa22cacd6c9ec9524c4de1ccc87411b045",
+    "cards-extra-sheet.png": "4ec4e8ac9d93a6dd47fbb0d3c350a507369bd6102247936653b08f74b524d27a",
+    "goods-sheet.png": "53ed9502e598777851b7a116b50976006590e8b2460e50d7dca69b4e4efdd673",
+    "characters-sheet.png": "9b277f947e819a7cf7c0609d569dcb3391b2009cacc0b437c7feb9e2ff20885b"
+  },
+  "save_version": 10,
+  "protocol": 2
+}

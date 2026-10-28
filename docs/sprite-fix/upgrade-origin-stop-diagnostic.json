@@ -1,0 +1,8 @@
+{
+  "status": "reload timed out after 10 seconds",
+  "offline_pending_requests": [
+    "http://localhost:34291/"
+  ],
+  "active_worker": "darb-sprites-v19",
+  "note": "Origin-stop fixture stalled on the navigation request; this attempt did not pass. The following explicit network-disconnect check is reported separately."
+}

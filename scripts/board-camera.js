@@ -143,6 +143,7 @@
     inspector.querySelector('.board-info-symbol').style.background = info.color;
     inspector.querySelector('use').setAttribute('href', `#gi-${info.icon}`);
     inspector.querySelector('.ui-icon').dataset.icon=info.icon;
+    window.DarbSprites?.hydrate(inspector.querySelector('.ui-icon'));
     window.DarbTabletopArt.decorateSymbol(inspector.querySelector('.board-info-symbol'),info);
     const list = inspector.querySelector('dl');
     list.replaceChildren();

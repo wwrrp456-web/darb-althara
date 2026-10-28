@@ -18,7 +18,7 @@
   const status = {'✅':'✓','❌':'×','⚠':'!','🚫':'×','🔴':'●','🟠':'●','🟡':'●','🟢':'●'};
   const avatarValues=['🧑','👩','🧔','👧','👦','👴','👵','🦁','🐯','🦊','🐼','🦄','🐸','🚀','👑','🎩'];
   const avatarNames=['شخصية مرحة','شخصية مبدعة','شخصية طموحة','شخصية فضولية','شخصية متفائلة','شخصية خبيرة','شخصية حكيمة','شخصية اجتماعية','شخصية مبادرة','شخصية ذكية','شخصية هادئة','شخصية حالمة','شخصية نشيطة','المستكشف','القائد','صاحب القبعة'];
-  function illustration(value,asAvatar=false) {
+  function makeIllustration(value,asAvatar=false) {
     const el=document.createElement('span'), name=iconFor(value);
     el.className='illustrated-icon';el.setAttribute('role','img');el.setAttribute('aria-label',value);
     if(['🥇','🥈','🥉'].includes(value))el.dataset.rank=String(['🥇','🥈','🥉'].indexOf(value)+1);
@@ -36,8 +36,10 @@
     else {el.dataset.icon=name;el.style.setProperty('--ix',(index%6)*20+'%');el.style.setProperty('--iy',Math.floor(index/6)*20+'%');}
     return el;
   }
+  function illustration(value,asAvatar=false){const el=makeIllustration(value,asAvatar);window.DarbSprites?.hydrate(el);return el;}
   function hydrate(root) {
     if(!root || (root.nodeType!==1 && root.nodeType!==3))return;
+    window.DarbSprites?.hydrate(root);
     if(root.nodeType===1){const options=root.matches('option')?[root]:root.querySelectorAll('option');for(const option of options){emoji.lastIndex=0;if(emoji.test(option.textContent)){const original=option.value;emoji.lastIndex=0;const label=option.textContent.replace(emoji,'').trim();option.value=original;option.textContent=label||'شخصية';}}}
     if(root.nodeType===1 && root.matches('svg,script,style,textarea,option,input,.illustrated-icon,.identity-avatar,[contenteditable]'))return;
     const nodes=[];
@@ -74,6 +76,7 @@
     const header=document.createElement('header');header.className='decision-heading';
     const image=document.createElement('span');image.className='card-illustration';image.setAttribute('aria-hidden','true');if(additional)image.classList.add('card-art-extra');image.style.setProperty('--cx',(art%(additional?2:3))*(additional?100:50)+'%');image.style.setProperty('--cy',Math.floor(art/(additional?2:3))*(additional?100:50)+'%');
     const titles=document.createElement('div'),kicker=document.createElement('span');kicker.className='card-kicker';kicker.textContent=label;
+    window.DarbSprites?.paint(image,additional?"cardExtra":"cards",art,4);
     titles.append(kicker,heading);header.append(image,titles);
     const content=document.createElement('div');content.className='decision-content';
     for(const node of [...sheet.childNodes])if(node!==actions)content.append(node);
