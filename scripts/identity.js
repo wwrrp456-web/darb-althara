@@ -86,7 +86,7 @@
     try{hint.open=document.documentElement.dataset.session!=='extended'&&sessionStorage.getItem(guideKey)!=='seen';}catch(e){hint.open=true;}
     hint.addEventListener('toggle',()=>{try{sessionStorage.setItem(guideKey,'seen');}catch(e){}});
     sheet.replaceChildren(header,hint,content,actions);
-    actions.classList.add('decision-actions');actions.setAttribute('aria-label','خيارات القرار');
+    actions.classList.add('decision-actions');actions.setAttribute('role','group');actions.setAttribute('aria-label','خيارات القرار');
     [...actions.children].forEach((button,i)=>{
       button.dataset.choice=i;
       const label=button.textContent, split=label.indexOf(' — ');
