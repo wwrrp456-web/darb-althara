@@ -1,0 +1,43 @@
+{
+  "status": "not passed; no ICE candidates",
+  "environment_policy": {
+    "source": "/etc/chromium/policies/managed/misc.json:42",
+    "WebRtcIPHandling": "disable_non_proxied_udp"
+  },
+  "initial": [
+    {
+      "role": "host-pending",
+      "signaling": "stable",
+      "localType": "offer",
+      "remoteType": "answer",
+      "candidates": 0
+    },
+    {
+      "role": "guest-pending",
+      "signaling": "stable",
+      "localType": "answer",
+      "remoteType": "offer",
+      "candidates": 0
+    }
+  ],
+  "after_timeout": [
+    {
+      "role": "host-pending",
+      "open": false,
+      "connection": "new",
+      "ice": "new",
+      "channel": "connecting",
+      "message": "ما زال الاتصال معلّقاً… تأكد أن الصديق أكمل الخطوات، أو جرّب الواي فاي نفسه.",
+      "errors": []
+    },
+    {
+      "role": "guest-pending",
+      "open": false,
+      "connection": "new",
+      "ice": "new",
+      "channel": null,
+      "message": "بعد أن يلصق صديقك الرمز ويضغط «اتصال» ستبدأ اللعبة تلقائياً…",
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,302 @@
+{
+  "matrix": [
+    {
+      "overflow": false,
+      "stage": {
+        "x": 14,
+        "y": 220,
+        "w": 332,
+        "h": 207.59375,
+        "bottom": 427.59375
+      },
+      "dock": {
+        "x": 12,
+        "y": 572.59375,
+        "w": 336,
+        "h": 67.40625,
+        "bottom": 640
+      },
+      "toast": {
+        "x": 12,
+        "y": 542.59375,
+        "w": 336,
+        "h": 30,
+        "bottom": 572.59375
+      },
+      "smallControls": [],
+      "hitBar": 0,
+      "width": 360,
+      "height": 640,
+      "players": 2
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 14,
+        "y": 220,
+        "w": 362,
+        "h": 411.59375,
+        "bottom": 631.59375
+      },
+      "dock": {
+        "x": 12,
+        "y": 776.59375,
+        "w": 366,
+        "h": 67.40625,
+        "bottom": 844
+      },
+      "toast": {
+        "x": 12,
+        "y": 746.59375,
+        "w": 366,
+        "h": 30,
+        "bottom": 776.59375
+      },
+      "smallControls": [],
+      "hitBar": 0,
+      "width": 390,
+      "height": 844,
+      "players": 2
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 14,
+        "y": 220,
+        "w": 402,
+        "h": 499.59375,
+        "bottom": 719.59375
+      },
+      "dock": {
+        "x": 12,
+        "y": 864.59375,
+        "w": 406,
+        "h": 67.40625,
+        "bottom": 932
+      },
+      "toast": {
+        "x": 12,
+        "y": 834.59375,
+        "w": 406,
+        "h": 30,
+        "bottom": 864.59375
+      },
+      "smallControls": [],
+      "hitBar": 0,
+      "width": 430,
+      "height": 932,
+      "players": 2
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 14,
+        "y": 220,
+        "w": 740,
+        "h": 525.59375,
+        "bottom": 745.59375
+      },
+      "dock": {
+        "x": 12,
+        "y": 956.59375,
+        "w": 744,
+        "h": 67.40625,
+        "bottom": 1024
+      },
+      "toast": {
+        "x": 12,
+        "y": 926.59375,
+        "w": 744,
+        "h": 30,
+        "bottom": 956.59375
+      },
+      "smallControls": [],
+      "hitBar": 0,
+      "width": 768,
+      "height": 1024,
+      "players": 2
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 410,
+        "y": 220,
+        "w": 756,
+        "h": 387.59375,
+        "bottom": 607.59375
+      },
+      "dock": {
+        "x": 12,
+        "y": 752.59375,
+        "w": 1156,
+        "h": 67.40625,
+        "bottom": 820
+      },
+      "toast": {
+        "x": 12,
+        "y": 722.59375,
+        "w": 1156,
+        "h": 30,
+        "bottom": 752.59375
+      },
+      "smallControls": [],
+      "hitBar": 0,
+      "width": 1180,
+      "height": 820,
+      "players": 2
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 14,
+        "y": 220,
+        "w": 332,
+        "h": 207.59375,
+        "bottom": 427.59375
+      },
+      "dock": {
+        "x": 12,
+        "y": 572.59375,
+        "w": 336,
+        "h": 67.40625,
+        "bottom": 640
+      },
+      "toast": {
+        "x": 12,
+        "y": 542.59375,
+        "w": 336,
+        "h": 30,
+        "bottom": 572.59375
+      },
+      "smallControls": [],
+      "hitBar": 0,
+      "width": 360,
+      "height": 640,
+      "players": 8
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 14,
+        "y": 220,
+        "w": 362,
+        "h": 411.59375,
+        "bottom": 631.59375
+      },
+      "dock": {
+        "x": 12,
+        "y": 776.59375,
+        "w": 366,
+        "h": 67.40625,
+        "bottom": 844
+      },
+      "toast": {
+        "x": 12,
+        "y": 746.59375,
+        "w": 366,
+        "h": 30,
+        "bottom": 776.59375
+      },
+      "smallControls": [],
+      "hitBar": 0,
+      "width": 390,
+      "height": 844,
+      "players": 8
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 14,
+        "y": 220,
+        "w": 402,
+        "h": 499.59375,
+        "bottom": 719.59375
+      },
+      "dock": {
+        "x": 12,
+        "y": 864.59375,
+        "w": 406,
+        "h": 67.40625,
+        "bottom": 932
+      },
+      "toast": {
+        "x": 12,
+        "y": 834.59375,
+        "w": 406,
+        "h": 30,
+        "bottom": 864.59375
+      },
+      "smallControls": [],
+      "hitBar": 0,
+      "width": 430,
+      "height": 932,
+      "players": 8
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 14,
+        "y": 220,
+        "w": 740,
+        "h": 525.59375,
+        "bottom": 745.59375
+      },
+      "dock": {
+        "x": 12,
+        "y": 956.59375,
+        "w": 744,
+        "h": 67.40625,
+        "bottom": 1024
+      },
+      "toast": {
+        "x": 12,
+        "y": 926.59375,
+        "w": 744,
+        "h": 30,
+        "bottom": 956.59375
+      },
+      "smallControls": [],
+      "hitBar": 0,
+      "width": 768,
+      "height": 1024,
+      "players": 8
+    },
+    {
+      "overflow": false,
+      "stage": {
+        "x": 410,
+        "y": 220,
+        "w": 756,
+        "h": 387.59375,
+        "bottom": 607.59375
+      },
+      "dock": {
+        "x": 12,
+        "y": 752.59375,
+        "w": 1156,
+        "h": 67.40625,
+        "bottom": 820
+      },
+      "toast": {
+        "x": 12,
+        "y": 722.59375,
+        "w": 1156,
+        "h": 30,
+        "bottom": 752.59375
+      },
+      "smallControls": [],
+      "hitBar": 0,
+      "width": 1180,
+      "height": 820,
+      "players": 8
+    }
+  ],
+  "errors": [],
+  "http_errors": [],
+  "browser": "154.0.8037.57",
+  "read_only_all_players": "passed; including board selection",
+  "financial_focus_trap_restore_and_background_inert": "passed",
+  "mandatory_choice_escape_and_duplicate_confirmation": "passed",
+  "zoomed_follow_after_manual_recovery": "passed (position fixture)",
+  "rotations": "passed (viewport simulation)"
+}

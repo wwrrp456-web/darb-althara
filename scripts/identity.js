@@ -83,7 +83,7 @@
     hint.append(summary,explanation);
     // Presentation preference only, scoped to this tab. No game save or network changes.
     const guideKey='darb-guide-'+(pr.category||pr.kind);
-    try{hint.open=sessionStorage.getItem(guideKey)!=='seen';}catch(e){hint.open=true;}
+    try{hint.open=document.documentElement.dataset.session!=='extended'&&sessionStorage.getItem(guideKey)!=='seen';}catch(e){hint.open=true;}
     hint.addEventListener('toggle',()=>{try{sessionStorage.setItem(guideKey,'seen');}catch(e){}});
     sheet.replaceChildren(header,hint,content,actions);
     actions.classList.add('decision-actions');actions.setAttribute('aria-label','خيارات القرار');

@@ -1,0 +1,38 @@
+{
+  "scenarios": [
+    {
+      "mode": "family",
+      "round": 1,
+      "reason": "rounds",
+      "turns": [
+        1,
+        1
+      ],
+      "count": 2
+    },
+    {
+      "mode": "extended",
+      "round": 1,
+      "reason": "rounds",
+      "turns": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "count": 8
+    }
+  ],
+  "errors": [],
+  "rematch_same_settings_and_professions": "passed",
+  "paused_financial_mutation_rejected": "passed",
+  "timed_expiry_in_required_decision_then_equal_round": "passed",
+  "pause_reload_resume": "passed",
+  "v9_migrates_with_original_dream_ending": "passed",
+  "original_dream_ending": "passed",
+  "unsupported_future_save_preserved": "passed"
+}

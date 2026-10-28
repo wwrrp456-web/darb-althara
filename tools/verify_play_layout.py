@@ -1,14 +1,14 @@
 """Phase C: real app layout, read-only group selection, focus and camera recovery.
 Serve repository on localhost:8000. Writes artifacts only to docs/phase-c.
 """
-import asyncio,json
+import argparse,asyncio,json
 from pathlib import Path
 from playwright.async_api import async_playwright
 from verify_tabletop import start_game
-OUT=Path(__file__).resolve().parents[1]/'docs/phase-c'
+parser=argparse.ArgumentParser();parser.add_argument('--artifacts',type=Path,default=Path(__file__).resolve().parents[1]/'docs/phase-c');OUT=parser.parse_args().artifacts
 SIZES=[(360,640),(390,844),(430,932),(768,1024),(1180,820)]
 async def main():
- OUT.mkdir(exist_ok=True)
+ OUT.mkdir(parents=True,exist_ok=True)
  result={'matrix':[],'errors':[],'http_errors':[]}
  async with async_playwright() as p:
   browser=await p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])

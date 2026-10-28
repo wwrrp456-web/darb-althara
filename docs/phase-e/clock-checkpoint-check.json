@@ -1,0 +1,6 @@
+{
+  "fixture": "deadline in a later uncommitted round",
+  "safe_turn_and_elapsed_time": "preserved",
+  "no_extra_round_on_expired_reload": "passed",
+  "completed_safe_round_with_equal_turns": "passed"
+}

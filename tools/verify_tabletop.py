@@ -8,6 +8,13 @@ from playwright.async_api import async_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 
+async def complete_setup(page):
+    await page.locator('#sStart').click()
+    # Older release fixtures go straight to briefing; current releases use three steps.
+    if await page.locator('#sSession').is_visible():
+        await page.get_by_role('button',name='مراجعة الإعدادات',exact=True).click()
+        await page.locator('#sLaunch').click()
+
 async def start_game(page, eight=False):
     await page.goto('http://localhost:8000/', wait_until='networkidle')
     await page.locator('#wNew').click()
@@ -20,7 +27,7 @@ async def start_game(page, eight=False):
     if eight:
         for _ in range(6):
             await page.locator('#sAdd').click()
-    await page.locator('#sStart').click()
+    await complete_setup(page)
     await page.get_by_role('button', name='ابدأ المباراة 🎲', exact=True).click()
     for _ in range(15):
         await page.wait_for_timeout(200)

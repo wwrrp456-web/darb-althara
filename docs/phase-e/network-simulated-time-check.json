@@ -1,0 +1,7 @@
+{
+  "errors": [],
+  "old_protocol_invitation_rejected": "passed",
+  "transport": "simulated application transport",
+  "host_round_limit_and_settlement": "passed",
+  "identical_result": "passed"
+}

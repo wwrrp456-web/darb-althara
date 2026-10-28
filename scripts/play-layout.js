@@ -24,7 +24,7 @@
       const turn = $('#turn-readout'); turn.replaceChildren();
       const name = document.createElement('b'); name.textContent = `دور ${next.name}`;
       const status = document.createElement('small');
-      status.textContent = `الجولة ${next.round} · ${next.busy ? 'قرار جارٍ' : next.phase === 'await_roll' ? 'ارمِ النرد' : 'تابع الدور'}`;
+      status.textContent = next.sessionLabel || `الجولة ${next.round} · ${next.busy ? 'قرار جارٍ' : next.phase === 'await_roll' ? 'ارمِ النرد' : 'تابع الدور'}`;
       turn.append(name, status);
       const location = $('#current-location'); location.replaceChildren();
       const text = document.createElement('span'), label = document.createElement('small'), title = document.createElement('b');

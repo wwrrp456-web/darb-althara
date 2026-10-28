@@ -7,6 +7,7 @@ import asyncio
 import json
 import re
 from pathlib import Path
+from verify_tabletop import complete_setup
 VERSION=re.search(r'const VER = "([^"]+)"', (Path(__file__).resolve().parents[1]/"sw.js").read_text()).group(1)
 from urllib.request import urlopen
 from playwright.async_api import async_playwright
@@ -44,7 +45,7 @@ async def verify(base_url):
             assert await image.evaluate('(el) => el.complete && el.naturalWidth > 0 && getComputedStyle(el).backgroundImage.includes("characters-sheet.png")')
             assert await image.get_attribute('alt')
         await page.locator('.pcard[data-p="0"]').click()
-        await page.locator('#sStart').click()
+        await complete_setup(page)
         await page.get_by_role('button', name='ابدأ المباراة 🎲', exact=True).click()
         # First-year budget contains actual gameplay choices before the first roll.
         for _ in range(15):

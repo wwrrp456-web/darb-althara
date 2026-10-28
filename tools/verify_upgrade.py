@@ -5,6 +5,7 @@ import asyncio,shutil,json,subprocess,tarfile,io,tempfile,threading,re
 from functools import partial
 from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 from pathlib import Path
+from verify_tabletop import complete_setup
 from playwright.async_api import async_playwright
 async def main(root,dest,base_url,stop_server):
  old_version=re.search(r'const VER = "([^"]+)"', (dest/"sw.js").read_text()).group(1)
@@ -18,7 +19,7 @@ async def main(root,dest,base_url,stop_server):
   page.on('pageerror',lambda e:errors.append(str(e)))
   await page.goto(base_url+'/',wait_until='networkidle')
   if await page.locator('#hClose').is_visible():await page.locator('#hClose').click()
-  await page.locator('#wNew').click();await page.locator('#sStart').click()
+  await page.locator('#wNew').click();await complete_setup(page)
   await page.get_by_role('button',name='ابدأ المباراة 🎲',exact=True).click()
   for _ in range(15):
    await page.wait_for_timeout(200)

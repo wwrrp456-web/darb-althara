@@ -1,0 +1,22 @@
+{
+  "base_ref": "6389bb3a548b5680ebbbb7fcddbf4cf16bcb8eb7",
+  "checks": {
+    "authored_data_and_financial_formulas": {
+      "identical": true,
+      "sha256": "555ef46eb0c189a9eb25a6e27eae06f441e12a05691c42ba75e9d9beaf38fa0b"
+    },
+    "standings": {
+      "identical": true,
+      "sha256": "89435c86624d15d20aefb6a9e08acbdaf7226946eb434cb496904a53bf258d2f"
+    },
+    "closing_dream_purchase": {
+      "identical": true,
+      "sha256": "f40a797ff761cedf0f7230b05b7c654c4cdf6d85a3ef079a1689b8446b8725fa"
+    }
+  },
+  "changed_intentionally": [
+    "session settings, completion boundary and pause guards",
+    "save v9 to v10 and protocol 2",
+    "guidance and effect duration"
+  ]
+}
